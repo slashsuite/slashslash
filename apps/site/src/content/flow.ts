@@ -100,7 +100,7 @@ export const FLOW: readonly FlowStep[] = [
           kind: "real",
           title: "a toy checkout page, flag off against flag on; path shortened",
           lines: [
-            "$ npx @hackcove/pixelslash --live http://localhost:4111 --local http://localhost:4112 --out out",
+            "$ npx @slashsuite/pixelslash --live http://localhost:4111 --local http://localhost:4112 --out out",
             "pixelslash: 52368 changed pixels",
             "report: file:///.../out/report.html",
             "timing: 1 shot, capture 0.6s, diff 0.1s, total 0.7s",

@@ -1,19 +1,18 @@
 import { existsSync, globSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
-import { FLOW } from "#/content/flow";
 import { PRODUCTS } from "#/content/products";
-import { CONTACT, DEVELOPERS_DESCRIPTION, DEVELOPERS_TITLE, SITE_NAME } from "#/content/site";
+import { CONTACT, DEVELOPERS_HEADLINE, DEVELOPERS_TITLE, SITE_NAME } from "#/content/site";
 import { STAGES } from "#/content/stages";
-import { DEVELOPERS } from "#/content/story";
 import { DEVELOPER_QUESTIONS } from "#/developers/questions";
+import { SELF_HOST } from "#/developers/self-host";
+import { TODAY } from "#/developers/today";
 import { SECTIONS } from "#/shell/sections";
 
 /*
  * /developers as the site builds it, read from dist (`bunx moon run site:test` builds first): on the
- * shell in the suite's section, in the page's order, every word of the walkthrough, env, flags, the
- * tools in detail, how to run PixelSlash today and the ask, a copy button on every command, and real and
- * imagined kept apart.
+ * shell in the suite's section, in the page's order: intro, try any product today, self-hosting in one
+ * container, every product in detail, and the ask, with a copy button on every command block.
  */
 
 const DIST = resolve(import.meta.dirname, "../../dist");
@@ -29,7 +28,7 @@ function read(file: string): string {
 function text(html: string): string {
   return html
     .replace(/<(script|style|template)[\s\S]*?<\/\1>/g, " ")
-    .replace(/<\/code>/g, "")
+    .replace(/<\/?(a|code|span)\b[^>]*>/g, "")
     .replace(/<[^>]+>/g, " ")
     .replaceAll("&#39;", "'")
     .replaceAll("&#x27;", "'")
@@ -56,12 +55,11 @@ describe("/developers", () => {
     expect(html).toMatch(/<a [^>]*href="\/"/);
   });
 
-  test("opens on one h1, For developers, with its lead, then the story's section for developers", () => {
+  test("opens on one h1, the developers headline, and points to /how-it-works", () => {
     const h1s = [...html.matchAll(/<h1[^>]*>([\s\S]*?)<\/h1>/g)].map((m) => text(m[1] ?? ""));
-    expect(h1s).toEqual(["For developers"]);
+    expect(h1s).toEqual([DEVELOPERS_HEADLINE]);
     expect(html).toMatch(/<h1[^>]*id="for-developers"/);
-    expect(words).toContain(DEVELOPERS_DESCRIPTION);
-    for (const line of [DEVELOPERS.title, DEVELOPERS.next.text]) expect(words).toContain(line);
+    expect(html).toContain('href="/how-it-works"');
   });
 
   test("has no @@ label", () => {
@@ -69,44 +67,33 @@ describe("/developers", () => {
   });
 
   test("keeps the page's order", () => {
-    const ids = ["for-developers", "agents", "walkthrough", "env", "flags", "tools-detail", "today", "ask"];
+    const ids = ["for-developers", "try-today", "self-host", "tools-detail", "ask"];
     const at = ids.map((id) => html.indexOf(`id="${id}"`));
     for (const [i, place] of at.entries()) expect(place, ids[i]).toBeGreaterThan(-1);
     expect(at).toEqual(at.toSorted((a, b) => a - b));
   });
 
-  test("renders the walkthrough, in full", () => {
-    for (const step of FLOW) {
-      expect(html).toContain(`id="${step.id}"`);
-      for (const line of [step.label, step.title, step.story]) expect(words).toContain(line);
-      for (const fit of step.fits) {
-        expect(words).toContain(fit.text.text);
-        for (const line of fit.output?.lines ?? []) expect(words).toContain(text(line.replace(/^\$ /, "")));
-      }
+  test("renders try-today commands for every alpha product, the self-host section, and every developer question", () => {
+    expect(words).toContain("npx @slashsuite/pixelslash --live-png main.png --local-png branch.png --out out");
+    expect(words).toContain("bun add @slashsuite/ui-react @slashsuite/themes");
+    expect(words).toContain("ghcr.io/slashsuite/slashslash:latest");
+    expect(words).toContain("self-host/proxmox/install.sh");
+    expect(words).toContain("oci://ghcr.io/slashsuite/charts");
+    for (const entry of TODAY.entries) {
+      expect(words, entry.id).toContain(entry.title);
+      expect(words, entry.id).toContain(entry.note.text);
     }
-    const images = FLOW.flatMap((step) => step.fits.flatMap((fit) => (fit.output?.image ? [fit.output.image.src] : [])));
-    for (const src of images) expect(html).toContain(`src="${src}"`);
-  });
-
-  test("reads the PixelSlash report from the fetched files, not a tracked copy", () => {
-    expect(html).toContain('src="/pixelslash/report.png"');
-    expect(html).not.toContain('src="/report.png"');
-  });
-
-  test("renders the install commands, the env and flags sections, and every developer question", () => {
-    expect(words).toContain("npx @hackcove/pixelslash --live-png a.png --local-png b.png --out out");
-    expect(words).toContain("npx @hackcove/pixelslash install-browser");
-    for (const id of ["env", "flags", "today"]) expect(html).toContain(`id="${id}"`);
-    expect(words).toContain("FS_TIMEOUT");
-    expect(words).toContain("The combination problem");
+    for (const detail of SELF_HOST.details) {
+      expect(words, detail.text).toContain(detail.text.replaceAll("`", ""));
+    }
     for (const question of DEVELOPER_QUESTIONS) expect(words).toContain(question);
     expect(words).toContain(CONTACT.lead.trim());
     expect(words).toContain(CONTACT.link);
     expect(html).toContain(`href="${CONTACT.href}"`);
   });
 
-  test("gives every tool a card with every paragraph of its summary", () => {
-    const tools = between('id="tools-detail"', 'id="today"');
+  test("gives every product a card with every paragraph of its summary", () => {
+    const tools = between('id="tools-detail"', 'id="ask"');
     const cards = tools.split("<article").slice(1);
     expect(cards).toHaveLength(PRODUCTS.length);
     for (const [i, product] of PRODUCTS.entries()) {
@@ -124,74 +111,31 @@ describe("/developers", () => {
     expect(html).not.toMatch(/role="tab/);
   });
 
-  test("puts a copy button on every command block, and hydrates only the copy islands and Motion", () => {
+  test("puts a copy button on every command block, and hydrates only Today and SelfHost", () => {
     const main = html.slice(html.indexOf("<main"));
     const blocks = main
       .split("<figure")
       .slice(1)
-      .map((chunk) => chunk.slice(0, chunk.indexOf("</figure>")))
-      .filter((figure) => !figure.startsWith(" data-kind"));
-    const commands = blocks.filter((figure) => />(command|bash)</.test(figure));
-    // Every command in the walkthrough and Today is in one.
-    const said = FLOW.flatMap((s) => s.fits.flatMap((f) => f.output?.lines ?? [])).filter((l) => l.startsWith("$ "));
-    expect(commands.length).toBeGreaterThan(0);
-    for (const block of commands) expect(block).toMatch(/<button[^>]*aria-label="Copy"/);
-    for (const block of blocks.filter((b) => !commands.includes(b))) expect(block).not.toMatch(/aria-label="Copy"/);
-    const copied = [...main.matchAll(/data-copy-text="([^"]*)"/g)].map((m) => text(m[1] ?? ""));
-    for (const command of said) expect(copied.join("\n")).toContain(command.slice(2));
+      .map((chunk) => chunk.slice(0, chunk.indexOf("</figure>")));
+    expect(blocks).toHaveLength(TODAY.entries.length + 1);
+    for (const block of blocks) expect(block).toMatch(/<button[^>]*aria-label="Copy"/);
     const islands = [...html.matchAll(/<astro-island[^>]*component-export="([^"]+)"[^>]*>/g)];
-    expect(islands.map((m) => m[1])).toEqual(["Walkthrough", "Today", "Motion"]);
-    expect(islands[0]?.[0]).toContain('client="visible"');
-    expect(islands[1]?.[0]).toContain('client="visible"');
+    expect(islands.map((m) => m[1])).toEqual(["Today", "SelfHost"]);
+    for (const island of islands) expect(island[0]).toContain('client="visible"');
   });
 
   test("names no count of tools or questions", () => {
     expect(words).not.toMatch(/\b(two|three|four|five|six|\d+)\s+(slash\s+)?(tools|questions)\b/i);
   });
 
-  test("names TaskSlash, with its card linking its page", () => {
-    const tools = between('id="tools-detail"', 'id="today"');
-    const card = tools.split("<article").find((chunk) => text(chunk).includes("TaskSlash"));
-    expect(card, "no TaskSlash card").toBeDefined();
-    expect(card).toContain('href="/taskslash"');
-  });
-});
-
-describe("real and imagined stay apart", () => {
-  test("the FS_ table says it is imagined", () => {
-    const env = between('id="env"', 'id="flags"');
-    expect(env).toContain('data-kind="idea"');
-    expect(env).toContain("FS_TIMEOUT");
-    expect(text(env)).toContain("imagined, no tool prints this");
-  });
-
-  test("the flag note says it is made up, in one table", () => {
-    const flags = between('id="flags"', 'id="tools-detail"');
-    expect(flags).toContain('data-kind="made-up"');
-    expect(text(flags)).toContain("Made up: no tool produces this today");
-    expect(flags.match(/<table/g)).toHaveLength(1);
-  });
-
-  /** Each fit in the built walkthrough, in FLOW's order: from its h4 to the next one. */
-  const fits = (() => {
-    const walkthrough = between('id="walkthrough"', 'id="env"');
-    const chunks = walkthrough.split("<h4").slice(1);
-    return FLOW.flatMap((step) => step.fits).map((fit, i) => ({ fit, html: chunks[i] ?? "" }));
-  })();
-
-  test("a tool's stage in the walkthrough is the stage in the product data", () => {
-    expect(fits.length).toBeGreaterThan(0);
-    for (const { fit, html: chunk } of fits) {
-      const product = PRODUCTS.find((p) => p.name === fit.tool);
-      if (product === undefined) throw new Error(`No product ${fit.tool}`);
-      const heading = text(`<h4${chunk.slice(0, chunk.indexOf("</h4>"))}`);
-      expect(heading).toBe(`${fit.tool} ${STAGES[product.stage].label}`);
-    }
-  });
-
-  test("a planned tool never shows real output", () => {
-    const shown = fits.filter(({ fit, html: chunk }) => fit.stage === "planned" && chunk.includes('data-kind="real"'));
-    expect(shown.map(({ fit }) => fit.tool)).toEqual([]);
+  test("names TaskSlash and UISlash, with each card linking its page", () => {
+    const tools = between('id="tools-detail"', 'id="ask"');
+    const taskCard = tools.split("<article").find((chunk) => text(chunk).includes("TaskSlash"));
+    expect(taskCard, "no TaskSlash card").toBeDefined();
+    expect(taskCard).toContain('href="/taskslash"');
+    const uiCard = tools.split("<article").find((chunk) => text(chunk).includes("UISlash"));
+    expect(uiCard, "no UISlash card").toBeDefined();
+    expect(uiCard).toContain('href="/uislash"');
   });
 });
 

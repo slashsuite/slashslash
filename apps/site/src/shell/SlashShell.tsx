@@ -2,7 +2,7 @@ import { AppShell, AppShellBrand, Caption, Cluster, ColourSchemeToggle, Show, Ta
 import type { ReactNode } from "react";
 import { licenceOf } from "#/content/facts";
 import { PRODUCTS } from "#/content/products";
-import { SITE_NAME } from "#/content/site";
+import { SELF_HOST_REPO_URL, SITE_NAME } from "#/content/site";
 import { LANDING_HEADLINE } from "#/content/story";
 import { TRADEMARK } from "#/pixelslash/content/trademark";
 import { FooterColumns } from "#/stand-ins/footer-columns";
@@ -80,15 +80,24 @@ function Footer(): ReactNode {
         </>
       }
       columns={[
-        { title: "Tools", items: productItems() },
+        { title: "Products", items: productItems() },
         {
-          title: "Developers",
+          title: "Docs and code",
           items: [
+            <TextLink key="/how-it-works" href="/how-it-works">
+              How it works
+            </TextLink>,
             <TextLink key="/developers" href="/developers">
-              How it works in CI
+              For developers
             </TextLink>,
             <TextLink key="/pixelslash/docs" href="/pixelslash/docs">
               PixelSlash docs
+            </TextLink>,
+            <TextLink key="/uislash" href="/uislash">
+              UISlash docs
+            </TextLink>,
+            <TextLink key="self-host" href={SELF_HOST_REPO_URL} external>
+              Self-host image
             </TextLink>,
             <TextLink key="github" href="https://github.com/slashsuite" external>
               Source on GitHub

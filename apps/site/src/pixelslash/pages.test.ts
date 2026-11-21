@@ -224,6 +224,14 @@ describe("/pixelslash/compare's matrix", () => {
   });
 });
 
+const ALLOWED_ORIGINS = new Set(["https://github.com", "https://slashslash.build"]);
+
+/** Whether an external http(s) URL is allowed on a PixelSlash page (GitHub, slashslash.build, cited docs, or hosted review app root). */
+function isAllowedExternal(ref: string): boolean {
+  const { origin, pathname } = new URL(ref);
+  return ALLOWED_ORIGINS.has(origin) || CITED.has(origin) || (origin === "https://pixelslash.dev" && pathname === "/");
+}
+
 /** What is wrong with one href or src on a PixelSlash page: a /pixelslash path not in dist, or an origin not cited. */
 function refProblem(file: string, ref: string): string[] {
   if (ref.startsWith("/")) {
@@ -234,18 +242,16 @@ function refProblem(file: string, ref: string): string[] {
     return path.startsWith("/pixelslash") && !exists ? [`${file} links ${ref}, which is not in dist`] : [];
   }
   if (!/^https?:/.test(ref)) return [];
-  const { origin } = new URL(ref);
-  const allowed = origin === "https://github.com" || origin === "https://slashslash.build" || CITED.has(origin);
-  return allowed ? [] : [`${file} links ${ref}`];
+  return isAllowedExternal(ref) ? [] : [`${file} links ${ref}`];
 }
 
 describe("every PixelSlash page", () => {
-  test("names only files that exist here, and links nothing on pixelslash.dev", () => {
+  test("names only files that exist here, and links no doc or marketing subpaths on pixelslash.dev", () => {
     for (const { file } of SERVED) {
       const html = read(file);
       expect([...html.matchAll(/\s(?:href|src)="([^"]+)"/g)].flatMap(([, ref = ""]) => refProblem(file, ref))).toEqual([]);
-      // Every PixelSlash page is served here now, the docs included.
-      expect(html, file).not.toMatch(/href="https?:\/\/pixelslash\.dev/);
+      // Every PixelSlash doc/marketing page is served here now; only the hosted review app root (https://pixelslash.dev) is external.
+      expect(html, file).not.toMatch(/href="https?:\/\/pixelslash\.dev\/[^"]/);
     }
   });
 

@@ -6,10 +6,10 @@ import { Rich } from "#/shell/rich-text";
 
 /*
  * The /how-it-works flow diagram, drawn as boxes in an ordered list (flow.css places them). One item per
- * step, in order, each with its number, label, role and rule, and the tool at that step, all as text. A
- * step that runs today has a solid outline; a planned one a dashed outline and a Planned pill, as
- * /developers marks imagined output. The arrows are decoration. On a phone, and at 200% zoom, the steps
- * stack top to bottom; from md up they run left to right, with the planned branches under their step.
+ * step, in order, each with its number, optional circular role avatar, label, role and rule, and the tool
+ * at that step. A step that runs today has a solid outline; a planned one a dashed outline and a Planned
+ * pill. The arrows are decoration. On a phone, and at 200% zoom, the steps stack top to bottom; on desktop
+ * they run left to right in two 5-step rows, with the planned branches (6a, 7a) directly beneath their steps.
  */
 
 /** A down arrow; flow.css turns it to point right where the next step is beside this one. */
@@ -33,6 +33,18 @@ function Node({ node, last }: { node: FlowNode; last: boolean }): ReactNode {
     >
       <span className="flex flex-wrap items-center gap-2">
         <span className="flow-num">{node.id}</span>
+        {node.roleId === undefined ? null : (
+          <img
+            src={`/how-it-works/${node.roleId}.webp`}
+            alt=""
+            aria-hidden="true"
+            width={32}
+            height={32}
+            loading="lazy"
+            decoding="async"
+            className="h-8 w-8 shrink-0 rounded-full border border-[var(--hc-line)] object-cover object-top"
+          />
+        )}
         <Text as="span" strong>
           {node.label}
         </Text>

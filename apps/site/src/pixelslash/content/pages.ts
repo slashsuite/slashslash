@@ -13,8 +13,8 @@ const LIST = [
     label: "Home",
     title: "PixelSlash: visual review for the web",
     description: {
-      text: "PixelSlash diffs two versions of a page and shows what changed. Source available under the Elastic License 2.0, self-hostable.",
-      facts: ["pixelslash/what-it-is", "pixelslash/licence", "pixelslash/self-host-docker", "pixelslash/self-host-cloudflare"],
+      text: "PixelSlash diffs Main and Branch shots with a Rust WebAssembly perceptual engine, writes a local report, and works with a review app and MCP server.",
+      facts: ["pixelslash/what-it-is", "pixelslash/wasm-diff-engine", "pixelslash/compare-two-pngs", "pixelslash/upload-to-review-app", "pixelslash/mcp-server"],
     },
   },
   {

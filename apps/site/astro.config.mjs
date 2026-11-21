@@ -41,7 +41,7 @@ export default defineConfig({
         "@pixelslash-src": here("./.sources/pixelslash"),
         // Each product's FACTS.md, at the commit facts.sha.json pins.
         "@facts": here("./.sources/facts"),
-        // The UISlash docs data and story closure scripts/fetch-sources.ts downloads at uislash.json's commit.
+        // The UISlash docs data and story closure scripts/fetch-sources.ts downloads at uislash.sha.json's commit.
         "@uislash-src": here("./.sources/uislash"),
       },
     },

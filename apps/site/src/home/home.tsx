@@ -1,4 +1,4 @@
-import { Card, Container, Lead, ListRow, Pill, Step, Steps, Text } from "@slashsuite/ui-react";
+import { Button, Card, Container, Lead, ListRow, Pill, Step, Steps, Text } from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
 import type { Claim } from "#/content/facts";
 import { STAGES, STAGE_TONE } from "#/content/stages";
@@ -6,13 +6,13 @@ import { HERO, PIPELINE } from "#/content/story";
 import { HomeSection } from "#/home/sections";
 import { TOOL_CARDS, type ToolCard } from "#/home/tools";
 import { HeroPanes } from "#/illustrations/hero";
-import { CentredHero } from "#/stand-ins/centred-hero";
+import { CentredHero, CentredRow } from "#/stand-ins/centred-hero";
 
 /*
- * The suite home's first screen, on the kit's parts: the hero (the story's title and lead, over the
- * hand-drawn panes, with no link or button), then the pipeline: the steps a change goes through, in
- * order, each with the tools that run there and what each does there. Nothing here runs in
- * the browser; the page adds the Motion island beside it.
+ * The suite home's first screen, on the kit's parts: the hero (the story's title, lead, CTAs and the
+ * five-stage pipeline strip), then the pipeline: the steps a change goes through, in order, each with
+ * the products that run there and what each does there. Nothing here runs in the browser; the page
+ * adds the Motion island beside it.
  */
 
 function HomeHero(): ReactNode {
@@ -22,8 +22,16 @@ function HomeHero(): ReactNode {
         <div className="pt-12 pb-8 md:pt-16">
           <CentredHero title={HERO.title.text}>
             <Lead>{HERO.lead.text}</Lead>
+            <CentredRow>
+              <Button href="/how-it-works" size="lg">
+                See how it works
+              </Button>
+              <Button href="#tools" variant="outline" size="lg">
+                Explore the products
+              </Button>
+            </CentredRow>
           </CentredHero>
-          {/* The full column, so the panes line up with the pipeline below. */}
+          {/* The full column, so the strip lines up with the pipeline below. */}
           <HeroPanes />
         </div>
       </Container>

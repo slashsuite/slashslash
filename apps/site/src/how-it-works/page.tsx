@@ -2,14 +2,15 @@ import { Container, Lead, PageHeading, Stack, Text, TextLink } from "@slashsuite
 import { Fragment, type ReactNode } from "react";
 import type { Claim } from "#/content/facts";
 import { CLOSE, DIAGRAM, type FlowTool, HOW_IT_WORKS_HEADLINE, HOW_IT_WORKS_LEAD, TOOLS } from "#/content/how-it-works";
+import { type FlowRole, type FlowTerm, ROLES, TERMS } from "#/content/how-it-works-roles";
 import { type FlowStep, type Run, STATUS, STEPS } from "#/content/how-it-works-steps";
 import { HomeSection } from "#/home/sections";
 import { FlowDiagram } from "#/illustrations/flow";
 import { Rich } from "#/shell/rich-text";
 
 /*
- * /how-it-works: the h1 and its two paragraphs, the flow diagram, the steps in words, today and planned,
- * the tools, and the close, in the approved copy's order. Static: nothing here runs in the browser.
+ * /how-it-works: the h1 and its two paragraphs, the illustrated roles, the terms, the flow diagram,
+ * the steps in words, today and planned, the tools, and the close. Static: nothing here runs in the browser.
  */
 
 const words = (run: Run): string => (typeof run === "string" ? run : run.text);
@@ -35,6 +36,53 @@ function List({ items }: { items: readonly Claim[] }): ReactNode {
         </li>
       ))}
     </ul>
+  );
+}
+
+function RoleCard({ role }: { role: FlowRole }): ReactNode {
+  return (
+    <li
+      data-role={role.id}
+      className="flex min-w-0 flex-col overflow-hidden rounded-lg border-2 border-[var(--hc-line)] bg-[var(--hc-surface)]"
+    >
+      <div className="border-b border-[var(--hc-line)] bg-[var(--hc-surface)]">
+        <img
+          src={role.image}
+          alt={role.alt}
+          width={800}
+          height={597}
+          loading="lazy"
+          decoding="async"
+          className="block aspect-[4/3] w-full object-cover"
+        />
+      </div>
+      <div className="flex flex-1 flex-col gap-2 p-4">
+        <div className="space-y-0.5">
+          <h3 className="text-lg font-semibold leading-snug">{role.name}</h3>
+          <Text tone="muted">{role.role}</Text>
+        </div>
+        <Text>
+          <Rich text={role.summary.text} />
+        </Text>
+      </div>
+    </li>
+  );
+}
+
+function TermCard({ term }: { term: FlowTerm }): ReactNode {
+  return (
+    <li
+      data-term={term.id}
+      className="flex min-w-0 flex-col gap-2 rounded-lg border-2 border-[var(--hc-line)] bg-[var(--hc-surface)] p-4"
+    >
+      <div className="space-y-0.5">
+        <h3 className="text-lg font-semibold leading-snug">{term.name}</h3>
+        <Text tone="muted">{term.tagline}</Text>
+      </div>
+      <Text>
+        <Rich text={term.summary.text} />
+      </Text>
+    </li>
   );
 }
 
@@ -81,6 +129,22 @@ export function HowItWorks(): ReactNode {
           </Stack>
         </Container>
       </div>
+      <HomeSection id="roles" title={ROLES.title}>
+        <Text>{ROLES.intro}</Text>
+        <ul className="m-0 grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3">
+          {ROLES.items.map((role) => (
+            <RoleCard key={role.id} role={role} />
+          ))}
+        </ul>
+      </HomeSection>
+      <HomeSection id="terms" title={TERMS.title}>
+        <Text>{TERMS.intro}</Text>
+        <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
+          {TERMS.items.map((term) => (
+            <TermCard key={term.id} term={term} />
+          ))}
+        </ul>
+      </HomeSection>
       <HomeSection id="flow" title={DIAGRAM.title}>
         <FlowDiagram nodes={DIAGRAM.nodes} caption={DIAGRAM.caption} />
       </HomeSection>

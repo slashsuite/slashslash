@@ -1,20 +1,25 @@
 ---
 // /uislash: UISlash Getting started and component directory, in the Slash shell.
 import { Container, SiteSearch, copyScript } from "@slashsuite/ui-react";
+import { licenceLine } from "#/content/facts";
 import Slash from "#/layouts/Slash.astro";
 import { DocsFrame } from "#/uislash/DocsFrame";
 import { UISLASH_SEARCH_ITEMS } from "#/uislash/search";
 import { UiPage } from "#/uislash/UiPage";
 import { UISLASH_UI } from "#/uislash/ui";
+
+const UISLASH_HEADLINE = "UI components your agents cannot style wrong.";
+const UISLASH_DESCRIPTION =
+  "React 19 components and seven WCAG AA checked themes built from props alone, with no className or style escape hatch and an llms.txt for agents.";
 ---
 
-<Slash section="uislash" title="UISlash" description={UISLASH_UI.subtitle}>
+<Slash section="uislash" title={`UISlash: ${UISLASH_HEADLINE}`} description={UISLASH_DESCRIPTION}>
   <script slot="head" is:inline set:html={copyScript} />
   <SiteSearch slot="controls" client:load label="Search components" items={UISLASH_SEARCH_ITEMS} />
   <div class="py-8">
     <Container>
-      <DocsFrame client:load pathname={Astro.url.pathname} title="UISlash" description={UISLASH_UI.subtitle}>
-        <UiPage />
+      <DocsFrame client:load pathname={Astro.url.pathname} title={UISLASH_HEADLINE} description={UISLASH_UI.subtitle}>
+        <UiPage licence={licenceLine("uislash")} />
       </DocsFrame>
     </Container>
   </div>

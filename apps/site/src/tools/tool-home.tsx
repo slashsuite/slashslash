@@ -82,6 +82,11 @@ function Hero({ tool, heroCode }: { tool: Tool; heroCode: ReactNode }): ReactNod
               <Button href="#try-it" size="lg">
                 Try it
               </Button>
+              {tool.heroLink === undefined ? null : (
+                <Button href={tool.heroLink.href} variant="outline" size="lg">
+                  {tool.heroLink.label}
+                </Button>
+              )}
               <Button href={tool.repo} variant="outline" size="lg">
                 Repository on GitHub
               </Button>
@@ -163,6 +168,15 @@ export function ToolHome({
       <div className="py-16">
         <Container>
           <Stack gap="xl">
+            {tool.proof === undefined ? null : (
+              <Section id="proof" size="lg" title={tool.proof.title}>
+                <Card size="lg">
+                  <Text>
+                    <Words text={tool.proof.text.text} />
+                  </Text>
+                </Card>
+              </Section>
+            )}
             <WorksToday tool={tool} />
             {tool.compared === undefined ? null : (
               <Section id="compared" size="lg" title={tool.compared.title}>

@@ -7,7 +7,7 @@ import { expect, type Page, test } from "@playwright/test";
  * they, have a dashed outline and the word Planned.
  */
 
-const PLANNED = new Set(["5a", "6a"]);
+const PLANNED = new Set(["6a", "7a"]);
 
 async function boxes(page: Page): Promise<{ id: string; x: number; y: number; bottom: number }[]> {
   return page.locator("[data-node]").evaluateAll((nodes) =>
@@ -21,7 +21,7 @@ async function boxes(page: Page): Promise<{ id: string; x: number; y: number; bo
 async function expectStacked(page: Page): Promise<void> {
   await page.goto("/how-it-works");
   const nodes = await boxes(page);
-  expect(nodes.map((node) => node.id)).toEqual(["1", "2", "3", "4", "5", "5a", "6", "6a", "7", "8", "9"]);
+  expect(nodes.map((node) => node.id)).toEqual(["1", "2", "3", "4", "5", "6", "6a", "7", "7a", "8", "9", "10"]);
   for (const [index, node] of nodes.entries()) {
     const before = nodes[index - 1];
     if (before === undefined) continue;
@@ -57,7 +57,7 @@ test("on a desktop the steps run left to right", async ({ page }, info) => {
 test("the planned steps, and only they, are dashed and say Planned", async ({ page }) => {
   await page.goto("/how-it-works");
   const nodes = page.locator("[data-node]");
-  await expect(nodes).toHaveCount(11);
+  await expect(nodes).toHaveCount(12);
   for (const node of await nodes.all()) {
     const id = (await node.getAttribute("data-node")) ?? "";
     const planned = PLANNED.has(id);

@@ -11,8 +11,8 @@ export const STATEMENT: Claim = {
   facts: ["pixelslash/self-host-docker", "pixelslash/self-host-cloudflare", "pixelslash/from-source"],
 };
 export const LEAD: Claim = {
-  text: "There is no paid plan to buy. The whole product is in the source-available repository.",
-  facts: ["pixelslash/licence"],
+  text: "Try the hosted review app at pixelslash.dev for free, or run the whole stack yourself. There is no paid plan to buy and no feature held back.",
+  facts: ["pixelslash/licence", "pixelslash/hosted-review-app", "pixelslash/self-host-docker"],
 };
 
 /** The one action the page asks for, and where it goes. */

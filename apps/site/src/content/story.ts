@@ -23,19 +23,18 @@ const SUITE: readonly [FactId, ...FactId[]] = [
 /** The suite and OmniSlash, which carries the work from one step to the next. */
 const SUITE_AND_OMNI: readonly [FactId, ...FactId[]] = [...SUITE, "omnislash/what-it-is"];
 
-export const HERO: { title: Claim; lead: Claim } = {
+export const HERO: { title: Claim; lead: Claim; description: Claim } = {
   title: {
-    text: "Slash takes agent work from an idea to a merged change, and checks it at every step.",
+    text: "Software tools built for coding agents from the ground up.",
     facts: SUITE_AND_OMNI,
   },
   lead: {
-    text: "OmniSlash carries the work. It refuses to start an agent on a ticket that nobody has drilled. It builds each ticket on its own branch. It has the pull request gated before it merges. The other tools check the work on the way: the parts it is built from, the builds and tests, the screens it changes and the release. Each tool does one job, so you can start with one and leave the rest.",
-    facts: [
-      ...SUITE_AND_OMNI,
-      "omnislash/drilled-ticket-gate",
-      "omnislash/agent-build-worktree",
-      "omnislash/review-merge-skills",
-    ],
+    text: "Dev tools built for one developer opening two pull requests a day break when five coding agents run in parallel on the same machine. Each Slash product solves one step from idea to release, so you can start with the one that hurts most and leave the rest.",
+    facts: SUITE_AND_OMNI,
+  },
+  description: {
+    text: "The Slash suite takes agent work from an idea to a merged release, checking the UI, local builds, flaky tests, visual diffs and feature rollouts along the way.",
+    facts: SUITE_AND_OMNI,
   },
 };
 
@@ -58,29 +57,26 @@ type PipelineStage = {
 };
 
 /**
- * The one view of the suite: the steps a change goes through, in order, and under each step the tools
- * that run there, each saying what it does there. A planned tool says what it will do. OmniSlash runs at
+ * The one view of the suite: the steps a change goes through, in order, and under each step the products
+ * that run there, each saying what it does there. A planned product says what it will do. OmniSlash runs at
  * more than one step, and says what it does at each.
  */
 export const PIPELINE: { title: string; lead: string; stages: readonly PipelineStage[]; next: Claim } = {
-  title: "Where each tool fits",
-  lead: "A change goes through the same steps, from the idea to the release. Each Slash product does one job at one of those steps. Start with the one that hurts most.",
+  title: "Where each product fits",
+  lead: "A change moves through the same steps from idea to release. Each Slash product owns one check along the way, and works on its own.",
   stages: [
     {
       name: "Planned",
       text: {
-        text: "An idea becomes a ticket, and the ticket is drilled before any agent starts on it.",
+        text: "An idea becomes a ticket with clear requirements and acceptance criteria before any agent starts coding.",
         facts: ["omnislash/drilled-ticket-gate"],
       },
       tools: [
         {
           tool: "OmniSlash",
           does: {
-            text: "OmniSlash refuses to dispatch a ticket that has no drilled section, no done-when item or no recorded check, unless you override it and give a reason. Planned: builders working in parallel are checked for conflicts.",
-            facts: [
-              "omnislash/drilled-ticket-gate",
-              "omnislash/parallel-conflict-checks",
-            ],
+            text: "Refuses to start an agent on a ticket until it has a written breakdown, acceptance criteria and a recorded sign-off, unless you explicitly override it with a reason. Planned: conflict checks between coding agents working in parallel.",
+            facts: ["omnislash/drilled-ticket-gate", "omnislash/parallel-conflict-checks"],
           },
         },
       ],
@@ -88,28 +84,28 @@ export const PIPELINE: { title: string; lead: string; stages: readonly PipelineS
     {
       name: "Written",
       text: {
-        text: "An agent builds the ticket on its own branch, in its own worktree, from ready parts.",
-        facts: ["omnislash/agent-build-worktree", "uislash/react-components"],
+        text: "An agent writes the code in its own git worktree using UI components it cannot style off-brand.",
+        facts: ["omnislash/agent-build-worktree", "uislash/no-styling-escape"],
       },
       tools: [
         {
           tool: "OmniSlash",
           does: {
-            text: "OmniSlash opens each builder in a git worktree on the ticket's own branch, and a lease lets only one holder work a ticket or a worktree at a time.",
+            text: "Opens each coding agent in its own git worktree on the ticket's branch, locked with a lease so two agents cannot edit the same ticket or checkout at once.",
             facts: ["omnislash/agent-build-worktree", "omnislash/leases"],
           },
         },
         {
           tool: "UISlash",
           does: {
-            text: "UISlash gives the agent React components that take props alone and accept no className or style, so it cannot style a page off the design. Switching theme changes the whole site with no component change. It has seven themes, each checked against WCAG AA contrast.",
+            text: "React 19 components and seven WCAG AA checked themes where no exported component accepts className or style. Switching one CSS class on the page reskins the whole site with no component change.",
             facts: [
               "uislash/what-it-is",
               "uislash/react-components",
-              "uislash/no-styling-escape",
-              "uislash/theme-reskins-all",
               "uislash/seven-themes",
               "uislash/contrast-checked",
+              "uislash/no-styling-escape",
+              "uislash/theme-reskins-all",
             ],
           },
         },
@@ -118,28 +114,39 @@ export const PIPELINE: { title: string; lead: string; stages: readonly PipelineS
     {
       name: "Built and tested",
       text: {
-        text: "The change is built and the automated tests run. A pass should mean the change works, not that the run got lucky.",
+        text: "Builds, typechecks and tests run when the machine has room, and a pass means the code works.",
         facts: ["taskslash/what-it-is", "flakeslash/what-it-is"],
       },
       tools: [
         {
           tool: "TaskSlash",
           does: {
-            text: "TaskSlash queues builds and tests and starts each one when your computer has capacity, on one machine today and across your CI runners next, so a test fails because of the code, not because everything ran at once.",
-            facts: ["taskslash/admission-by-capacity", "taskslash/ci-runners"],
+            text: "Queues builds, tests and browser runs on one Linux machine and starts each job only when its measured CPU, memory and disk writes fit what is free. Planned: scheduling across a pool of machines and CI runners.",
+            facts: [
+              "taskslash/daemon-queue",
+              "taskslash/measured-runs",
+              "taskslash/admission-by-capacity",
+              "taskslash/machine-pool",
+              "taskslash/ci-runners",
+            ],
           },
         },
         {
           tool: "FlakeSlash",
           does: {
-            text: "FlakeSlash finds the checks that both failed and passed on the same commit, so a failure means something and is not just a reason to run it again.",
-            facts: ["flakeslash/flake-same-commit"],
+            text: "Scans GitHub Actions history and proves which jobs both failed and passed on the same commit, grouping failures into issues with redacted log excerpts and no AI model required.",
+            facts: [
+              "flakeslash/scan-github-actions",
+              "flakeslash/flake-same-commit",
+              "flakeslash/issue-grouping",
+              "flakeslash/redacted-excerpts",
+            ],
           },
         },
         {
           tool: "BundleSlash",
           does: {
-            text: "BundleSlash will measure how much code your customers download after each build, so a page cannot get slower to load one change at a time.",
+            text: "Will compare JavaScript bundle sizes between commits locally, track dependencies for vulnerabilities that actually reach your code, and cut Conventional Commit releases on command.",
             planned: "BundleSlash",
           },
         },
@@ -148,26 +155,27 @@ export const PIPELINE: { title: string; lead: string; stages: readonly PipelineS
     {
       name: "Reviewed",
       text: {
-        text: "The pull request is gated before it merges, and the reviewer sees what the change does to each page.",
+        text: "A separate reviewer checks the pull request before merge, and reviewers see every visual change.",
         facts: ["omnislash/review-merge-skills", "pixelslash/what-it-is"],
       },
       tools: [
         {
           tool: "OmniSlash",
           does: {
-            text: "Agent skills gate the pull request before merge: reviewers that presume every changed line is wrong, a watch on the pull request, and a merge made by a different role than the one that built it.",
-            facts: ["omnislash/review-merge-skills"],
+            text: "Hands the pull request to a separate review agent (never the one that wrote the code) for read-only code review across multiple AI models, CI monitoring and merge.",
+            facts: ["omnislash/role-delivery", "omnislash/review-merge-skills"],
           },
         },
         {
           tool: "PixelSlash",
           does: {
-            text: "PixelSlash takes screenshots of each page before and after the change and shows the reviewer every one that looks different. Anti-aliasing, noise and sub-pixel shifts are not changes. A person accepts or rejects each change in the review app.",
+            text: "Compares page shots between your main branch and your pull request with a Rust WebAssembly perceptual diff that ignores anti-aliasing, noise and sub-pixel shifts. Reviewers accept or reject changes in the review app, and coding agents can read builds through its MCP server.",
             facts: [
               "pixelslash/compare-two-urls",
-              "pixelslash/many-pages",
+              "pixelslash/wasm-diff-engine",
               "pixelslash/perceptual-diff",
               "pixelslash/upload-to-review-app",
+              "pixelslash/mcp-server",
             ],
           },
         },
@@ -176,53 +184,65 @@ export const PIPELINE: { title: string; lead: string; stages: readonly PipelineS
     {
       name: "Released",
       text: {
-        text: "The change goes live, to every customer at once or to some first.",
+        text: "Code ships behind a flag, rolled out to some users first and turned off without a redeploy.",
         facts: ["toggleslash/targeting"],
       },
       tools: [
         {
           tool: "ToggleSlash",
           does: {
-            text: "ToggleSlash is feature flags you run yourself: choose which customers get a feature, switch it off again without a new release, and keep a record of every switch.",
-            facts: ["toggleslash/what-it-is", "toggleslash/targeting", "toggleslash/audit-trail"],
+            text: "Self-hosted feature flags backed by a single C# server and SQLite, with in-process evaluation across six server SDK languages, live stream updates and a full audit trail of every change.",
+            facts: [
+              "toggleslash/what-it-is",
+              "toggleslash/server",
+              "toggleslash/typescript-server-sdk",
+              "toggleslash/other-server-sdks",
+              "toggleslash/live-updates",
+              "toggleslash/audit-trail",
+            ],
           },
         },
       ],
     },
   ],
   next: {
-    text: "Next, what the tools find goes back to the agent that made the change, so it can fix its own work before a person has to look.",
+    text: "Next: what each product finds feeds back to the coding agent so it can fix its own change before a person has to review it.",
     facts: ["pixelslash/mcp-server"],
   },
 };
 
 /**
- * Where it stands: the alphas paragraph, then where to start with each tool. The items are Rich text: `code`
- * renders as inline code and [words](href) as a link; `external` lists the links that leave the site.
+ * Where it stands: the alphas paragraph, where to start with each product, and the combined self-host
+ * container. The items are Rich text: `code` renders as inline code and [words](href) as a link.
  */
 export const STANDS: {
   title: string;
   stages: Claim;
   start: { title: string; items: readonly Claim[]; external: readonly string[] };
+  selfHost: Claim;
 } = {
   title: "Where it stands",
   stages: {
-    text: "UISlash, TaskSlash, FlakeSlash, PixelSlash, ToggleSlash and OmniSlash are alphas. Expect the screens, the components and the commands to change, and expect bugs. Between alpha versions, what a tool has stored may be reset: TaskSlash's job history, FlakeSlash's scans and issue corrections, PixelSlash's builds and approvals, ToggleSlash's flags and audit trail, and OmniSlash's work items. UISlash stores nothing.",
+    text: "OmniSlash, UISlash, TaskSlash, FlakeSlash, PixelSlash and ToggleSlash are alphas. Expect commands, screens and components to change, and expect bugs. Between alpha versions, stored state may be reset: OmniSlash tickets, TaskSlash job history, FlakeSlash scans and grouped issues, PixelSlash builds and approvals, and ToggleSlash flags and audit trail. UISlash stores nothing.",
     facts: SUITE_AND_OMNI,
   },
   start: {
-    title: "Where to start:",
+    title: "Start with any product today:",
     items: [
       {
-        text: "UISlash: install `@slashsuite/ui-react` and `@slashsuite/themes` from npm into a React 19 app that uses Tailwind v4, and read the docs at [hack-cove.com/ui/](https://hack-cove.com/ui/).",
-        facts: ["uislash/npm-install", "uislash/themes-package", "uislash/docs-site"],
+        text: "OmniSlash: clone the repo, run `bun install`, then `bun apps/cli/src/index.ts --help`.",
+        facts: ["omnislash/checkout-linux"],
       },
       {
-        text: "TaskSlash: build it from source with cargo on Linux and run a command through `taskslash run`.",
-        facts: ["taskslash/no-release"],
+        text: "UISlash: install `@slashsuite/ui-react` and `@slashsuite/themes` from npm into a React 19 and Tailwind v4 app, and browse [the component docs](/uislash) or [/uislash/llms.txt](/uislash/llms.txt).",
+        facts: ["uislash/npm-install", "uislash/themes-package", "uislash/component-docs"],
       },
       {
-        text: "FlakeSlash: run `flakeslash scan` from a checkout against your GitHub Actions history, or sign in to the dashboard at [flakeslash.slashslash.build](https://flakeslash.slashslash.build) with GitHub.",
+        text: "TaskSlash: build from source with `cargo` on Linux, install the systemd user daemon, and run any command through `taskslash run`.",
+        facts: ["taskslash/no-release", "taskslash/linux-systemd", "taskslash/run-command"],
+      },
+      {
+        text: "FlakeSlash: run `flakeslash scan` from a checkout against your GitHub Actions history, or sign in with GitHub at [flakeslash.slashslash.build](https://flakeslash.slashslash.build).",
         facts: [
           "flakeslash/scan-github-actions",
           "flakeslash/cli-from-checkout",
@@ -231,19 +251,25 @@ export const STANDS: {
         ],
       },
       {
-        text: "PixelSlash: install `@hackcove/pixelslash` from npm and compare two URLs that are already running, or start with [how it works in CI](/developers).",
-        facts: ["pixelslash/npm-cli", "pixelslash/compare-two-urls"],
+        text: "PixelSlash: install `@slashsuite/pixelslash` from npm to diff two URLs or PNGs locally, or upload shots to the hosted review app at [pixelslash.dev](https://pixelslash.dev).",
+        facts: [
+          "pixelslash/npm-cli",
+          "pixelslash/compare-two-urls",
+          "pixelslash/compare-two-pngs",
+          "pixelslash/hosted-review-app",
+        ],
       },
       {
-        text: "ToggleSlash: run `bun run stack` from a checkout to start the server, the dashboard and an example app on one machine.",
-        facts: ["toggleslash/local-stack"],
-      },
-      {
-        text: "OmniSlash: clone it, run `bun install`, then `bun apps/cli/src/index.ts --help`.",
-        facts: ["omnislash/checkout-linux"],
+        text: "ToggleSlash: install `@slashsuite/toggleslash` and `@slashsuite/toggleslash-sdk` from npm, or run `bun run stack` from a checkout to start the server, dashboard and example app on one machine.",
+        facts: ["toggleslash/cli-npm", "toggleslash/typescript-packages-npm", "toggleslash/local-stack"],
       },
     ],
-    external: ["https://hack-cove.com/ui/", "https://flakeslash.slashslash.build"],
+    external: ["https://flakeslash.slashslash.build", "https://pixelslash.dev"],
+  },
+  selfHost: {
+    text: "Want to self-host PixelSlash and ToggleSlash together? One rootless Docker image (`ghcr.io/slashsuite/slashslash:latest`) runs both on one volume, with a Proxmox installer and a Kubernetes Helm chart. [See self-hosting details](/developers#self-host).",
+    facts: ["pixelslash/self-host-docker", "toggleslash/server-container"],
+    repo: ["self-host/README.md", "self-host/proxmox/install.sh"],
   },
 };
 
@@ -256,10 +282,10 @@ export const DEVELOPERS: { title: string; next: Claim } = {
 };
 
 export const VIEW_QUESTIONS = [
-  "Has a change made by an agent ever surprised you or your customers?",
-  "Which of these tools would you most want running on every change?",
-  "Was anything on this page hard to follow?",
-  "Would you want these tools together or separately?",
+  "When you run several coding agents at once, which step breaks first?",
+  "Which Slash product would you try first on your own machine?",
+  "Was anything on this page unclear or missing?",
+  "Would you adopt these products together or one at a time?",
 ] as const;
 
 /** The product names the story must place, for the tests: every PRODUCTS entry. */

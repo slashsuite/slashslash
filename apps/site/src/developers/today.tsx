@@ -1,83 +1,142 @@
 import { CodeBlock, Cluster, Step, Steps, SubsectionHeading, Text, TextLink } from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
-import { PIXELSLASH_COMMAND, PIXELSLASH_NPM_URL, PIXELSLASH_REPO_URL, PIXELSLASH_SITE_URL } from "#/content/site";
 import type { Claim } from "#/content/facts";
+import {
+  FLAKESLASH_DASHBOARD_URL,
+  FLAKESLASH_REPO_URL,
+  OMNISLASH_REPO_URL,
+  PIXELSLASH_COMMAND,
+  PIXELSLASH_SITE_URL,
+  TASKSLASH_REPO_URL,
+  TOGGLESLASH_REPO_URL,
+} from "#/content/site";
 import { DevSection } from "#/developers/section";
-import { Rich } from "#/shell/rich-text";
 
-/* How to run PixelSlash today, each command in a kit CodeBlock with a copy button. The page hydrates this when it scrolls into view. */
-
-const DOCS = `${PIXELSLASH_REPO_URL}/blob/main/docs/ci`;
-
-const GUIDES = [`${DOCS}/github-actions.md`, `${DOCS}/any-ci.md`];
-
-/** The section's product claims, each citing PixelSlash's facts. Its licence line is read from the facts file. */
-export const TODAY: { title: Claim; lead: Claim; pngs: Claim; urls: Claim; ci: Claim } = {
-  title: {
-    text: "PixelSlash can run on your machine today.",
-    facts: ["pixelslash/compare-two-pngs", "pixelslash/compare-two-urls", "pixelslash/npm-cli"],
-  },
-  lead: { text: "It is published on npm at a 0.x version, and requires Bun.", facts: ["pixelslash/npm-cli"] },
-  pngs: { text: "This writes the report to out/report.html.", facts: ["pixelslash/compare-two-pngs"] },
-  urls: {
-    text: "The first command runs once and fetches the browser that takes the screenshots.",
-    facts: ["pixelslash/compare-two-urls"],
-  },
-  ci: {
-    text: `The [GitHub Actions guide](${GUIDES[0]}) was tested on GitHub Actions. The [guide for any other CI](${GUIDES[1]}) was tested as a GitHub Actions step and on a desktop; its CircleCI, GitLab and Jenkins examples are not tested on those systems.`,
-    facts: ["pixelslash/exit-codes", "pixelslash/block-ci-on-review"],
-  },
+type TodayEntry = {
+  id: string;
+  title: string;
+  commands: readonly string[];
+  note: Claim;
+  links: readonly { label: string; href: string; external?: boolean }[];
 };
 
-function Command({ text }: { text: string }): ReactNode {
-  return <CodeBlock label="bash" language="bash" lines={[text]} copy />;
-}
+/** Product claims for the /developers try-today quick-start steps, held to each product's FACTS.md. */
+export const TODAY: {
+  title: string;
+  lead: string;
+  entries: readonly TodayEntry[];
+} = {
+  title: "Try any product today",
+  lead: "No account or credit card required to run the command-line tools locally.",
+  entries: [
+    {
+      id: "pixelslash",
+      title: "PixelSlash (npm, requires Bun)",
+      commands: [PIXELSLASH_COMMAND],
+      note: {
+        text: "Writes a standalone out/report.html with no browser. For live URLs, run npx @slashsuite/pixelslash install-browser once first.",
+        facts: ["pixelslash/compare-two-pngs", "pixelslash/compare-two-urls", "pixelslash/npm-cli"],
+      },
+      links: [
+        { label: "PixelSlash overview", href: "/pixelslash" },
+        { label: "Docs", href: "/pixelslash/docs" },
+        { label: "Hosted review app", href: PIXELSLASH_SITE_URL, external: true },
+      ],
+    },
+    {
+      id: "uislash",
+      title: "UISlash (npm, React 19 and Tailwind v4)",
+      commands: ["bun add @slashsuite/ui-react @slashsuite/themes"],
+      note: {
+        text: "Import one theme CSS file and set its scope class on html. No component accepts className or style.",
+        facts: ["uislash/npm-install", "uislash/themes-package", "uislash/theme-reskins-all", "uislash/no-styling-escape"],
+      },
+      links: [
+        { label: "Component docs", href: "/uislash" },
+        { label: "llms.txt", href: "/uislash/llms.txt" },
+      ],
+    },
+    {
+      id: "toggleslash",
+      title: "ToggleSlash (npm or one-command local stack)",
+      commands: [`git clone ${TOGGLESLASH_REPO_URL}`, "cd toggleslash && bun install && bun run stack"],
+      note: {
+        text: "Starts the C# server, seeded flags, dashboard and example shop on loopback. CLI and TypeScript SDKs are on npm under @slashsuite/* (0.2.0).",
+        facts: ["toggleslash/local-stack", "toggleslash/example-app", "toggleslash/cli-npm", "toggleslash/typescript-packages-npm"],
+      },
+      links: [{ label: "ToggleSlash overview", href: "/toggleslash" }],
+    },
+    {
+      id: "taskslash",
+      title: "TaskSlash (Linux, build from source with cargo and Bun)",
+      commands: [
+        `git clone ${TASKSLASH_REPO_URL}`,
+        "cd taskslash && rustup toolchain install && bun install",
+        "bun scripts/install-service.ts",
+        "taskslash run -- bun run test",
+      ],
+      note: {
+        text: "Installs the systemd user daemon, measures each job in its own scope, and queues runs against free CPU, memory and disk writes.",
+        facts: ["taskslash/linux-systemd", "taskslash/measured-runs", "taskslash/admission-by-capacity"],
+      },
+      links: [{ label: "TaskSlash overview", href: "/taskslash" }],
+    },
+    {
+      id: "flakeslash",
+      title: "FlakeSlash (local CLI from checkout, or hosted dashboard)",
+      commands: [
+        `git clone ${FLAKESLASH_REPO_URL}`,
+        "cd flakeslash && bun install",
+        "export GITHUB_TOKEN=<your key>",
+        "bun run flakeslash scan owner/repo",
+      ],
+      note: {
+        text: "Reads GitHub Actions history into SQLite and writes report.html. Or sign in with GitHub at flakeslash.slashslash.build.",
+        facts: ["flakeslash/cli-from-checkout", "flakeslash/local-store", "flakeslash/report-html", "flakeslash/hosted-dashboard"],
+      },
+      links: [
+        { label: "FlakeSlash overview", href: "/flakeslash" },
+        { label: "Hosted dashboard", href: FLAKESLASH_DASHBOARD_URL, external: true },
+      ],
+    },
+    {
+      id: "omnislash",
+      title: "OmniSlash (Linux, from checkout with Bun 1.4.2)",
+      commands: [
+        `git clone ${OMNISLASH_REPO_URL}`,
+        "cd omnislash && bun install",
+        "bun apps/cli/src/index.ts --help",
+      ],
+      note: {
+        text: "Tracks tickets, leases and agent dispatches. Uses Postgres by default, or SQLite with OMNISLASH_STORE=sqlite. Builder dispatch requires T3 Code.",
+        facts: ["omnislash/checkout-linux", "omnislash/help-command", "omnislash/item-tracking", "omnislash/agent-build-worktree"],
+      },
+      links: [{ label: "OmniSlash overview", href: "/omnislash" }],
+    },
+  ],
+};
 
-/**
- * `licence` is PixelSlash's licence line, read from its facts file by the page and passed in, so this island's
- * browser bundle does not carry the facts files.
- */
-export function Today({ licence }: { licence: string }): ReactNode {
+/** Hands-on quick-start commands for every alpha product. Hydrates on scroll for CodeBlock copy buttons. */
+export function Today(): ReactNode {
   return (
-    <DevSection
-      id="today"
-      title={TODAY.title.text}
-      lead={TODAY.lead.text}
-    >
-      <Text tone="muted">
-        <span data-licence-line="pixelslash">{licence}</span>
-      </Text>
+    <DevSection id="try-today" title={TODAY.title} lead={TODAY.lead}>
       <Steps>
-        <Step title={<SubsectionHeading>From two existing screenshots</SubsectionHeading>}>
-          <div className="space-y-3">
-            <Command text={PIXELSLASH_COMMAND} />
-            <Text>{TODAY.pngs.text}</Text>
-          </div>
-        </Step>
-        <Step title={<SubsectionHeading>From two running versions of a page</SubsectionHeading>}>
-          <div className="space-y-3">
-            <Command text="npx @hackcove/pixelslash install-browser" />
-            <Command text="npx @hackcove/pixelslash --live http://localhost:3000 --local http://localhost:3001 --out out" />
-            <Text>{TODAY.urls.text}</Text>
-          </div>
-        </Step>
-        <Step title={<SubsectionHeading>In your own pipeline</SubsectionHeading>}>
-          <Text>
-            <Rich text={TODAY.ci.text} external={GUIDES} />
-          </Text>
-        </Step>
+        {TODAY.entries.map((entry) => (
+          <Step key={entry.id} title={<SubsectionHeading>{entry.title}</SubsectionHeading>}>
+            <div className="space-y-3">
+              <CodeBlock label="bash" language="bash" lines={[...entry.commands]} copy />
+              <Text>{entry.note.text}</Text>
+              <Cluster gap="md">
+                {entry.links.map((link) => (
+                  <TextLink key={link.href} href={link.href} external={link.external}>
+                    {link.label}
+                  </TextLink>
+                ))}
+              </Cluster>
+            </div>
+          </Step>
+        ))}
       </Steps>
-      <Cluster gap="md">
-        <TextLink href={PIXELSLASH_SITE_URL} external>
-          pixelslash.dev
-        </TextLink>
-        <TextLink href={PIXELSLASH_REPO_URL} external>
-          Repository on GitHub
-        </TextLink>
-        <TextLink href={PIXELSLASH_NPM_URL} external>
-          Package on npm
-        </TextLink>
-      </Cluster>
     </DevSection>
   );
 }

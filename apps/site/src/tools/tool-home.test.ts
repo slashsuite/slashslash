@@ -1,7 +1,8 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
-import { SITE_NAME, SITE_URL } from "#/content/site";
+import { licenceLine } from "#/content/facts";
+import { OMNISLASH_REPO_URL, SITE_NAME, SITE_URL } from "#/content/site";
 import { STAGES } from "#/content/stages";
 import { SECTIONS } from "#/shell/sections";
 import { promiseOf, stageOf, TOOLS, type Tool } from "#/tools/tools";
@@ -29,7 +30,7 @@ function text(html: string): string {
   return html
     .replace(/<(script|style|template)[\s\S]*?<\/\1>/g, " ")
     .replace(/<\/?span[^>]*>/g, "")
-    .replace(/<\/code>/g, "")
+    .replace(/<\/?code[^>]*>/g, "")
     .replace(/<[^>]+>/g, " ")
     .replaceAll("&#39;", "'")
     .replaceAll("&#x27;", "'")
@@ -45,16 +46,17 @@ function text(html: string): string {
 const between = (html: string, from: string, to: string): string =>
   html.slice(html.indexOf(`id="${from}"`), html.indexOf(`id="${to}"`));
 
-/** The variable each tool's try-it sets to the reader's own key. TaskSlash and OmniSlash need no key. */
+/** The variable each tool's try-it sets to the reader's own key. ToggleSlash (local stack), TaskSlash and OmniSlash need no key. */
 const KEY_VARIABLE: Record<Tool["key"], string | undefined> = {
   flakeslash: "GITHUB_TOKEN",
-  toggleslash: "TOGGLESLASH_TOKEN",
+  toggleslash: undefined,
   taskslash: undefined,
   omnislash: undefined,
 };
 
 const ORDER = (tool: Tool): string[] => [
   tool.key,
+  ...(tool.proof === undefined ? [] : ["proof"]),
   "works-today",
   ...(tool.compared === undefined ? [] : ["compared"]),
   "try-it",
@@ -190,42 +192,59 @@ describe("/omnislash, the approved copy", () => {
   test("the hero carries the lead and the licence, and no command", () => {
     const hero = prose(between(html, "omnislash", "works-today"));
     expect(hero).toContain(
-      "OmniSlash (Omni for short) is a command-line tool that keeps track of tasks, projects and the agents that work on them. It will not let an agent start on a ticket nobody has thought through. It builds each ticket on its own branch, and has the pull request gated before it merges. It is built for agents from the start. It is in alpha, so anything may change or break.",
+      "OmniSlash (Omni for short) tracks tickets, projects and the coding agents that work on them. It refuses to start an agent on a ticket until it has a written breakdown and acceptance criteria, builds each ticket in its own git worktree, and hands pull requests to a separate review agent before merge.",
     );
-    expect(hero).toContain("Licence: OmniSlash is source available under the Elastic License 2.0.");
+    expect(hero).toContain(licenceLine("omnislash"));
     expect(between(html, "omnislash", "works-today")).not.toContain("<figure");
   });
 
-  test("How a ticket moves: the five steps, with no command, and the three roles as a list", () => {
+  test("How a ticket moves: the six steps, each with its command, and the three roles as a list", () => {
     expect(heading("works-today")).toBe("How a ticket moves");
     const section = between(html, "works-today", "compared");
     const today = prose(section);
-    const steps: [string, string][] = [
+    const steps: [string, string, string][] = [
       [
-        "A drilled ticket.",
-        "You write the ticket. Before the first dispatch, it needs a ## Drilled section, at least one ## Done when item and a go check recorded on its current text. Without them, the dispatch is refused and nothing is queued. You can override the refusal with --no-check and a reason. A spike ticket has its own rule: it needs ## Questions, ## Box, ## Done when and a link to the ticket it serves.",
+        "Ticket readiness gate",
+        "spinoff <ticket>",
+        "Before an agent can start, a ticket needs a written breakdown (## Drilled), acceptance criteria (## Done when) and a recorded go sign-off on its current text. Without them, OmniSlash refuses to start the agent and queues nothing. You can override with --no-check and a reason. Research spikes follow their own rule: ## Questions, ## Box, ## Done when and a link to the ticket they serve.",
       ],
       [
-        "Its own branch.",
-        "A dispatch opens the builder in a git worktree on the ticket's own branch. If a worktree is already checked out on that branch, it reuses it. If not, it makes one from origin/main. The builder runs as a T3 Code thread.",
+        "Its own branch and worktree",
+        "git worktree add <path> -b <branch>",
+        "Dispatch opens each builder as a T3 Code thread in its own git worktree. If a worktree already exists on the ticket's branch, OmniSlash reuses it; otherwise it creates one from origin/main.",
       ],
       [
-        "Leases.",
-        "A lease on a ticket or a worktree has one holder at a time. A second holder is refused until the first releases it or the lease expires. Two agents cannot work the same ticket or the same worktree at once.",
+        "Resource leases",
+        "lease acquire|run|release",
+        "A lease on ticket:<ref> or worktree:<path> allows one live holder at a time. A second holder is refused until the first releases it or the lease expires, so two agents cannot edit the same ticket or checkout at once.",
       ],
       [
-        "A gated merge.",
-        "The builder opens the pull request, and a different role gates and merges it. Read-only reviewers presume every changed line is wrong until they can show it is right. A watch follows the pull request once it is handed off.",
+        "Three standing roles",
+        "role start|status|end <team> <role>",
+        "Agent skills prime a thread for each team role, with one active role run per team role:",
       ],
-      ["Three roles.", "Agent skills prime a thread for each role."],
+      [
+        "Role inbox and watchdog ticks",
+        'send <team> <role> "<text>"',
+        "Messages and builder handoffs go into a role's inbox and deliver to its open run, or start a fresh run seeded with role brief (in-flight work, unread inbox, open questions and the prior run's handoff note). role tick checks every 15 minutes for stalled builders, unassigned flakes and idle queues, and rotates runs cleanly when idle or at 200,000 tokens.",
+      ],
+      [
+        "A gated merge",
+        "ob-skeptical-review",
+        "The builder opens the pull request and stops. Another role runs read-only skeptical reviewers across models (defaulting to Neon and Opus) that presume every changed line is wrong, watches the pull request, and merges it.",
+      ],
     ];
-    for (const [title, body] of steps) expect(today).toContain(`${title} ${body}`);
-    expect(tool.today.every((step) => step.command === undefined)).toBe(true);
+    for (const [title, command, body] of steps) {
+      expect(today, title).toContain(title);
+      expect(today, title).toContain(command);
+      expect(today, title).toContain(body);
+    }
+    expect(tool.today.every((step) => step.command !== undefined)).toBe(true);
     const roles = [...section.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/g)].map((m) => text(m[1] ?? ""));
     expect(roles).toEqual([
-      "Architect: plans, drills and dispatches every build, then gates and merges.",
+      "Architect: plans, specifies and dispatches every build, then gates and merges.",
       "Sentinel: verifies, merges and deploys every pull request.",
-      "Muse: explores, and hands over a design once it is confirmed.",
+      "Muse: explores an idea and hands over a design once confirmed.",
     ]);
     // The words the copy marks as code are set as code.
     for (const word of ["## Drilled", "## Done when", "go", "--no-check", "## Questions", "## Box", "origin/main"]) {
@@ -236,17 +255,17 @@ describe("/omnislash, the approved copy", () => {
   test("Against Jira and Linear sits between the steps and try it", () => {
     expect(heading("compared")).toBe("Against Jira and Linear");
     expect(prose(between(html, "compared", "try-it"))).toContain(
-      "Against Jira and Linear OmniSlash refuses to dispatch a ticket that has no drilled section, no done-when item or no recorded check, unless you override it. The Jira and Linear docs name no such check before an agent takes the work.",
+      "Against Jira and Linear OmniSlash refuses to start an agent on a ticket that has no written breakdown, no acceptance criteria or no recorded sign-off, unless you override it. The Jira and Linear docs name no such check before an agent takes the work.",
     );
   });
 
-  test("Try it: the lead, the two-line block with a copy button, then the sentences after it", () => {
+  test("Try it: the lead, the clone-and-run block with a copy button, then the sentences after it", () => {
     expect(heading("try-it")).toBe("Try it");
     const section = between(html, "try-it", "planned");
     const words = prose(section);
     const lead = "OmniSlash runs from a fresh clone on Linux with Bun 1.4.2:";
     const after =
-      "The second command prints the command reference. Postgres is the default store and needs a connection URL. To try it without Postgres, set OMNISLASH_STORE=sqlite, OMNISLASH_DB_CREATE=1 and OMNISLASH_DB to a new path, then add and list work items in that file. Dispatching a builder needs T3 Code.";
+      "The last command prints the command reference. Postgres is the default store and needs a connection URL. To try it without Postgres, set OMNISLASH_STORE=sqlite, OMNISLASH_DB_CREATE=1 and OMNISLASH_DB to a new path, then add and list work items in that file. Dispatching a builder requires T3 Code.";
     expect(words).toContain(lead);
     expect(words).toContain(after);
     expect(words.indexOf(lead)).toBeLessThan(words.indexOf("bun install"));
@@ -256,18 +275,27 @@ describe("/omnislash, the approved copy", () => {
     expect(figures[0]).toMatch(/<button[^>]*aria-label="Copy"/);
   });
 
-  test("the TryIt island is handed exactly the two commands, in one block with no lead line", () => {
+  test("the TryIt island is handed the four clone-and-run commands, in one block with no lead line", () => {
     const islands = [...html.matchAll(/<astro-island[^>]*component-export="([^"]+)"[^>]*>/g)];
     expect(islands.map((m) => m[1])).toEqual(["TryIt"]);
     const raw = islands[0]?.[0].match(/\sprops="([^"]*)"/)?.[1] ?? "{}";
     const props = unwrap(JSON.parse(raw.replaceAll("&quot;", '"').replaceAll("&amp;", "&")));
-    expect(props).toHaveProperty("steps", [{ commands: ["bun install", "bun apps/cli/src/index.ts --help"] }]);
+    expect(props).toHaveProperty("steps", [
+      {
+        commands: [
+          `git clone ${OMNISLASH_REPO_URL}`,
+          "cd omnislash",
+          "bun install",
+          "bun apps/cli/src/index.ts --help",
+        ],
+      },
+    ]);
   });
 
   test("Planned: its heading, its lead and the two items", () => {
     expect(heading("planned")).toBe("Planned");
     expect(prose(between(html, "planned", "docs"))).toContain(
-      "Planned These are planned, not built. Builders working in parallel are checked for conflicts with each other. A team server, with access per user.",
+      "Planned These are planned, not built. Conflict checks between builders working in parallel. A team server with per-user access.",
     );
   });
 });
@@ -276,7 +304,7 @@ describe("/developers lists OmniSlash", () => {
   test("with its product list entry and the lead", () => {
     const words = text(read("developers.html"));
     expect(words).toContain(
-      "OmniSlash Alpha Changing fast. Expect breaking changes between versions. From an idea to a merged change, in one tool. OmniSlash (Omni for short) is a command-line tool that keeps track of tasks, projects and the agents that work on them. It will not let an agent start on a ticket nobody has thought through. It builds each ticket on its own branch, and has the pull request gated before it merges. It is built for agents from the start. It is in alpha, so anything may change or break.",
+      "OmniSlash Alpha Changing fast. Expect breaking changes between versions. From an idea to a merged change, in one tool. OmniSlash (Omni for short) tracks tickets, projects and the coding agents that work on them. It refuses to start an agent on a ticket until it has a written breakdown and acceptance criteria, builds each ticket in its own git worktree, and hands pull requests to a separate review agent before merge.",
     );
   });
 });

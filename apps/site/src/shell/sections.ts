@@ -35,52 +35,11 @@ export const SECTIONS = {
     mark: "/brand/slash-mark.svg",
     name: SITE_NAME,
     home: "/",
-    pages: [],
-  },
-  pixelslash: {
-    // Becomes slash-pixelslash / slash-pixelslash-dark when @slashsuite/themes ships slash-pixelslash.css.
-    day: "slash-suite",
-    night: "slash-suite-dark",
-    mark: markFor("PixelSlash"),
-    name: "PixelSlash",
-    home: "/pixelslash",
     pages: [
-      { label: "Overview", href: "/pixelslash" },
-      { label: "How it works", href: "/pixelslash/how-it-works" },
-      { label: "Compare", href: "/pixelslash/compare" },
-      { label: "Pricing", href: "/pixelslash/pricing" },
-      { label: "Docs", href: "/pixelslash/docs" },
+      { label: "Overview", href: "/" },
+      { label: "How it works", href: "/how-it-works" },
+      { label: "Developers", href: "/developers" },
     ],
-  },
-  flakeslash: {
-    // Becomes slash-flakeslash / slash-flakeslash-dark when @slashsuite/themes ships slash-flakeslash.css.
-    day: "slash-suite",
-    night: "slash-suite-dark",
-    mark: markFor("FlakeSlash"),
-    name: "FlakeSlash",
-    home: "/flakeslash",
-    pages: [
-      { label: "Overview", href: "/flakeslash" },
-      { label: "Docs", href: `${FLAKESLASH_REPO_URL}/blob/main/docs/getting-started.md`, external: true },
-    ],
-  },
-  toggleslash: {
-    // Becomes slash-toggleslash / slash-toggleslash-dark when @slashsuite/themes ships slash-toggleslash.css.
-    day: "slash-suite",
-    night: "slash-suite-dark",
-    mark: markFor("ToggleSlash"),
-    name: "ToggleSlash",
-    home: "/toggleslash",
-    pages: [{ label: "Overview", href: "/toggleslash" }],
-  },
-  taskslash: {
-    // Becomes slash-taskslash / slash-taskslash-dark when @slashsuite/themes ships slash-taskslash.css.
-    day: "slash-suite",
-    night: "slash-suite-dark",
-    mark: markFor("TaskSlash"),
-    name: "TaskSlash",
-    home: "/taskslash",
-    pages: [{ label: "Overview", href: "/taskslash" }],
   },
   omnislash: {
     // Becomes slash-omnislash / slash-omnislash-dark when @slashsuite/themes ships slash-omnislash.css.
@@ -102,6 +61,51 @@ export const SECTIONS = {
       { label: "Components", href: "/uislash" },
       { label: "llms.txt", href: "/uislash/llms.txt" },
     ],
+  },
+  taskslash: {
+    // Becomes slash-taskslash / slash-taskslash-dark when @slashsuite/themes ships slash-taskslash.css.
+    day: "slash-suite",
+    night: "slash-suite-dark",
+    mark: markFor("TaskSlash"),
+    name: "TaskSlash",
+    home: "/taskslash",
+    pages: [{ label: "Overview", href: "/taskslash" }],
+  },
+  flakeslash: {
+    // Becomes slash-flakeslash / slash-flakeslash-dark when @slashsuite/themes ships slash-flakeslash.css.
+    day: "slash-suite",
+    night: "slash-suite-dark",
+    mark: markFor("FlakeSlash"),
+    name: "FlakeSlash",
+    home: "/flakeslash",
+    pages: [
+      { label: "Overview", href: "/flakeslash" },
+      { label: "Docs", href: `${FLAKESLASH_REPO_URL}/blob/main/docs/getting-started.md`, external: true },
+    ],
+  },
+  pixelslash: {
+    // Becomes slash-pixelslash / slash-pixelslash-dark when @slashsuite/themes ships slash-pixelslash.css.
+    day: "slash-suite",
+    night: "slash-suite-dark",
+    mark: markFor("PixelSlash"),
+    name: "PixelSlash",
+    home: "/pixelslash",
+    pages: [
+      { label: "Overview", href: "/pixelslash" },
+      { label: "How it works", href: "/pixelslash/how-it-works" },
+      { label: "Compare", href: "/pixelslash/compare" },
+      { label: "Pricing", href: "/pixelslash/pricing" },
+      { label: "Docs", href: "/pixelslash/docs" },
+    ],
+  },
+  toggleslash: {
+    // Becomes slash-toggleslash / slash-toggleslash-dark when @slashsuite/themes ships slash-toggleslash.css.
+    day: "slash-suite",
+    night: "slash-suite-dark",
+    mark: markFor("ToggleSlash"),
+    name: "ToggleSlash",
+    home: "/toggleslash",
+    pages: [{ label: "Overview", href: "/toggleslash" }],
   },
 } as const satisfies Record<string, Section>;
 

@@ -37,6 +37,9 @@ export function Stands(): ReactNode {
           </li>
         ))}
       </ul>
+      <Text>
+        <Rich text={STANDS.selfHost.text} />
+      </Text>
     </HomeSection>
   );
 }

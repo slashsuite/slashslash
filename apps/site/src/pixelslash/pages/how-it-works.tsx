@@ -36,7 +36,7 @@ export const HOW_IT_WORKS: {
       facts: ["pixelslash/licence"],
     },
     {
-      text: "It differs in where the work happens: a local run needs no server, and its design-system judge runs on your machine, with a local vision model. Screenshots leave the machine only when you upload them, and then only to the server you name. On the held-out half of our own benchmark, measured 2026-10-20, it caught 42 of 45 real changes and wrongly flagged 11 of 36 noise pairs; Argos, on the same pairs, caught 37 and flagged 24.",
+      text: "It differs in where the work happens: a local run needs no server, and its design-system judge runs on your machine, with a local vision model. Shots leave the machine only when you upload them, and then only to the server you name. On the held-out half of our own benchmark, measured 2026-10-20, it caught 42 of 45 real changes and wrongly flagged 11 of 36 noise pairs; Argos, on the same pairs, caught 37 and flagged 24.",
       facts: ["pixelslash/local-unless-upload", "pixelslash/design-system-judge", "pixelslash/perceptual-diff"],
     },
   ],

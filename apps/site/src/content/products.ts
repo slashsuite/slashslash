@@ -129,7 +129,7 @@ export const PRODUCTS: readonly Product[] = [
     question: { text: "Can the agent build the UI without writing its own CSS?", facts: ["uislash/what-it-is"] },
     summary: [
       {
-        text: "React components (@hackcove/ui-react) and seven themes (@hackcove/themes: four light, three dark, one CSS file each), and a site is built from them with props alone because no exported component accepts className or style.",
+        text: "React components (@slashsuite/ui-react) and seven themes (@slashsuite/themes: four light, three dark, one CSS file each), and a site is built from them with props alone because no exported component accepts className or style.",
         facts: [
           "uislash/what-it-is",
           "uislash/react-components",

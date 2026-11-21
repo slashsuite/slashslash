@@ -55,6 +55,7 @@ describe("the shell on the 404 page", () => {
       { href: "/toggleslash", text: "ToggleSlash" },
       { href: "/taskslash", text: "TaskSlash" },
       { href: "/omnislash", text: "OmniSlash" },
+      { href: "/uislash", text: "UISlash" },
     ]);
   });
 
@@ -80,11 +81,11 @@ describe("the shell on the 404 page", () => {
     for (const product of PRODUCTS) expect(words).toContain(product.name);
   });
 
-  test("only a planned tool carries the Planned caption: a built tool with no page here is named alone", () => {
+  test("only a planned tool carries the Planned caption: every built tool links its page here", () => {
     const footer = elements(notFound(), "footer")[0] ?? "";
     const caption = (name: string): boolean => new RegExp(`${name}\\s*Planned`).test(text(footer));
     for (const product of PRODUCTS) expect(caption(product.name), product.name).toBe(product.stage === "planned");
-    expect(links(footer).map((link) => link.text)).not.toContain("UISlash");
+    expect(links(footer)).toContainEqual({ href: "/uislash", text: "UISlash" });
     expect(footer).toContain(`src="${markFor("UISlash")}"`);
   });
 

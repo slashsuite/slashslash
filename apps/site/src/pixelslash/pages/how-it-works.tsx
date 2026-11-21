@@ -7,7 +7,7 @@ import {
   Step,
   Steps,
   TextLink,
-} from "@hackcove/ui-react";
+} from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
 import type { Claim } from "#/content/facts";
 import { psAsset, psHref } from "#/pixelslash/paths";

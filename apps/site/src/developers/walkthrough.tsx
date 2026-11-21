@@ -1,4 +1,4 @@
-import { Overline, Pill, Step, Steps, SubsectionHeading, Text } from "@hackcove/ui-react";
+import { Overline, Pill, Step, Steps, SubsectionHeading, Text } from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
 import { FLOW, type Output } from "#/content/flow";
 import { STAGES, STAGE_TONE } from "#/content/stages";

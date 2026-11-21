@@ -1,6 +1,6 @@
 @import "tailwindcss";
-@import "@hackcove/themes/slash-suite.css";
-@import "@hackcove/themes/slash-suite-dark.css";
+@import "@slashsuite/themes/slash-suite.css";
+@import "@slashsuite/themes/slash-suite-dark.css";
 @import "./fonts.css";
 @import "./stand-ins/hero-ground.css";
 @import "./illustrations/hero.css";
@@ -8,12 +8,13 @@
 @import "./illustrations/flow.css";
 @import "./pixelslash/demo.css";
 /* Tailwind skips node_modules: scan the design system for the utilities its components use, and this app. */
-@source "../node_modules/@hackcove/ui-react/dist";
+@source "../node_modules/@slashsuite/ui-react/dist";
 @source "./";
+@source "../.sources/uislash/apps/storybook/src";
 
 /*
  * Slash Day and Slash Night are built on the Catppuccin Latte and Mocha palettes © 2021 Catppuccin,
- * MIT license (notice in @hackcove/themes/NOTICE). Tailwind's build drops the credit comment from
+ * MIT license (notice in @slashsuite/themes/NOTICE). Tailwind's build drops the credit comment from
  * the theme files, so it is repeated here.
  */
 

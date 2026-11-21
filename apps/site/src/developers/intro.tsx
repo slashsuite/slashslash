@@ -1,4 +1,4 @@
-import { Container, Lead, PageHeading, Stack, Text } from "@hackcove/ui-react";
+import { Container, Lead, PageHeading, Stack, Text } from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
 import { DEVELOPERS_DESCRIPTION } from "#/content/site";
 import { DEVELOPERS } from "#/content/story";

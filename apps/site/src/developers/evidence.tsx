@@ -1,4 +1,4 @@
-import { CodeBlock, Pill, Text } from "@hackcove/ui-react";
+import { CodeBlock, Pill, Text } from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
 
 type EvidenceKind = "real" | "quoted" | "made-up" | "idea";

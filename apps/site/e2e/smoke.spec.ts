@@ -1,5 +1,5 @@
 import { expect, test, type APIRequestContext } from "@playwright/test";
-import { NotFound } from "@hackcove/ui-react";
+import { NotFound } from "@slashsuite/ui-react";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { BUILD_COMMIT_PATTERN } from "../src/content/build-commit.ts";

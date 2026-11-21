@@ -23,7 +23,7 @@ const standIns = (): string[] =>
 describe("stand-ins", () => {
   test("every stand-in's first comment names the UISlash package it stands in for", () => {
     const missing = standIns().filter(
-      (file) => !/@hackcove\/(?:ui-react|themes)\b/.test(firstComment(readFileSync(resolve(DIR, file), "utf8")) ?? ""),
+      (file) => !/@slashsuite\/(?:ui-react|themes)\b/.test(firstComment(readFileSync(resolve(DIR, file), "utf8")) ?? ""),
     );
     expect(missing).toEqual([]);
   });

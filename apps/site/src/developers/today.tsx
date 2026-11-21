@@ -1,4 +1,4 @@
-import { CodeBlock, Cluster, Step, Steps, SubsectionHeading, Text, TextLink } from "@hackcove/ui-react";
+import { CodeBlock, Cluster, Step, Steps, SubsectionHeading, Text, TextLink } from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
 import { PIXELSLASH_COMMAND, PIXELSLASH_NPM_URL, PIXELSLASH_REPO_URL, PIXELSLASH_SITE_URL } from "#/content/site";
 import type { Claim } from "#/content/facts";

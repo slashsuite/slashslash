@@ -10,7 +10,7 @@ import { PRODUCTS, type Product } from "#/content/products";
 import { STATEMENT } from "#/pixelslash/content/pricing";
 
 /** A tool's brand slug: its files in public/brand are `<tool>-mark.svg` and `<tool>-lockup-{light,dark}.svg`. */
-export type OgTool = "slash" | "pixelslash" | "flakeslash" | "toggleslash" | "taskslash" | "omnislash";
+export type OgTool = "slash" | "pixelslash" | "flakeslash" | "toggleslash" | "taskslash" | "omnislash" | "uislash";
 
 export type OgCard = {
   /** The page's path, as in `PAGES`. */
@@ -41,6 +41,7 @@ const LOCKUP: Record<OgTool, string> = {
   toggleslash: "ToggleSlash",
   taskslash: "TaskSlash",
   omnislash: "OmniSlash",
+  uislash: "UISlash",
 };
 
 /** The headline and tool of each page. Each typed headline is the words of that page's h1. */
@@ -56,12 +57,14 @@ const CARDS: Record<string, { tool: OgTool; headline: string }> = {
   "/pixelslash/pricing": { tool: "pixelslash", headline: STATEMENT.text },
   "/taskslash": { tool: "taskslash", headline: question("TaskSlash") },
   "/toggleslash": { tool: "toggleslash", headline: question("ToggleSlash") },
+  "/uislash": { tool: "uislash", headline: question("UISlash") },
 };
 
 /**
  * Pages that wear another page's card instead of their own, by path: the 404 page (not in `PAGES`) the
  * suite's, and the two PixelSlash documents served here the PixelSlash card. The docs pages are not
- * listed: `wornCard` gives every one of them the PixelSlash card.
+ * listed: `wornCard` gives every PixelSlash docs page the PixelSlash card and every UISlash component
+ * page the UISlash card.
  */
 export const WEARS: Readonly<Record<string, string>> = {
   "/404": "/",
@@ -69,11 +72,12 @@ export const WEARS: Readonly<Record<string, string>> = {
   "/pixelslash/self-host": "/pixelslash",
 };
 
-/** The page whose card `path` wears instead of its own, if any: `WEARS`, and the PixelSlash card for every docs page. */
+/** The page whose card `path` wears instead of its own, if any: `WEARS`, PixelSlash docs, and UISlash component pages. */
 export function wornCard(path: string): string | undefined {
   const worn = WEARS[path];
   if (worn !== undefined) return worn;
   if (path === "/pixelslash/docs" || path.startsWith("/pixelslash/docs/")) return "/pixelslash";
+  if (path.startsWith("/uislash/")) return "/uislash";
   return undefined;
 }
 

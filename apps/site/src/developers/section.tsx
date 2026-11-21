@@ -1,4 +1,4 @@
-import { Container, Section } from "@hackcove/ui-react";
+import { Container, Section } from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
 
 /**

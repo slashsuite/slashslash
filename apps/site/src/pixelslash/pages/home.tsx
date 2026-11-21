@@ -12,7 +12,7 @@ import {
   Steps,
   Text,
   TextLink,
-} from "@hackcove/ui-react";
+} from "@slashsuite/ui-react";
 import type { ComponentProps, ReactNode } from "react";
 import type { Claim } from "#/content/facts";
 import { STAGES, STAGE_TONE } from "#/content/stages";

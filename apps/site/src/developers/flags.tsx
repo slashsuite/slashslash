@@ -1,4 +1,4 @@
-import { Callout, SubsectionHeading, Table, TableBody, TableCell, TableRow, Text } from "@hackcove/ui-react";
+import { Callout, SubsectionHeading, Table, TableBody, TableCell, TableRow, Text } from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
 import { Evidence } from "#/developers/evidence";
 import { DevSection } from "#/developers/section";

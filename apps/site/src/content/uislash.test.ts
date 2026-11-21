@@ -26,7 +26,7 @@ describe("UISlash on the site, in the approved words", () => {
       facts: "uislash",
       question: "Can the agent build the UI without writing its own CSS?",
       summary: [
-        "React components (@hackcove/ui-react) and seven themes (@hackcove/themes: four light, three dark, one CSS file each), and a site is built from them with props alone because no exported component accepts className or style.",
+        "React components (@slashsuite/ui-react) and seven themes (@slashsuite/themes: four light, three dark, one CSS file each), and a site is built from them with props alone because no exported component accepts className or style.",
         "Early (every package at 0.x) and MIT licensed. Every theme is tested against WCAG AA contrast, a reusable GitHub workflow runs a rule check that fails the pull request plus an advisory model review, and the docs and an llms.txt for agents are at hack-cove.com/ui/.",
       ],
     });

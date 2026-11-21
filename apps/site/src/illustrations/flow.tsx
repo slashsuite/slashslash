@@ -1,4 +1,4 @@
-import { Pill, Text } from "@hackcove/ui-react";
+import { Pill, Text } from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
 import type { FlowNode } from "#/content/how-it-works";
 import { STAGES, STAGE_TONE } from "#/content/stages";

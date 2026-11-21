@@ -1,3 +1,4 @@
+import { componentPages } from "@uislash-src/packages/ui-react/docs/components/index";
 import { LISTED_PAGES } from "#/pixelslash/doc/docs-map";
 
 /**
@@ -22,4 +23,6 @@ export const PAGES: readonly { path: string; file: string }[] = [
   { path: "/pixelslash/self-host", file: "pixelslash/self-host.astro" },
   { path: "/taskslash", file: "taskslash.astro" },
   { path: "/toggleslash", file: "toggleslash.astro" },
+  { path: "/uislash", file: "uislash/index.astro" },
+  ...componentPages.map((page) => ({ path: `/uislash/${page.slug}`, file: "uislash/[slug].astro" })),
 ];

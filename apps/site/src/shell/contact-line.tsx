@@ -1,4 +1,4 @@
-import { Callout, TextLink } from "@hackcove/ui-react";
+import { Callout, TextLink } from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
 import { CONTACT } from "#/content/site";
 

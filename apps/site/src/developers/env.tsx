@@ -1,4 +1,4 @@
-import { Code, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, Text } from "@hackcove/ui-react";
+import { Code, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, Text } from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
 import { Evidence } from "#/developers/evidence";
 import { DevSection } from "#/developers/section";

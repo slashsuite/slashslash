@@ -1,4 +1,4 @@
-import { Text } from "@hackcove/ui-react";
+import { Text } from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
 import { type FactsProduct, licenceLine } from "#/content/facts";
 

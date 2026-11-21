@@ -233,7 +233,7 @@ describe("the home from the pipeline on", () => {
     ]);
     const items = [...(stands.match(/data-stands-start[^>]*>([\s\S]*?)<\/ul>/)?.[1] ?? "").matchAll(/<li[^>]*>([\s\S]*?)<\/li>/g)];
     expect(items).toHaveLength(6);
-    expect(stands).toContain("<code>@hackcove/ui-react</code>");
+    expect(stands).toContain("<code>@slashsuite/ui-react</code>");
     expect(html).not.toContain("report.png");
   });
 

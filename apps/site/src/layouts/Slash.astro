@@ -1,5 +1,5 @@
 ---
-import { appShellRootClassFor, colourSchemeScript } from "@hackcove/ui-react";
+import { appShellRootClassFor, colourSchemeScript } from "@slashsuite/ui-react";
 import { thisBuildCommit } from "#/content/build-commit";
 import { OG_HEIGHT, OG_WIDTH, ogCardFor } from "#/content/og";
 import { SITE_NAME, SITE_URL } from "#/content/site";
@@ -61,6 +61,7 @@ const toggleScript = `(function(c){document.querySelectorAll("[data-scheme-toggl
   </head>
   <body>
     <SlashShell section={section} path={path}>
+      {Astro.slots.has("controls") && <slot name="controls" slot="controls" />}
       <slot />
     </SlashShell>
     <script is:inline set:html={toggleScript} />

@@ -1,4 +1,4 @@
-import { Card, Icon, Stack, SubsectionHeading, Text, TextLink } from "@hackcove/ui-react";
+import { Card, Icon, Stack, SubsectionHeading, Text, TextLink } from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
 import { EXTRA_NAV, GROUPS, LISTED_PAGES } from "#/pixelslash/doc/docs-map";
 import { DOCS } from "#/pixelslash/doc/resolve-links";

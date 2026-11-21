@@ -1,4 +1,4 @@
-import { Code, Text } from "@hackcove/ui-react";
+import { Code, Text } from "@slashsuite/ui-react";
 import type { CSSProperties, ReactNode } from "react";
 import hero from "@pixelslash-src/apps/site/src/content/hero.json";
 import { psAsset } from "#/pixelslash/paths";

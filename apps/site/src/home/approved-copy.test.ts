@@ -63,7 +63,7 @@ const HOME = {
   stands: [
     "UISlash, TaskSlash, FlakeSlash, PixelSlash, ToggleSlash and OmniSlash are alphas. Expect the screens, the components and the commands to change, and expect bugs. Between alpha versions, what a tool has stored may be reset: TaskSlash's job history, FlakeSlash's scans and issue corrections, PixelSlash's builds and approvals, ToggleSlash's flags and audit trail, and OmniSlash's work items. UISlash stores nothing.",
     "Where to start:",
-    "UISlash: install `@hackcove/ui-react` and `@hackcove/themes` from npm into a React 19 app that uses Tailwind v4, and read the docs at hack-cove.com/ui/.",
+    "UISlash: install `@slashsuite/ui-react` and `@slashsuite/themes` from npm into a React 19 app that uses Tailwind v4, and read the docs at hack-cove.com/ui/.",
     "TaskSlash: build it from source with cargo on Linux and run a command through `taskslash run`.",
     "FlakeSlash: run `flakeslash scan` from a checkout against your GitHub Actions history, or sign in to the dashboard at flakeslash.slashslash.build with GitHub.",
     "PixelSlash: install `@hackcove/pixelslash` from npm and compare two URLs that are already running, or start with how it works in CI.",

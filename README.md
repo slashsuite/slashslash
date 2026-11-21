@@ -106,8 +106,8 @@ labelled where they appear). Never give something unbuilt a `real` frame; a test
 
 ## Design system
 
-The shell, the type, the pills, the code blocks, the links and the theme toggle come from `@hackcove/ui-react`,
-on the Slash Day and Slash Night themes of `@hackcove/themes`. `src/styles.css` is the one stylesheet: Tailwind,
+The shell, the type, the pills, the code blocks, the links and the theme toggle come from `@slashsuite/ui-react`,
+on the Slash Day and Slash Night themes of `@slashsuite/themes`. `src/styles.css` is the one stylesheet: Tailwind,
 the themes, and the plain CSS of the one-off drawings (`src/illustrations/`), each on the themes' variables.
 
 Fonts are self-hosted and subset (`apps/site/public/fonts/`, licences beside them): Inter for text,

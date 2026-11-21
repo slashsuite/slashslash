@@ -55,6 +55,27 @@ function resolves(page: string, href: string, idsOf: (page: string) => Set<strin
   return !hash || (file.endsWith(".html") && idsOf(file).has(decode(hash) ?? ""));
 }
 
+/** Drops inert UISlash story preview subtrees whose sample links (e.g. #quotes, /privacy) are non-interactive illustrations. */
+function stripInertPreviews(source: string): string {
+  const marker = /<div\b[^>]*\bdata-uislash-preview="[^"]*"[^>]*>/g;
+  const tag = /<\/?div\b[^>]*>/g;
+  let out = "";
+  let cursor = 0;
+  for (let match = marker.exec(source); match !== null; match = marker.exec(source)) {
+    out += source.slice(cursor, match.index);
+    let depth = 1;
+    tag.lastIndex = match.index + match[0].length;
+    while (depth > 0) {
+      const next = tag.exec(source);
+      if (next === null) break;
+      depth += next[0].startsWith("</") ? -1 : 1;
+    }
+    cursor = depth === 0 ? tag.lastIndex : source.length;
+    marker.lastIndex = cursor;
+  }
+  return out + source.slice(cursor);
+}
+
 /** Every internal href on every built page that does not resolve, as `<page> <href>`. */
 function deadLinks(): string[] {
   const ids = new Map<string, Set<string>>();
@@ -64,7 +85,7 @@ function deadLinks(): string[] {
     return found;
   };
   return pages().flatMap((page) =>
-    attrs(html(page), "href")
+    attrs(stripInertPreviews(html(page)), "href")
       .filter((href) => isInternal(href) && !resolves(page, href, idsOf))
       .map((href) => `${page} ${href}`),
   );

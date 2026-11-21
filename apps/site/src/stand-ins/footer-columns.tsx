@@ -1,6 +1,6 @@
-// Stands in for @hackcove/ui-react link columns: a footer's lead block, then its titled columns of
+// Stands in for @slashsuite/ui-react link columns: a footer's lead block, then its titled columns of
 // links, side by side from md and stacked on a phone. Layout only; every colour is the kit's.
-import { Caption, Stack } from "@hackcove/ui-react";
+import { Caption, Stack } from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
 
 export type FooterColumn = {

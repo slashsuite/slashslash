@@ -1,5 +1,5 @@
 /**
- * The site's sections: the suite and each tool with a page. Each names the pair of @hackcove/themes
+ * The site's sections: the suite and each tool with a page. Each names the pair of @slashsuite/themes
  * scopes its pages wear (light and dark), its mark, its home and, for a tool, its own pages for the
  * second header row. The shell, the layout and the head script read only this.
  */
@@ -38,7 +38,7 @@ export const SECTIONS = {
     pages: [],
   },
   pixelslash: {
-    // Becomes slash-pixelslash / slash-pixelslash-dark when @hackcove/themes ships slash-pixelslash.css.
+    // Becomes slash-pixelslash / slash-pixelslash-dark when @slashsuite/themes ships slash-pixelslash.css.
     day: "slash-suite",
     night: "slash-suite-dark",
     mark: markFor("PixelSlash"),
@@ -53,7 +53,7 @@ export const SECTIONS = {
     ],
   },
   flakeslash: {
-    // Becomes slash-flakeslash / slash-flakeslash-dark when @hackcove/themes ships slash-flakeslash.css.
+    // Becomes slash-flakeslash / slash-flakeslash-dark when @slashsuite/themes ships slash-flakeslash.css.
     day: "slash-suite",
     night: "slash-suite-dark",
     mark: markFor("FlakeSlash"),
@@ -65,7 +65,7 @@ export const SECTIONS = {
     ],
   },
   toggleslash: {
-    // Becomes slash-toggleslash / slash-toggleslash-dark when @hackcove/themes ships slash-toggleslash.css.
+    // Becomes slash-toggleslash / slash-toggleslash-dark when @slashsuite/themes ships slash-toggleslash.css.
     day: "slash-suite",
     night: "slash-suite-dark",
     mark: markFor("ToggleSlash"),
@@ -74,7 +74,7 @@ export const SECTIONS = {
     pages: [{ label: "Overview", href: "/toggleslash" }],
   },
   taskslash: {
-    // Becomes slash-taskslash / slash-taskslash-dark when @hackcove/themes ships slash-taskslash.css.
+    // Becomes slash-taskslash / slash-taskslash-dark when @slashsuite/themes ships slash-taskslash.css.
     day: "slash-suite",
     night: "slash-suite-dark",
     mark: markFor("TaskSlash"),
@@ -83,13 +83,25 @@ export const SECTIONS = {
     pages: [{ label: "Overview", href: "/taskslash" }],
   },
   omnislash: {
-    // Becomes slash-omnislash / slash-omnislash-dark when @hackcove/themes ships slash-omnislash.css.
+    // Becomes slash-omnislash / slash-omnislash-dark when @slashsuite/themes ships slash-omnislash.css.
     day: "slash-suite",
     night: "slash-suite-dark",
     mark: markFor("OmniSlash"),
     name: "OmniSlash",
     home: "/omnislash",
     pages: [{ label: "Overview", href: "/omnislash" }],
+  },
+  uislash: {
+    // Becomes slash-uislash / slash-uislash-dark when @slashsuite/themes ships slash-uislash.css.
+    day: "slash-suite",
+    night: "slash-suite-dark",
+    mark: markFor("UISlash"),
+    name: "UISlash",
+    home: "/uislash",
+    pages: [
+      { label: "Components", href: "/uislash" },
+      { label: "llms.txt", href: "/uislash/llms.txt" },
+    ],
   },
 } as const satisfies Record<string, Section>;
 

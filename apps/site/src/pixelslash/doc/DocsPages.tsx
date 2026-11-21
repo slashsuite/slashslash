@@ -9,7 +9,7 @@ import {
   Stack,
   Text,
   TextLink,
-} from "@hackcove/ui-react";
+} from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
 import { OnThisPage } from "#/pixelslash/doc/DocPage";
 import { DocsGroupGrid } from "#/pixelslash/doc/DocsGroups";

@@ -1,8 +1,8 @@
-// Stands in for @hackcove/ui-react Hero centred and Cluster justify="center" (HC-331): the kit's Hero
+// Stands in for @slashsuite/ui-react Hero centred and Cluster justify="center" (HC-331): the kit's Hero
 // sits at its parent's left edge and a Cluster cannot centre its row. CentredHero centres the Hero's
 // column and its text; CentredRow centres a row of actions under it. Layout only: the Hero, its glow
 // and every colour are the kit's.
-import { Hero } from "@hackcove/ui-react";
+import { Hero } from "@slashsuite/ui-react";
 import type { ComponentProps, ReactNode } from "react";
 
 export function CentredHero(props: ComponentProps<typeof Hero>): ReactNode {

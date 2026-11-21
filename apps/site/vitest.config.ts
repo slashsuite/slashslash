@@ -9,6 +9,7 @@ export default defineConfig({
       "#": fileURLToPath(new URL("./src", import.meta.url)),
       "@pixelslash-src": fileURLToPath(new URL("./.sources/pixelslash", import.meta.url)),
       "@facts": fileURLToPath(new URL("./.sources/facts", import.meta.url)),
+      "@uislash-src": fileURLToPath(new URL("./.sources/uislash", import.meta.url)),
     },
   },
   test: {

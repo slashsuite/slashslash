@@ -26,6 +26,14 @@ describe("the share card list", () => {
     expect(OG_CARDS.some((item) => item.path.startsWith("/pixelslash/docs"))).toBe(false);
   });
 
+  test("gives every UISlash component page the one shared UISlash card", () => {
+    expect(wornCard("/uislash")).toBeUndefined();
+    expect(wornCard("/uislash/button")).toBe("/uislash");
+    expect(ogCardFor("/uislash").slug).toBe("uislash");
+    expect(ogCardFor("/uislash/button")).toBe(card("/uislash"));
+    expect(OG_CARDS.filter((item) => item.tool === "uislash")).toHaveLength(1);
+  });
+
   test("gives every card a unique slug made from its path", () => {
     expect(new Set(OG_CARDS.map((item) => item.slug)).size).toBe(OG_CARDS.length);
     expect(card("/")?.slug).toBe("slashslash");

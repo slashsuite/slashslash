@@ -1,4 +1,4 @@
-import { Overline, ProseLayout, Stack, TextLink } from "@hackcove/ui-react";
+import { Overline, ProseLayout, Stack, TextLink } from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
 import { DocBody, type Doc } from "#/pixelslash/doc/markdown";
 

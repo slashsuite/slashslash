@@ -14,6 +14,7 @@
 import { copyFileSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { DOC_PAGES } from "#/pixelslash/doc/docs-map";
+import { assertUiReactVersionMatches, fetchUislashSources } from "./fetch-uislash";
 
 /** The screenshots the docs show, every file of PixelSlash's apps/site/public/docs-images/. */
 const DOCS_IMAGES = [
@@ -114,12 +115,15 @@ async function download(sha: string, path: string, repo = REPO, name = "PixelSla
 }
 
 async function main(): Promise<void> {
+  // Check the vendored package version before any network call so a mismatch fails fast.
+  assertUiReactVersionMatches(SITE);
   const sha = pinnedSha();
   const pins = factsPins();
-  const bodies = await Promise.all(PIXELSLASH_FILES.map((path) => download(sha, path)));
-  const facts = await Promise.all(
-    pins.map(([product, pin]) => download(pin, FACTS_PATH, FACTS_REPOS[product], product)),
-  );
+  const [bodies, facts, uislash] = await Promise.all([
+    Promise.all(PIXELSLASH_FILES.map((path) => download(sha, path))),
+    Promise.all(pins.map(([product, pin]) => download(pin, FACTS_PATH, FACTS_REPOS[product], product))),
+    fetchUislashSources(SITE),
+  ]);
   // Written only once every file has arrived, so a failure leaves no half-updated folder behind.
   rmSync(SOURCES, { recursive: true, force: true });
   rmSync(PUBLIC, { recursive: true, force: true });
@@ -138,6 +142,7 @@ async function main(): Promise<void> {
   });
   console.log(`fetched ${PIXELSLASH_FILES.length} PixelSlash files at ${sha}`);
   for (const [product, pin] of pins) console.log(`fetched ${product} ${FACTS_PATH} at ${pin}`);
+  console.log(`fetched ${uislash.docsCount} UISlash docs files and ${uislash.storyCount} story files at ${uislash.sha}`);
 }
 
 // Run only as a script, so a test can import PIXELSLASH_FILES without a fetch.

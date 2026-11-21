@@ -21,12 +21,17 @@ function builtHtml(): string {
 
 /**
  * Every built slashslash page: the home, /developers, each tool's page and the 404 page. The PixelSlash pages
- * (pixelslash/**) carry PixelSlash's own copy, with their own checks in src/pixelslash/pages.test.ts.
+ * (pixelslash/**) and UISlash component docs (uislash/**) carry each tool's own fetched copy and stories, with
+ * their own checks in src/pixelslash/pages.test.ts and src/uislash/uislash.dist.test.ts.
  */
 function builtPages(): string[] {
   builtHtml();
   const pages = globSync("**/*.html", { cwd: CLIENT }).filter(
-    (page) => page !== "pixelslash.html" && !page.startsWith("pixelslash/"),
+    (page) =>
+      page !== "pixelslash.html" &&
+      !page.startsWith("pixelslash/") &&
+      page !== "uislash.html" &&
+      !page.startsWith("uislash/"),
   );
   expect(pages.toSorted()).toEqual(["404.html", "developers.html", "flakeslash.html", "how-it-works.html", "index.html", "omnislash.html", "taskslash.html", "toggleslash.html"]);
   return pages.map((page) => readFileSync(resolve(CLIENT, page), "utf8"));

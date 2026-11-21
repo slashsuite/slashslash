@@ -1,4 +1,4 @@
-import { Input, ListRow, Stack, Text } from "@hackcove/ui-react";
+import { Input, ListRow, Stack, Text } from "@slashsuite/ui-react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { type SearchEntry, type SearchHit, search } from "#/pixelslash/doc/search";
 

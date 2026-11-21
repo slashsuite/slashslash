@@ -10,7 +10,7 @@ import {
   PageHeading,
   Stack,
   TextLink,
-} from "@hackcove/ui-react";
+} from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
 import { psHref } from "#/pixelslash/paths";
 import { LicenceLine } from "#/shell/licence-line";

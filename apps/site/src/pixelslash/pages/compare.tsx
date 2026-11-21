@@ -16,7 +16,7 @@ import {
   TableHeaderCell,
   TableRow,
   TextLink,
-} from "@hackcove/ui-react";
+} from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
 import {
   type Cell,

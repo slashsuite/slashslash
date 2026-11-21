@@ -1,4 +1,4 @@
-import { Container, Section, Text } from "@hackcove/ui-react";
+import { Container, Section, Text } from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
 import { STANDS, VIEW, VIEW_QUESTIONS } from "#/content/story";
 import { ContactLine } from "#/shell/contact-line";

@@ -214,7 +214,7 @@ export const STANDS: {
     title: "Where to start:",
     items: [
       {
-        text: "UISlash: install `@hackcove/ui-react` and `@hackcove/themes` from npm into a React 19 app that uses Tailwind v4, and read the docs at [hack-cove.com/ui/](https://hack-cove.com/ui/).",
+        text: "UISlash: install `@slashsuite/ui-react` and `@slashsuite/themes` from npm into a React 19 app that uses Tailwind v4, and read the docs at [hack-cove.com/ui/](https://hack-cove.com/ui/).",
         facts: ["uislash/npm-install", "uislash/themes-package", "uislash/docs-site"],
       },
       {

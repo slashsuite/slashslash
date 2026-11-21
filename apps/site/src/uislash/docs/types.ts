@@ -1,0 +1,29 @@
+/** One prop of a component, as `scripts/generate-props.ts` reads it from `packages/ui-react`. */
+export type PropDoc = {
+  name: string;
+  type: string;
+  required: boolean;
+  /** The default value as source text, when the component sets one. */
+  default?: string | undefined;
+  description: string;
+  /** A DOM prop the component passes through (`disabled`, `placeholder`), listed for what it means here. */
+  native: boolean;
+};
+
+/** One export: a component and its props, or a helper (`fromISODate`) and its signature. */
+export type ComponentDoc = {
+  name: string;
+  description: string;
+  /** A helper's TypeScript signature, as `name(params): result` or `name: type`. */
+  signature?: string | undefined;
+  props: PropDoc[];
+};
+
+/** `packages/ui-react/docs/props.json`: every value `@slashsuite/ui-react` exports, by name. */
+export type PropsJson = Record<string, ComponentDoc>;
+
+/** One type export (`Tone`, `Crumb`): its JSDoc and its definition, one level down. */
+export type TypeDoc = { name: string; description: string; definition: string };
+
+/** `packages/ui-react/docs/types.json`: every type `@slashsuite/ui-react` exports, by name. */
+export type TypesJson = Record<string, TypeDoc>;

@@ -1,4 +1,4 @@
-import { TextLink } from "@hackcove/ui-react";
+import { TextLink } from "@slashsuite/ui-react";
 import { Fragment, type ReactNode } from "react";
 
 /**

@@ -1,5 +1,5 @@
 /*
- * Stands in for @hackcove/ui-react page backdrop: the suite's grid, faint, and a wash of the theme
+ * Stands in for @slashsuite/ui-react page backdrop: the suite's grid, faint, and a wash of the theme
  * accent under a page's hero, fading out down the hero so the page below sits on the plain canvas.
  * It reads only the theme's own variables (--hc-line, --hc-accent), so it follows Slash Day, Slash
  * Night and every tool's pair. Put `hero-ground` on the hero's wrapper.

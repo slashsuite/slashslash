@@ -1,4 +1,4 @@
-import { Card, Container, Lead, ListRow, Pill, Step, Steps, Text } from "@hackcove/ui-react";
+import { Card, Container, Lead, ListRow, Pill, Step, Steps, Text } from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
 import type { Claim } from "#/content/facts";
 import { STAGES, STAGE_TONE } from "#/content/stages";

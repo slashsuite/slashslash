@@ -1,4 +1,4 @@
-import { CodeBlock, Stack, Text } from "@hackcove/ui-react";
+import { CodeBlock, Stack, Text } from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
 import type { TryStep } from "#/content/flakeslash";
 

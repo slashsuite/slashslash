@@ -1,4 +1,4 @@
-import { Container, Lead, PageHeading, Stack, Text, TextLink } from "@hackcove/ui-react";
+import { Container, Lead, PageHeading, Stack, Text, TextLink } from "@slashsuite/ui-react";
 import { Fragment, type ReactNode } from "react";
 import type { Claim } from "#/content/facts";
 import { CLOSE, DIAGRAM, type FlowTool, HOW_IT_WORKS_HEADLINE, HOW_IT_WORKS_LEAD, TOOLS } from "#/content/how-it-works";

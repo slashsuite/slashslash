@@ -164,11 +164,12 @@ describe("the icon and the header on the built pages", () => {
     }
   });
 
-  test("FlakeSlash, ToggleSlash, TaskSlash and OmniSlash use their own tool mark", () => {
+  test("FlakeSlash, ToggleSlash, TaskSlash, OmniSlash and UISlash use their own tool mark", () => {
     expect(iconOf(read("flakeslash.html"))).toBe("/brand/flakeslash-mark.svg");
     expect(iconOf(read("toggleslash.html"))).toBe("/brand/toggleslash-mark.svg");
     expect(iconOf(read("taskslash.html"))).toBe("/brand/taskslash-mark.svg");
     expect(iconOf(read("omnislash.html"))).toBe("/brand/omnislash-mark.svg");
+    expect(iconOf(read("uislash.html"))).toBe("/brand/uislash-mark.svg");
   });
 
   test("no page still points at the old logo files or PixelSlash's own favicon", () => {

@@ -1,4 +1,4 @@
-import { Card, CardGrid, Pill, Stack, SubsectionHeading, Text, TextLink } from "@hackcove/ui-react";
+import { Card, CardGrid, Pill, Stack, SubsectionHeading, Text, TextLink } from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
 import { PRODUCTS, type Product } from "#/content/products";
 import { TOGGLESLASH_REPO_URL } from "#/content/site";

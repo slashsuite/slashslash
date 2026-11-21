@@ -1,4 +1,4 @@
-import { AppShell, AppShellBrand, Caption, Cluster, ColourSchemeToggle, Show, Tabs, Text, TextLink } from "@hackcove/ui-react";
+import { AppShell, AppShellBrand, Caption, Cluster, ColourSchemeToggle, Show, Tabs, Text, TextLink } from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
 import { licenceOf } from "#/content/facts";
 import { PRODUCTS } from "#/content/products";
@@ -18,13 +18,13 @@ function Marked({ mark, children }: { mark: string; children: ReactNode }): Reac
   );
 }
 
-/** The suite's lockup: its mark and its name, one link home. */
-function Lockup(): ReactNode {
+/** The suite's lockup: its mark and its name, one link home. In the header, the wordmark folds at tablet widths (md to lg) so all six tools fit one row. */
+function Lockup({ compactOnTablet = false }: { compactOnTablet?: boolean }): ReactNode {
   return (
     <AppShellBrand
       href="/"
       logo={<img src={SECTIONS.suite.mark} alt="" width={24} height={24} />}
-      label={SITE_NAME}
+      label={compactOnTablet ? <span className="md:sr-only lg:not-sr-only">{SITE_NAME}</span> : SITE_NAME}
     />
   );
 }
@@ -118,11 +118,14 @@ function Footer(): ReactNode {
 export function SlashShell({
   section,
   path,
+  controls,
   children,
 }: {
   section: SectionKey;
   /** The page's own path, to mark its sub-nav entry current. */
   path: string;
+  /** Optional extra header controls placed before the colour scheme toggle (e.g. SiteSearch on /uislash). */
+  controls?: ReactNode;
   children: ReactNode;
 }): ReactNode {
   const current = SECTIONS[section];
@@ -159,12 +162,22 @@ export function SlashShell({
         }))}
       />
     ) : undefined;
+  const toggle = <ColourSchemeToggle schemes={{ light, dark }} size="sm" data-scheme-toggle="" />;
   return (
     <AppShell
-      brand={<Lockup />}
+      brand={<Lockup compactOnTablet />}
       nav={switcher}
       {...(subnav ? { subnav } : {})}
-      controls={<ColourSchemeToggle schemes={{ light, dark }} size="sm" data-scheme-toggle="" />}
+      controls={
+        controls !== undefined ? (
+          <Cluster as="span" gap="xs" wrap={false}>
+            {controls}
+            {toggle}
+          </Cluster>
+        ) : (
+          toggle
+        )
+      }
       footer={<Footer />}
       bleed
     >

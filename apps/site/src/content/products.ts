@@ -23,134 +23,6 @@ export type Product = {
 
 export const PRODUCTS: readonly Product[] = [
   {
-    name: "PixelSlash",
-    stage: "alpha",
-    facts: "pixelslash",
-    question: { text: "Does the page look different?", facts: ["pixelslash/what-it-is"] },
-    summary: [
-      {
-        text: "It compares screenshots from before and after a change and points out what really changed.",
-        facts: ["pixelslash/compare-two-pngs", "pixelslash/compare-two-urls", "pixelslash/perceptual-diff"],
-      },
-      {
-        text: "Small visual changes are easy to miss by eye. This tool spots them and tells real changes apart from tiny differences nobody would notice, so a redesign doesn't ship by accident.",
-        facts: ["pixelslash/perceptual-diff"],
-      },
-      {
-        text: "The diff is a Rust crate compiled to WebAssembly, the same module in the command line tool and the review app. `pixelslash mcp` is an MCP server, so a coding agent can read builds and changed shots and accept or reject a change.",
-        facts: ["pixelslash/wasm-diff-engine", "pixelslash/mcp-server"],
-      },
-    ],
-  },
-  {
-    name: "ToggleSlash",
-    stage: "alpha",
-    facts: "toggleslash",
-    question: {
-      text: "Which features are switched on, and for whom?",
-      facts: ["toggleslash/what-it-is", "toggleslash/targeting"],
-    },
-    summary: [
-      {
-        text: "ToggleSlash is a feature flag service you run yourself: it decides which users see which version of a feature, and you change those decisions from a command line or a web dashboard while the application runs.",
-        facts: ["toggleslash/what-it-is"],
-      },
-      {
-        text: "It is being built now. Its source is public under the Elastic License 2.0, and you host it yourself. Today it has a C# server on SQLite with an audit trail of every admin change, a command line, a dashboard, and server SDKs in TypeScript, Python, Go, Java, C# and Ruby that pass the same conformance tests (only the TypeScript one is on npm). Evaluation is one written spec with shared test vectors.",
-        facts: [
-          "toggleslash/what-it-is",
-          "toggleslash/licence",
-          "toggleslash/server",
-          "toggleslash/audit-trail",
-          "toggleslash/cli",
-          "toggleslash/typescript-server-sdk",
-          "toggleslash/other-server-sdks",
-          "toggleslash/dashboard",
-          "toggleslash/evaluation-spec",
-        ],
-      },
-    ],
-    page: "/toggleslash",
-  },
-  {
-    name: "FlakeSlash",
-    stage: "alpha",
-    facts: "flakeslash",
-    question: { text: "Can the test results be trusted?", facts: ["flakeslash/what-it-is"] },
-    summary: [
-      {
-        text: "It spots automated checks that pass and fail at random, so a failure means something.",
-        facts: ["flakeslash/what-it-is", "flakeslash/flake-same-commit"],
-      },
-      {
-        text: "It is being built now. Its source is public under the Elastic License 2.0. Today its command line tool scans GitHub Actions history and lists the jobs that failed and passed on the same commit, grouped into issues with their log excerpts. Readers for other CI systems are planned.",
-        facts: [
-          "flakeslash/what-it-is",
-          "flakeslash/licence",
-          "flakeslash/scan-github-actions",
-          "flakeslash/flake-same-commit",
-          "flakeslash/issue-grouping",
-          "flakeslash/redacted-excerpts",
-          "flakeslash/later-features",
-        ],
-      },
-    ],
-    page: "/flakeslash",
-  },
-  {
-    name: "TaskSlash",
-    stage: "alpha",
-    facts: "taskslash",
-    question: { text: "Why did the tests time out?", facts: ["taskslash/what-it-is"] },
-    summary: [
-      {
-        text: "It queues builds and tests on one machine, so a test fails because of the code, not because everything ran at once.",
-        facts: ["taskslash/what-it-is", "taskslash/admission-by-capacity"],
-      },
-      {
-        text: "It is being built now. Its source is public under the MIT license. Today it is a daemon and a command line for Linux that run each job in its own systemd scope, measure what it cost, and start a job only when your computer has capacity for it. There is no release you can install yet: you build it from source with cargo.",
-        facts: [
-          "taskslash/what-it-is",
-          "taskslash/licence",
-          "taskslash/daemon-queue",
-          "taskslash/measured-runs",
-          "taskslash/admission-by-capacity",
-          "taskslash/linux-systemd",
-          "taskslash/no-release",
-        ],
-      },
-    ],
-    page: "/taskslash",
-  },
-  {
-    name: "UISlash",
-    stage: "alpha",
-    facts: "uislash",
-    question: { text: "Can the agent build the UI without writing its own CSS?", facts: ["uislash/what-it-is"] },
-    summary: [
-      {
-        text: "React components (@slashsuite/ui-react) and seven themes (@slashsuite/themes: four light, three dark, one CSS file each), and a site is built from them with props alone because no exported component accepts className or style.",
-        facts: [
-          "uislash/what-it-is",
-          "uislash/react-components",
-          "uislash/themes-package",
-          "uislash/seven-themes",
-          "uislash/no-styling-escape",
-        ],
-      },
-      {
-        text: "Early (every package at 0.x) and MIT licensed. Every theme is tested against WCAG AA contrast, a reusable GitHub workflow runs a rule check that fails the pull request plus an advisory model review, and the docs and an llms.txt for agents are at hack-cove.com/ui/.",
-        facts: [
-          "uislash/what-it-is",
-          "uislash/licence",
-          "uislash/contrast-checked",
-          "uislash/ui-review-workflow",
-          "uislash/component-docs",
-        ],
-      },
-    ],
-  },
-  {
     name: "OmniSlash",
     stage: "alpha",
     facts: "omnislash",
@@ -159,13 +31,164 @@ export const PRODUCTS: readonly Product[] = [
     page: "/omnislash",
   },
   {
+    name: "UISlash",
+    stage: "alpha",
+    facts: "uislash",
+    question: { text: "UI components your agents cannot style wrong.", facts: ["uislash/what-it-is"] },
+    summary: [
+      {
+        text: "React 19 components (`@slashsuite/ui-react`) and seven WCAG AA checked themes (`@slashsuite/themes`: four light, three dark, one CSS file each). No exported component accepts `className` or `style`, so people and coding agents compose pages from props alone.",
+        facts: [
+          "uislash/what-it-is",
+          "uislash/react-components",
+          "uislash/themes-package",
+          "uislash/seven-themes",
+          "uislash/contrast-checked",
+          "uislash/no-styling-escape",
+        ],
+      },
+      {
+        text: "Open source under the MIT licence. Includes status pages, a reusable GitHub Actions PR review workflow, component docs at `/uislash` and a plain-text `/uislash/llms.txt` reference for coding agents.",
+        facts: [
+          "uislash/licence",
+          "uislash/status-pages",
+          "uislash/ui-review-workflow",
+          "uislash/component-docs",
+        ],
+      },
+    ],
+    page: "/uislash",
+  },
+  {
+    name: "TaskSlash",
+    stage: "alpha",
+    facts: "taskslash",
+    question: { text: "Admission control for builds and tests on one machine.", facts: ["taskslash/what-it-is", "taskslash/admission-by-capacity"] },
+    summary: [
+      {
+        text: "Queues builds, tests and browser runs on one Linux machine so a test fails because of the code, not because parallel agents ran everything at once.",
+        facts: ["taskslash/what-it-is", "taskslash/admission-by-capacity"],
+      },
+      {
+        text: "Open source under the MIT licence. A local daemon runs each job in its own systemd scope, measures CPU, memory and disk writes, schedules moon targets by dependency order, and exposes `taskslash top`, `taskslash cancel` and per-job logs. Build from source with cargo.",
+        facts: [
+          "taskslash/licence",
+          "taskslash/daemon-queue",
+          "taskslash/measured-runs",
+          "taskslash/moon-targets",
+          "taskslash/top",
+          "taskslash/cancel",
+          "taskslash/job-logs",
+          "taskslash/no-release",
+        ],
+      },
+    ],
+    page: "/taskslash",
+  },
+  {
+    name: "FlakeSlash",
+    stage: "alpha",
+    facts: "flakeslash",
+    question: { text: "Know which test failures are real and which are flakes.", facts: ["flakeslash/what-it-is", "flakeslash/flake-same-commit"] },
+    summary: [
+      {
+        text: "Scans GitHub Actions history with no change to your pipeline and marks a job flaky only when it both failed and passed on the same commit, keeping suspects separate.",
+        facts: ["flakeslash/what-it-is", "flakeslash/scan-github-actions", "flakeslash/flake-same-commit", "flakeslash/suspects"],
+      },
+      {
+        text: "Source available under the Elastic License 2.0. Groups failures into issues with redacted log excerpts and no model required. Run locally from a checkout against SQLite, use the hosted dashboard at flakeslash.slashslash.build, or self-host on Cloudflare Workers.",
+        facts: [
+          "flakeslash/licence",
+          "flakeslash/issue-grouping",
+          "flakeslash/redacted-excerpts",
+          "flakeslash/cli-from-checkout",
+          "flakeslash/hosted-dashboard",
+          "flakeslash/self-hosted-dashboard",
+        ],
+      },
+    ],
+    page: "/flakeslash",
+  },
+  {
+    name: "PixelSlash",
+    stage: "alpha",
+    facts: "pixelslash",
+    question: { text: "See what your change did to the page.", facts: ["pixelslash/what-it-is"] },
+    summary: [
+      {
+        text: "Compares Main and Branch shots with a Rust WebAssembly perceptual diff that ignores anti-aliasing, faint noise and sub-pixel shifts, using the same module in the CLI (`@slashsuite/pixelslash`) and the review app.",
+        facts: [
+          "pixelslash/compare-two-pngs",
+          "pixelslash/compare-two-urls",
+          "pixelslash/perceptual-diff",
+          "pixelslash/wasm-diff-engine",
+          "pixelslash/npm-cli",
+        ],
+      },
+      {
+        text: "Source available under the Elastic License 2.0. Runs locally for free, checks flaky shots, Storybook stories and native PNGs, exposes an MCP server (`pixelslash mcp`) for coding agents, and uploads to pixelslash.dev or your own self-hosted server.",
+        facts: [
+          "pixelslash/licence",
+          "pixelslash/local-unless-upload",
+          "pixelslash/flaky-shot-detection",
+          "pixelslash/storybook-stories",
+          "pixelslash/native-screenshots",
+          "pixelslash/mcp-server",
+          "pixelslash/hosted-review-app",
+          "pixelslash/self-host-docker",
+        ],
+      },
+    ],
+    page: "/pixelslash",
+  },
+  {
+    name: "ToggleSlash",
+    stage: "alpha",
+    facts: "toggleslash",
+    question: {
+      text: "Feature flags you self-host, with one spec across languages.",
+      facts: ["toggleslash/what-it-is", "toggleslash/evaluation-spec"],
+    },
+    summary: [
+      {
+        text: "Self-hosted feature flags backed by one C# (.NET 10) server on SQLite, with in-process evaluation across six server SDK languages (TypeScript on npm at 0.2.0; Python, Go, Java, C# and Ruby from checkout) built from one evaluation spec and shared test vectors.",
+        facts: [
+          "toggleslash/what-it-is",
+          "toggleslash/server",
+          "toggleslash/typescript-server-sdk",
+          "toggleslash/typescript-packages-npm",
+          "toggleslash/other-server-sdks",
+          "toggleslash/evaluation-spec",
+        ],
+      },
+      {
+        text: "Source available under the Elastic License 2.0. Includes a CLI, web dashboard, browser SDK with secure mode, OpenTelemetry tracing hook, live stream updates, privacy-safe usage counts and a full audit trail of every admin write.",
+        facts: [
+          "toggleslash/licence",
+          "toggleslash/cli",
+          "toggleslash/dashboard",
+          "toggleslash/browser-sdk",
+          "toggleslash/secure-mode",
+          "toggleslash/opentelemetry-tracing",
+          "toggleslash/live-updates",
+          "toggleslash/usage-counts",
+          "toggleslash/audit-trail",
+        ],
+      },
+    ],
+    page: "/toggleslash",
+  },
+  {
     name: "BundleSlash",
     stage: "planned",
-    question: { text: "Does the app take longer to load?", planned: "BundleSlash" },
+    question: { text: "Does the app take longer to load, or ship vulnerable packages?", planned: "BundleSlash" },
     summary: [
-      { text: "It measures how much code customers have to download after a change.", planned: "BundleSlash" },
       {
-        text: "It would compare the JavaScript bundles of two commits locally, before CI does, for Bun, Vite and webpack builds.",
+        text: "Will compare JavaScript bundle sizes between commits locally before CI, for Bun, Vite and webpack builds.",
+        planned: "BundleSlash",
+      },
+      {
+        text: "Will also track a package catalogue with vulnerability and compromise alerts checked for reachability in your code, and cut Conventional Commit releases on command.",
         planned: "BundleSlash",
       },
     ],

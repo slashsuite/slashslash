@@ -21,11 +21,11 @@ function snapshot(dir: string): Record<string, number> {
   return out;
 }
 
-/** Creates a minimal site directory with uislash.json and an installed @slashsuite/ui-react package.json. */
+/** Creates a minimal site directory with uislash.sha.json and an installed @slashsuite/ui-react package.json. */
 function makeSiteFixture(pinVersion: string, installedVersion: string): string {
   const dir = mkdtempSync(resolve(tmpdir(), "uislash-pin-"));
   writeFileSync(
-    resolve(dir, "uislash.json"),
+    resolve(dir, "uislash.sha.json"),
     JSON.stringify({ sha: "e85986c14eecae2c7892cc8843d9da3573cb4624", "ui-react": pinVersion, themes: "0.3.2" }),
   );
   const pkgDir = resolve(dir, "node_modules/@slashsuite/ui-react");
@@ -42,7 +42,7 @@ test("--list prints exactly PIXELSLASH_FILES and touches no fetched folder", () 
   expect(TOUCHED.map(snapshot)).toEqual(before);
 });
 
-test("assertUiReactVersionMatches passes when uislash.json matches installed @slashsuite/ui-react", () => {
+test("assertUiReactVersionMatches passes when uislash.sha.json matches installed @slashsuite/ui-react", () => {
   const pin = assertUiReactVersionMatches(SITE);
   expect(pin.sha).toMatch(/^[0-9a-f]{40}$/);
   expect(pin["ui-react"]).toMatch(/^\d+\.\d+\.\d+/);
@@ -54,7 +54,7 @@ test("assertUiReactVersionMatches passes when uislash.json matches installed @sl
   }
 });
 
-test("assertUiReactVersionMatches fails naming both versions when uislash.json differs from installed @slashsuite/ui-react", () => {
+test("assertUiReactVersionMatches fails naming both versions when uislash.sha.json differs from installed @slashsuite/ui-react", () => {
   const dir = makeSiteFixture("0.99.0", "0.11.3");
   try {
     expect(() => assertUiReactVersionMatches(dir)).toThrow(/0\.99\.0[\s\S]*0\.11\.3/);

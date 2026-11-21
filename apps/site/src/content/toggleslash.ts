@@ -14,21 +14,22 @@ import { TOGGLESLASH_REPO_URL } from "#/content/site";
 const DOCS = `${TOGGLESLASH_REPO_URL}/blob/main/docs`;
 
 export const TOGGLESLASH_TITLE: Claim = {
-  text: "ToggleSlash: feature flags you can self-host",
-  facts: ["toggleslash/what-it-is"],
+  text: "ToggleSlash: feature flags you self-host, with one spec across languages.",
+  facts: ["toggleslash/what-it-is", "toggleslash/evaluation-spec"],
 };
 
 export const TOGGLESLASH_INTRO: { title: string; lead: Claim } = {
   title: "ToggleSlash",
   lead: {
-    text: "ToggleSlash is a feature flag service you run yourself. Today it is a server, a command line, server SDKs in TypeScript, Python, Go, Java, C# and Ruby, and a dashboard, and there is no hosted service.",
+    text: "ToggleSlash is a self-hosted feature flag service. You run one C# server on SQLite, evaluate flags in process with no network call per check, and change targeting live from the CLI or web dashboard. Every npm package is at 0.2.0 under @slashsuite/*, and there is no public hosted service.",
     facts: [
       "toggleslash/what-it-is",
       "toggleslash/server",
-      "toggleslash/cli",
       "toggleslash/typescript-server-sdk",
-      "toggleslash/other-server-sdks",
+      "toggleslash/cli",
       "toggleslash/dashboard",
+      "toggleslash/cli-npm",
+      "toggleslash/typescript-packages-npm",
       "toggleslash/dashboard-cloudflare-workers",
     ],
   },
@@ -36,12 +37,13 @@ export const TOGGLESLASH_INTRO: { title: string; lead: Claim } = {
 
 /** The page's description in search results and link previews. */
 export const TOGGLESLASH_DESCRIPTION: Claim = {
-  text: "ToggleSlash is a self-hosted feature flag service: a C# server on SQLite, a command line, a TypeScript server SDK and a dashboard, with an audit trail of every change.",
+  text: "ToggleSlash is a self-hosted feature flag service: a C# server on SQLite, CLI and TypeScript SDKs on npm, five more server SDKs, a dashboard and a full audit trail.",
   facts: [
     "toggleslash/what-it-is",
     "toggleslash/server",
-    "toggleslash/cli",
-    "toggleslash/typescript-server-sdk",
+    "toggleslash/cli-npm",
+    "toggleslash/typescript-packages-npm",
+    "toggleslash/other-server-sdks",
     "toggleslash/dashboard",
     "toggleslash/audit-trail",
   ],
@@ -54,90 +56,89 @@ export type Feature = {
   text: Claim;
 };
 
-/** What works today. Every toggleslash command here is in packages/cli/src/commands at 335fcf3. */
+/** What works today, grounded in toggleslash/FACTS.md. */
 export const WORKS_TODAY: readonly Feature[] = [
   {
-    title: "A server that owns the flags",
+    title: "One C# server on SQLite",
     command: "dotnet run --project apps/server/ToggleSlash.Server",
     text: {
-      text: "A C# server (ASP.NET Core, .NET 10) keeps projects, environments and flags in one SQLite file, and serves an admin API and the routes the SDK reads. It creates the database at startup and brings it up to the current schema.",
-      facts: ["toggleslash/server", "toggleslash/server-from-source"],
+      text: "An ASP.NET Core (.NET 10) server keeps projects, environments, flags and segments in one SQLite file, migrates its schema on startup, describes its API in OpenAPI, and enforces rate limits and security headers.",
+      facts: ["toggleslash/server", "toggleslash/server-from-source", "toggleslash/openapi-document", "toggleslash/rate-limits"],
     },
   },
   {
-    title: "Projects and environments",
-    command: "toggleslash projects list|create",
-    text: {
-      text: "The toggleslash command line manages everything over the admin API. Each project holds its own environments, such as staging and production, which envs list, envs create, envs rename and envs delete look after.",
-      facts: ["toggleslash/cli"],
-    },
-  },
-  {
-    title: "Flags, targeting and segments",
+    title: "Flags, targeting and multi-context rules",
     command: "toggleslash flags show|create|on|off|archive|delete",
     text: {
-      text: "A new flag is a true or false switch, off in every environment. flags on and flags off turn it on or off in one environment and change nothing else. targeting show and targeting set read and replace its rules in one environment, and segments keeps groups that several flags can share.",
-      facts: ["toggleslash/cli", "toggleslash/flag-variations", "toggleslash/targeting"],
-    },
-  },
-  {
-    title: "SDK keys, shown once",
-    command: "toggleslash keys create|list|revoke",
-    text: {
-      text: "An SDK reads one environment with its own key. The server keeps only a hash of each key, so it is shown once when it is made.",
-      facts: ["toggleslash/sdk-keys"],
-    },
-  },
-  {
-    title: "Server SDKs in six languages",
-    command: "TypeScript on npm, five more from a checkout",
-    text: {
-      text: "Check a flag inside your own process, with no network call per check. The TypeScript SDK installs from npm, keeps an environment's ruleset current and evaluates flags in your process. The Python, Go, Java, C# and Ruby SDKs also evaluate locally and pass the same conformance tests. None of those five is published: they run from a checkout of the repository.",
+      text: "Flags serve boolean or arbitrary JSON variations per environment. Target individual keys, rules on context attributes (string, number, semver, date, regex), multi-context subjects (such as user and organisation), reusable segments, prerequisite flags and percentage rollouts. Version checks prevent stale overwrites.",
       facts: [
-        "toggleslash/typescript-server-sdk",
-        "toggleslash/live-updates",
-        "toggleslash/other-server-sdks",
-        "toggleslash/typescript-packages-npm",
+        "toggleslash/flag-variations",
+        "toggleslash/targeting",
+        "toggleslash/targeting-operators",
+        "toggleslash/multi-context",
+        "toggleslash/targeting-concurrency",
+        "toggleslash/archive-and-delete",
       ],
     },
   },
   {
-    title: "One evaluation spec",
-    command: "docs/evaluation.md",
+    title: "One evaluation spec, six server SDK languages",
+    command: "@slashsuite/toggleslash-sdk",
     text: {
-      text: "A flag should give the same answer whichever language asks. Evaluation is written down once, with shared test vectors in `fixtures/evaluation/`. The TypeScript engine and the C# evaluator pass every vector.",
-      facts: ["toggleslash/evaluation-spec"],
+      text: "Evaluation is written once in `docs/evaluation.md` with shared test vectors in `fixtures/evaluation/`. The TypeScript server SDK (0.2.0 on npm) syncs rulesets over a live stream with polling fallback and evaluates in process with zero network call per check. Python, Go, Java, C# and Ruby server SDKs pass the same conformance tests from a repo checkout.",
+      facts: [
+        "toggleslash/evaluation-spec",
+        "toggleslash/typescript-server-sdk",
+        "toggleslash/typescript-packages-npm",
+        "toggleslash/live-updates",
+        "toggleslash/other-server-sdks",
+        "toggleslash/server-sdks-from-checkout",
+      ],
     },
   },
   {
-    title: "An audit trail of every change",
+    title: "Browser SDK, secure mode and tracing",
+    command: "@slashsuite/toggleslash-sdk-browser",
+    text: {
+      text: "The browser SDK (0.2.0 on npm) caches server-evaluated flags for one context and updates on change. Browser keys see only flags marked visible, and secure mode requires contexts signed by your own server. `@slashsuite/toggleslash-sdk-otel` adds every evaluation and ruleset hash to active OpenTelemetry spans.",
+      facts: [
+        "toggleslash/browser-sdk",
+        "toggleslash/typescript-packages-npm",
+        "toggleslash/client-visibility",
+        "toggleslash/secure-mode",
+        "toggleslash/opentelemetry-tracing",
+      ],
+    },
+  },
+  {
+    title: "CLI and scoped tokens",
+    command: "@slashsuite/toggleslash",
+    text: {
+      text: "Install the CLI from npm (requires Bun 1.4+) to manage projects, environments, flags, targeting, segments, SDK keys (stored hashed, shown once) and expiring project-scoped API tokens so the admin key stays out of CI.",
+      facts: ["toggleslash/cli", "toggleslash/cli-npm", "toggleslash/sdk-keys", "toggleslash/scoped-tokens"],
+    },
+  },
+  {
+    title: "Audit trail and privacy-safe usage counts",
     command: "toggleslash flags history",
     text: {
-      text: "Every write to the admin API is recorded. flags history reads one flag's trail, newest first, and the dashboard has the whole audit log.",
-      facts: ["toggleslash/audit-trail", "toggleslash/dashboard"],
+      text: "Every admin API write enters the audit trail with credential, before and after. Daily usage counts record how often each variation was served and never store a user's key or context. Each flag tracks lifecycle state (new, active, inactive, archived) and tags.",
+      facts: ["toggleslash/audit-trail", "toggleslash/usage-counts", "toggleslash/flag-lifecycle", "toggleslash/flag-tags"],
     },
   },
   {
-    title: "Usage counts, and nothing more",
-    command: "toggleslash flags list",
-    text: {
-      text: "The server counts how often each variation of each flag is served per day. It keeps the counts only, never the context of the person the flag was served to. flags list shows when each flag was last evaluated.",
-      facts: ["toggleslash/usage-counts"],
-    },
-  },
-  {
-    title: "Ask why a flag answered as it did",
+    title: "Diagnose any evaluation, now or in the past",
     command: "toggleslash diagnose",
     text: {
-      text: "diagnose evaluates a flag for a context you give it on the server and says why, without counting it as usage. With --etag it asks as of an earlier ruleset, which rulesets show prints, and runtime says what the server is serving for an environment right now.",
+      text: "Explains why a flag answered as it did for a context without counting usage. Pass `--etag` to ask under an earlier ruleset hash, `rulesets show` to inspect past rulesets, and `runtime` to inspect what the server serves now.",
       facts: ["toggleslash/diagnose", "toggleslash/ruleset-lookup", "toggleslash/cli"],
     },
   },
   {
-    title: "A dashboard",
+    title: "Web dashboard",
     command: "apps/web",
     text: {
-      text: "The dashboard works over the same admin API: the flag list, turning a flag on or off, creating and archiving flags, a page per flag with its targeting editor, history and usage, and pages for environments, SDK keys, segments and the audit log. One operator signs in with a password.",
+      text: "Runs over the same admin API with single-operator password sign-in: list, search, create, toggle and archive flags, edit targeting, inspect flag history and usage, and manage environments, SDK keys, segments, ruleset hashes and the audit trail.",
       facts: ["toggleslash/dashboard", "toggleslash/dashboard-sign-in"],
     },
   },
@@ -145,55 +146,35 @@ export const WORKS_TODAY: readonly Feature[] = [
     title: "Self-hosting as a container",
     command: "docker compose up -d --build --wait",
     text: {
-      text: "The server runs as one container you build yourself from the repository, with the SQLite file in a Docker volume. It reads the admin key from the environment and never stores it, and it listens on port 8080 on loopback only, so put a TLS proxy in front to expose it. Scoped keys for one project, read or write and expiring, keep the admin key out of CI.",
-      facts: ["toggleslash/server-container", "toggleslash/scoped-tokens"],
+      text: "Build one Docker container from the repository (SQLite in a volume, port 8080 on loopback behind your TLS proxy), or run ToggleSlash alongside PixelSlash in the combined `ghcr.io/slashsuite/slashslash` image.",
+      facts: ["toggleslash/server-container"],
+      repo: ["self-host/README.md"],
     },
   },
 ];
 
 export type TryStep = { lead: string; commands: readonly string[] };
 
-/** How to try it today, from a clone: the quickstart in short. The server is not published. */
+/** How to try it today: one-command local stack, or npm packages. */
 export const TRY_IT: { lead: Claim; steps: readonly TryStep[] } = {
   lead: {
-    text: "You need Bun and the .NET SDK, or Docker for the server.",
-    facts: ["toggleslash/server-from-source", "toggleslash/server-container", "toggleslash/local-stack"],
+    text: "You need Bun 1.4+ and the .NET 10 SDK (or Docker for the server). Fastest way: one command starts the server, seeded flags, dashboard and an example shop checkout on loopback:",
+    facts: ["toggleslash/server-from-source", "toggleslash/server-container", "toggleslash/local-stack", "toggleslash/example-app"],
   },
   steps: [
     {
-      lead: "Clone it and install:",
-      commands: [`git clone ${TOGGLESLASH_REPO_URL}`, "cd toggleslash", "bun install"],
+      lead: "Clone and start the full local stack (server, seeded flags, dashboard and example shop):",
+      commands: [`git clone ${TOGGLESLASH_REPO_URL}`, "cd toggleslash", "bun install", "bun run stack"],
     },
     {
-      lead: "Pick an admin key, note it down, and start the server. Leave it running.",
-      commands: [
-        "export TOGGLESLASH_ADMIN_TOKEN=$(openssl rand -hex 32)",
-        "echo $TOGGLESLASH_ADMIN_TOKEN",
-        "export TOGGLESLASH_DB_PATH=$PWD/quickstart.db",
-        "ASPNETCORE_URLS=http://127.0.0.1:8080 dotnet run --project apps/server/ToggleSlash.Server",
-      ],
-    },
-    {
-      lead: "In a second terminal in the same clone, give the command line the same admin key. Put the key you noted where it says <your key>:",
-      commands: ["export TOGGLESLASH_TOKEN=<your key>"],
-    },
-    {
-      lead: "Point it at the server, then make a flag and turn it on:",
-      commands: [
-        "export TOGGLESLASH_URL=http://127.0.0.1:8080",
-        "bun run toggleslash projects create shop --name Shop",
-        "bun run toggleslash envs create production --project shop",
-        "bun run toggleslash flags create new-checkout --project shop",
-        "bun run toggleslash flags on new-checkout --project shop --env production",
-      ],
+      lead: "Or install the CLI and TypeScript SDK from npm (0.2.0):",
+      commands: ["bun add @slashsuite/toggleslash-sdk", "bunx @slashsuite/toggleslash --help"],
     },
   ],
 };
 
 /**
- * Planned: the facts file's own Planned list, read from it. The four items typed here before (a "probably
- * safe to remove" verdict, a pull request check, a read-only way for an AI assistant, a migration path from
- * LaunchDarkly) are not in it.
+ * Planned: the facts file's own Planned list, read from it.
  */
 export const PLANNED: readonly Claim[] = [...FACTS.toggleslash.planned].map(([id, text]) => ({
   text: `${text.charAt(0).toUpperCase()}${text.slice(1)}`,

@@ -17,12 +17,14 @@ import { describe, expect, test } from "vitest";
 import * as flakeslash from "#/content/flakeslash";
 import * as flow from "#/content/flow";
 import * as howItWorks from "#/content/how-it-works";
+import * as howItWorksRoles from "#/content/how-it-works-roles";
 import * as howItWorksSteps from "#/content/how-it-works-steps";
 import * as omnislash from "#/content/omnislash";
 import * as products from "#/content/products";
 import * as story from "#/content/story";
 import * as taskslash from "#/content/taskslash";
 import * as toggleslash from "#/content/toggleslash";
+import * as developersSelfHost from "#/developers/self-host";
 import * as developersToday from "#/developers/today";
 import * as developersTools from "#/developers/tools";
 import * as homeTools from "#/home/tools";
@@ -44,6 +46,7 @@ const MODULES: Record<string, object> = {
   "content/story": story,
   "content/flow": flow,
   "content/how-it-works": howItWorks,
+  "content/how-it-works-roles": howItWorksRoles,
   "content/how-it-works-steps": howItWorksSteps,
   "content/toggleslash": toggleslash,
   "content/flakeslash": flakeslash,
@@ -51,6 +54,7 @@ const MODULES: Record<string, object> = {
   "content/omnislash": omnislash,
   "home/tools": homeTools,
   "tools/tools": tools,
+  "developers/self-host": developersSelfHost,
   "developers/today": developersToday,
   "developers/tools": developersTools,
   "pixelslash/content/pages": psPages,
@@ -224,11 +228,13 @@ const PAGES = readdirSync(DIST, { recursive: true, encoding: "utf8" }).filter((f
 describe("the licence lines", () => {
   /** The pages that must state a product's licence, and whose. */
   const REQUIRED: Record<string, FactsProduct> = {
+    "omnislash.html": "omnislash",
+    "uislash.html": "uislash",
+    "taskslash.html": "taskslash",
+    "flakeslash.html": "flakeslash",
     "pixelslash.html": "pixelslash",
     "pixelslash/pricing.html": "pixelslash",
     "toggleslash.html": "toggleslash",
-    "flakeslash.html": "flakeslash",
-    "taskslash.html": "taskslash",
     "developers.html": "pixelslash",
   };
 

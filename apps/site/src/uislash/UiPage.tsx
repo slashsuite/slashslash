@@ -1,7 +1,10 @@
 import {
+  BulletItem,
+  BulletList,
   Card,
   CodeBlock,
   MetaList,
+  Pill,
   Prose,
   Section,
   Stack,
@@ -16,6 +19,7 @@ import {
 } from "@slashsuite/ui-react";
 import { componentSections } from "@uislash-src/packages/ui-react/docs/components/index";
 import type { ReactNode } from "react";
+import { STAGES, STAGE_TONE } from "#/content/stages";
 import { StatusCard } from "./StatusCard";
 import { UISLASH_THEMES } from "./themes";
 import { UISLASH_UI } from "./ui";
@@ -66,6 +70,30 @@ function Themes(): ReactNode {
   );
 }
 
+function Included(): ReactNode {
+  return (
+    <Section title="What else is included" gap="md">
+      <BulletList>
+        <BulletItem>
+          Whole status pages: built-in pages for error, not found, forbidden, maintenance and offline states.
+        </BulletItem>
+        <BulletItem>
+          PR review workflow: a reusable GitHub Actions workflow runs a deterministic rule check that fails a pull
+          request on design-system violations, plus an advisory model review.
+        </BulletItem>
+        <BulletItem>
+          Agent-ready docs: every component page below leads with Do and Don&apos;t rules, accessibility guidance and
+          props. <TextLink href="/uislash/llms.txt">/uislash/llms.txt</TextLink> serves the same reference as plain text
+          for coding agents.
+        </BulletItem>
+        <BulletItem>
+          Planned: @slashsuite/ui-react-native, built natively for React Native (not built yet).
+        </BulletItem>
+      </BulletList>
+    </Section>
+  );
+}
+
 function Components(): ReactNode {
   return (
     <Section title={UISLASH_UI.components.title} gap="md">
@@ -96,18 +124,32 @@ function Components(): ReactNode {
   );
 }
 
-/** Getting started: the purpose, install, themes, the component docs and where to find it. */
-export function UiPage(): ReactNode {
+/** Getting started: stage, licence, intro, install, themes, highlights, component docs and links. */
+export function UiPage({ licence }: { licence?: string }): ReactNode {
   return (
     <Prose>
       <Stack gap="xl">
-        <Stack gap="md">
+        <Stack gap="sm">
+          <p data-testid="stage">
+            <Pill tone={STAGE_TONE.alpha} dot round>
+              {STAGES.alpha.label}
+            </Pill>{" "}
+            <Text as="span" tone="muted">
+              {STAGES.alpha.sentence}
+            </Text>
+          </p>
+          {licence !== undefined ? (
+            <Text tone="muted">
+              <span data-licence-line="uislash">{licence}</span>
+            </Text>
+          ) : null}
           {UISLASH_UI.intro.map((paragraph) => (
             <Text key={paragraph}>{paragraph}</Text>
           ))}
         </Stack>
         <Install />
         <Themes />
+        <Included />
         <Components />
         <StatusCard
           title={UISLASH_UI.docs.title}

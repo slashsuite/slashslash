@@ -46,26 +46,26 @@ describe("the shell on the 404 page", () => {
     expect(links(headers[0] ?? "")[0]).toEqual({ href: "/", text: SECTIONS.suite.name });
   });
 
-  test("the switcher, named Tools, links each tool's home and no other", () => {
+  test("the switcher, named Tools, links each tool's home in pipeline order and no other", () => {
     const nav = elements(notFound(), "nav").find((n) => /aria-label="Tools"/.test(n));
     expect(nav, "no nav named Tools").toBeDefined();
     expect(links(nav ?? "")).toEqual([
-      { href: "/pixelslash", text: "PixelSlash" },
-      { href: "/flakeslash", text: "FlakeSlash" },
-      { href: "/toggleslash", text: "ToggleSlash" },
-      { href: "/taskslash", text: "TaskSlash" },
       { href: "/omnislash", text: "OmniSlash" },
       { href: "/uislash", text: "UISlash" },
+      { href: "/taskslash", text: "TaskSlash" },
+      { href: "/flakeslash", text: "FlakeSlash" },
+      { href: "/pixelslash", text: "PixelSlash" },
+      { href: "/toggleslash", text: "ToggleSlash" },
     ]);
   });
 
-  test("the footer names each tool's own licence in its facts file's words: TaskSlash and UISlash are MIT, the others Elastic License 2.0", () => {
+  test("the footer names each tool's own licence in its facts file's words: UISlash and TaskSlash are MIT, the others Elastic License 2.0", () => {
     const footer = elements(notFound(), "footer")[0] ?? "";
     const licences = [...footer.matchAll(/data-licence="[^"]*">([\s\S]*?)<\/span>/g)].map((m) => text(m[1] ?? ""));
     expect(licences).toEqual([
-      `${licenceOf("pixelslash")}: PixelSlash, ToggleSlash, FlakeSlash`,
-      `${licenceOf("taskslash")}: TaskSlash, UISlash`,
       `${licenceOf("omnislash")}: OmniSlash`,
+      `${licenceOf("uislash")}: UISlash, TaskSlash`,
+      `${licenceOf("flakeslash")}: FlakeSlash, PixelSlash, ToggleSlash`,
     ]);
   });
 

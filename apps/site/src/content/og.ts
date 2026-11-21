@@ -4,6 +4,7 @@
  * The headline is the page's promise, taken from the content module that already holds it wherever one does.
  */
 import { HOW_IT_WORKS_HEADLINE } from "#/content/how-it-works";
+import { DEVELOPERS_HEADLINE } from "#/content/site";
 import { HERO } from "#/content/story";
 import { PAGES } from "#/content/pages";
 import { PRODUCTS, type Product } from "#/content/products";
@@ -47,7 +48,7 @@ const LOCKUP: Record<OgTool, string> = {
 /** The headline and tool of each page. Each typed headline is the words of that page's h1. */
 const CARDS: Record<string, { tool: OgTool; headline: string }> = {
   "/": { tool: "slash", headline: HERO.title.text },
-  "/developers": { tool: "slash", headline: "For developers" },
+  "/developers": { tool: "slash", headline: DEVELOPERS_HEADLINE },
   "/flakeslash": { tool: "flakeslash", headline: question("FlakeSlash") },
   "/how-it-works": { tool: "slash", headline: HOW_IT_WORKS_HEADLINE },
   "/omnislash": { tool: "omnislash", headline: question("OmniSlash") },

@@ -5,10 +5,14 @@ started at once (by you, or by coding agents in several worktrees) overload a de
 time out for reasons that have nothing to do with the code. TaskSlash puts a small daemon in front of
 them: each command asks it for a slot, and it keeps the queue and the record of what ran.
 
+Every feature, with where it lives in the source: [FEATURES.md](FEATURES.md).
+
 This version runs each job in its own systemd scope, measures it, and records what it cost, and the
 daemon samples the whole machine once a second. From those records it estimates what each key will
 cost, and a job starts only when its estimate fits in the room the machine has left. A job that
 waits says what it waits for.
+
+The proof that it works on a real desktop under load: [`docs/proof/phase-1.md`](docs/proof/phase-1.md).
 
 ## Use
 
@@ -20,23 +24,35 @@ taskslash run --kind browser --name visual -- bun run visual   # a cost class fo
 taskslash run --cpu 4 --mem 3000 -- bun run visual             # say what it costs (threads, MiB)
 taskslash run --class urgent -- bun run test                     # first in line (default: normal)
 taskslash moon :typecheck :test          # moon targets, one job per target
-taskslash why 7                           # why job 7 waits (or "running")
+taskslash why                             # why each waiting job waits, one line each
+taskslash why 7                           # why job 7 waits ("running", or what became of it)
 taskslash why 7 --json                    # the reason as an object
+taskslash cancel 7                        # take job 7 off the queue, or stop it (SIGTERM, SIGKILL 10s on)
+taskslash cancel 7 --grace 0              # stop it with SIGKILL straight away
+taskslash history                         # every key with runs, the most recently run first
 taskslash history gate                    # the estimate of "gate", then what its last 20 runs cost
+taskslash history "bun test"              # a run with no --name is keyed by its first two words
+taskslash history shop/web:test           # a taskslash moon target: <repo>/<project>:<task>
+taskslash history web:test                # the same, typed inside the shop workspace
+taskslash history gate --limit 5 --where shop   # its last 5 runs submitted from the worktree "shop"
 taskslash history gate --json             # the same, as {"estimate": ..., "runs": [...]}
 taskslash status                          # is this machine busy, and with what
 taskslash status --json                   # the same, as one line of JSON
-taskslash logs 7                          # what running job 7 has printed so far
+taskslash top                             # the machine, the jobs and their output, live
+taskslash logs 7                          # what job 7 has printed so far, running or ended
 taskslash logs 7 -f                       # the same, followed until it ends
 taskslash logs --last gate                # the newest run of "gate", running or not
-taskslash logs --failed                   # the newest run that failed
+taskslash logs --failed                   # the newest run that failed in this worktree
+taskslash logs --failed --all             # the newest run that failed on the whole machine
+taskslash events                          # one JSON line per job queued, started, finished
 taskslash plugins                         # the plugins on PATH (below)
 ```
 
 `taskslash run` runs the command itself, in your directory, with your environment and terminal, and
 exits with its exit code (128+N when signal N killed it, 127 when it cannot be started). With no
 daemon running it does not run the command and exits 1; so do `taskslash history`,
-`taskslash status`, `taskslash why` and `taskslash logs`.
+`taskslash status`, `taskslash why`, `taskslash cancel`, `taskslash logs`, `taskslash events` and
+`taskslash top`.
 
 ### Every job's output is kept
 
@@ -69,20 +85,44 @@ else in the directory) of jobs that ended over 7 days ago, then the oldest ended
 deleted. `TASKSLASH_LOG_DAYS` (days, fractions allowed) and `TASKSLASH_LOG_MIB` change the limits.
 The run's row keeps the path of a deleted log.
 
-**Reading a log.** `taskslash logs` prints one log to stdout, unchanged:
+**Reading a log.** `taskslash logs` prints one log to stdout, unchanged, after one line on stderr
+that says whose it is, so the log itself stays pipeable:
+
+```
+run 3140 taskslash/test in taskslash-wt, exit 2, 2026-11-17 20:22
+job 12 taskslash/test in taskslash-wt, running since 20:22
+```
+
+The worktree is the last part of the submitter's path, as `top` and `history` show it, and the time
+is local.
 
 | Command | Picks |
 | --- | --- |
-| `taskslash logs <job>` | the running job with that number, as `taskslash status` shows it |
+| `taskslash logs <job>` | the job with that number, as `taskslash status` shows it: running, or ended since the daemon started (it remembers the newest 1000; a restart forgets them) |
 | `taskslash logs --run <id>` | the recorded run with that id, as `taskslash history` shows it |
 | `taskslash logs --last <key>` | the newest run of the key, running or not |
-| `taskslash logs --failed [<key>]` | the newest run (of the key) with an exit code that is not 0; a signal's 128+N counts, a run with no exit code (its client went away) does not |
+| `taskslash logs --failed [<key>]` | the newest run (of the key) submitted from this worktree with an exit code that is not 0; a signal's 128+N counts, a run with no exit code (its client went away) does not |
+| `taskslash logs --failed [<key>] --all` | the same, from every worktree on the machine |
+
+This worktree is the one `taskslash run` reports from here: the nearest directory above the current
+one with a `.git`. On a shared machine the newest failure is usually someone else's, so `--failed`
+looks only at yours until `--all` widens it.
 
 `-f` follows a running job's log until the job ends, then exits. It exits 0 when it printed the log,
-and 1 with one line on stderr when there is no such job or run (`taskslash: no job 7`,
-`taskslash: no run of gate`), when the run was recorded before logs were kept
-(`taskslash: run 12 has no log`), or when retention deleted it
-(`taskslash: the log of run 12 has expired`); 2 on a usage error.
+and 1 with one line on stderr when there is nothing to print:
+
+| Case | Message |
+| --- | --- |
+| a job number the daemon does not know | `taskslash: no job 7 (the daemon restarted or forgot it); find the run with taskslash history <key>, then taskslash logs --run <id>` |
+| a job that ended before it started | `taskslash: job 7 never ran (it ended before it started), so it has no log` |
+| no failed run in this worktree | `taskslash: no failed run in shop; taskslash logs --failed --all searches the whole machine` |
+| no run of the key | `taskslash: no run of gate` |
+| a run recorded before logs were kept | `taskslash: run 12 has no log` |
+| a log retention deleted | `taskslash: the log of run 12 has expired` |
+
+It exits 2 on a usage error (`--all` without `--failed` is one). A daemon older than this client
+answers with less: the header names only the run or job, and `--failed` searches the whole machine
+and says so on stderr (`(this daemon is older: searched the whole machine; reinstall it)`).
 
 ### moon targets
 
@@ -99,7 +139,10 @@ target is its own job, so the daemon's budget decides how many run at once, acro
 It finds the workspace (the first directory from here up with `.moon/workspace.yml`) and its moon
 (`node_modules/.bin/moon` there, else `moon` on `PATH`), and reads `moon query tasks`. A target is
 `:<task>` (that task in every project that has it) or `<project>:<task>`; anything else, or one that
-matches nothing, is a usage error (exit 2). The requested targets and every target they depend on,
+matches nothing, is a usage error (exit 2). One that matches nothing is followed by what exists: the
+projects that have that task (`projects with test: cli, web`, at most 12), or, when only the task is
+wrong, the project's tasks (`tasks in cli: lint, test`). With no moon found, it says to run your
+package manager's install first (exit 1). The requested targets and every target they depend on,
 requested or not, each run **exactly once**, after all their dependencies passed, as
 `moon run <target> --upstream none` (plus `--force` when given), so moon never re-runs a dependency
 TaskSlash already ran. That holds for a task with its cache off too: it runs once, before what needs
@@ -109,13 +152,15 @@ job's output is passed through as moon prints it.
 Each job is named `<repo>/<target>`, where `<repo>` is the repository's name, the same for every
 worktree of it (`shop` for both `shop` and its worktree `shop.feature-x`), so they share one
 history. Its kind is the task's name when that is `test`, `typecheck` or `build`, else `command`.
-It ends with one line per target, in dependency order:
+It ends with one line per target, in dependency order, each ending with the key its run is
+recorded under, and a failed target followed by the command that prints its log:
 
 ```
-a:gen pass 0.1s
-b:test pass 0.1s cached
-b:typecheck fail 0.1s
-b:lint skipped -
+a:gen pass 0.1s [shop/a:gen]
+b:test pass 0.1s cached [shop/b:test]
+b:typecheck fail 0.1s [shop/b:typecheck]
+  log: taskslash logs --last shop/b:typecheck
+b:lint skipped - [shop/b:lint]
 ```
 
 `cached` marks a target moon replayed from its cache. That run is recorded with `cached` set and its
@@ -133,8 +178,16 @@ MiB written, the exit code, and the machine's pressure while it ran (`machine_cp
 `machine_mem_some`, `machine_io_some`: the mean of the `some avg10` readings taken during the run,
 null when none was). A `taskslash moon` job also records `cached` (moon replayed it from cache) and
 `moon_hash`; both are null for any other run. The key is `--name` when given, else the first two words of the command
-(`bunx moon`). `taskslash history <key>` prints the newest 20 runs of a key, `-` for a value that
-was not measured; a run whose `taskslash run` went away before the command ended has no exit code.
+(`bunx moon`). `taskslash history <key>` prints the newest 20 runs of a key (`--limit` for another
+number, `--where <dir>` for only those submitted from a worktree, by its directory name or full
+path), `-` for a value that was not measured, and the worktree each ran in; a run whose
+`taskslash run` went away before the command ended has no exit code. With no key it lists every key
+that has runs, the most recently run first, with its run count, last run, last exit code and the
+worktree it last ran in (`--json`: an array). A key with no runs exits 1 and names up to five known
+keys like it on stderr. Inside a moon workspace, a key that has no runs and looks like a moon target
+(`<project>:<task>`, no `/`) is tried as `<repo>/<project>:<task>`, the key `taskslash moon` records
+it under; when that has runs they are shown, and `key: <repo>/<project>:<task>` goes first on stderr. A client newer than the daemon it talks to says so and asks you to reinstall
+the daemon.
 
 **Measurement needs a systemd user session.** The daemon checks once at startup whether
 `systemd-run --user --scope` works. When it does, every job runs in a transient scope under
@@ -187,13 +240,21 @@ Three resources count: CPU (threads), memory (MiB) and disk writes (MiB/s).
   30 one second samples. Machine CPU is `cpu.busy` times `cpu.threads`,
   memory `total_mib - available_mib`, writes the sum over the disks.
 - **A job fits** when, for every resource, committed plus its estimate is within the budget.
-- **Gates:** while any holds nothing starts: CPU `some avg10` over 40, memory `some avg10` over 5,
+- **Pressure gates:** while any holds nothing starts (but see the wait cap below): CPU `some avg10` over 40, memory `some avg10` over 5,
   I/O `full avg10` over 5 or `some avg10` over 25, `available_mib` under 10% of `total_mib`, a
   watched mount over 90% used.
 - **Never seen:** a key is seen once one of its runs has finished. At most one job whose key was
   never seen runs at a time, unless the caller gave both `--cpu` and `--mem`.
 - **Too big to ever fit:** a job whose estimate alone is over a budget starts when no other job is
-  running and no gate holds.
+  running and no pressure gate holds.
+- **Wait cap:** when no managed job is running, a job that has waited 3 minutes on load TaskSlash
+  does not manage starts anyway: on the CPU pressure gate, either I/O pressure gate, or a budget
+  that unmanaged use fills. Under a pressure gate only the job first in line is looked at, so the cap starts
+  nothing until that job has waited 3 minutes. Only one starts this way at a time, since once it
+  runs a managed job does. The memory pressure, memory available and mount gates are never capped
+  (running out of memory or disk does harm a wait avoids), so the cap applies only when none of
+  them holds. The daemon's start line says so, e.g. `job 12 started (normal) past its 3 min wait
+  cap: cpu pressure 52% over the 40% gate: <command>`.
 
 `--cpu <threads>` and `--mem <MiB>` on `run` replace the learned estimate for that run.
 
@@ -223,29 +284,53 @@ A job that fits starts. A job that does not is passed over and the pass goes on,
 smaller job may start (**backfill**), unless the one passed over waits for room and has waited more
 than 5 minutes:
 then nothing behind it starts until it has (**the starvation guard**), and those behind it wait
-with `behind <key> (job <n>), which has waited over 5 minutes and is not passed`. A gate holds every
+with `behind <key> (job <n>), which has waited over 5 minutes and is not passed`. A pressure gate holds every
 job. A higher class never stops, kills or freezes a running job; it is only first in line.
 
 **Weights.** On the scope path a job runs with `-p CPUWeight=<w>` from its class: `urgent` 400,
 `flake` 300, `interactive` 200, `normal` 100, `background` 20. Weights share out a busy CPU between
 running jobs; they do not admit. The plain path has no weight.
 
-A job that waits is told why on stderr when it is queued and every 15 seconds after. The line names
-the first thing that holds it, checked in this order: a gate, the never-seen rule, a resource. A
-resource line lists the running jobs that hold the most of it first:
+A job that waits is told why on stderr when it is queued and every 15 seconds after, with its job
+number. The line names the first thing that holds it, checked in this order: a pressure gate, the never-seen
+rule, a resource. A resource line names the three running jobs that hold the most of it, biggest
+first, and counts the rest. The first line of a job whose key has never run (and that was given
+neither `--cpu` nor `--mem`) also says what its kind is assumed to take:
 
 ```
-taskslash: waiting 45s (2nd in line): cpu needs 4.8, free 1.8; held by cli-db:test (job 3), visual (job 5)
-taskslash: waiting 30s (1st in line): cpu pressure 52% over the 40% gate
+taskslash: job 18 waiting 45s (2nd in line): cpu needs 4.8, free 1.8; held by cli-db:test (job 3), visual (job 5), lint (job 7) and 8 more
+taskslash: job 19 waiting 0s (1st in line): cpu pressure 52% over the 40% gate (never run before: assumed 2.0 threads; --cpu 0.1 says otherwise)
 ```
 
-`taskslash why <job>` prints the same sentence, `running` for a running job, and exits 1 for a job
-the daemon does not hold (an ended job's record is in `history`). With `--json` it prints the
+A daemon older than the job number sends lines without it (`taskslash: waiting 30s ...`).
+
+`taskslash why <job>` prints the same sentence and `running` for a running job. For a job that
+ended since the daemon started it names the run: `job 1 ended: run 3140 of shop/web:test, exit 0
+(taskslash logs 1 shows its log)` (or that it ended without running, or that its run was not
+recorded). It exits 1 for a job the daemon does not know (it forgets ended jobs when it restarts,
+and keeps the newest 1000; `taskslash history` lists the keys). `taskslash why` with no job prints
+one line per waiting job, `job 18 shop.wt-2 shop/web:test: <reason>`, or `nothing is waiting`;
+with `--json`, an array of `{"job", "key", "submitter", "reason"}` (`[]` when nothing waits). With
+`--json` and a job it prints the
 reason: `{"kind":"resource","resource":"cpu","needs":4.8,"free":1.8,"held_by":[{"job":3,"key":
 "cli-db:test","amount":3.0}]}`, `{"kind":"gate","gate":"cpu_pressure","value":52.0,"limit":40.0}`,
-`{"kind":"never_seen","job":3,"key":"..."}`, `{"kind":"behind","job":3,"key":"..."}`, or
-`{"kind":"running"}`. A `taskslash run` stopped
+`{"kind":"never_seen","job":3,"key":"..."}`, `{"kind":"behind","job":3,"key":"..."}`,
+`{"kind":"running"}`, or for an ended job `{"kind":"ended","ended":{"as":"run","run":3140,"key":
+"...","exit_code":0}}` (`as` is also `never_ran`, `unrecorded` or `recording`). A `taskslash run` stopped
 while it waits leaves the queue and its command never runs.
+
+**Cancel a job from any terminal.** `taskslash cancel <job>` takes the number `status`, `why` and the
+waiting line show. A waiting job leaves the queue: its `taskslash run` prints `taskslash: job 12
+cancelled while waiting` and exits 1 without running the command. A running job is stopped by its
+own `taskslash run`, which prints `taskslash: job 12 cancelled` and sends the command's process
+group SIGTERM, then SIGKILL after `--grace` seconds (10 by default, 0 for SIGKILL straight away) if
+it is still running; the run is recorded with the code it ends with (143 after SIGTERM, 137 after
+SIGKILL), and `run` exits with that code. `cancel` prints `job 12 cancelled (was waiting)` or `job
+12 cancelled (was running; SIGTERM sent, SIGKILL in 10s if it has not ended)` and exits 0; a second
+cancel of the same job exits 0 and says it is already being cancelled. A job that is neither
+waiting nor running exits 1, saying how it ended when the daemon remembers. There is no other
+access check than the socket's: it sits in `$XDG_RUNTIME_DIR` in a directory only you can open, so
+only you can cancel your jobs (a `TASKSLASH_SOCKET` elsewhere is as private as its directory).
 
 **A fake machine, for tests.** With `TASKSLASH_FAKE_MACHINE=<file>` in its environment the daemon
 reads the machine from that file (a `machine` object as `status --json` prints it) on every sample
@@ -257,8 +342,16 @@ tests can set the machine's load and pressure; do not use it otherwise.
 `taskslash status` answers from the daemon's latest machine reading, taken once a second (free
 space every 30 seconds), and lists the running jobs with their last live reading. The plain form is
 a few lines: CPU, the `some avg10` pressures, memory, each disk, each mount, then one line per
-running job and one per waiting job (`waiting 9 visual (browser, background, as normal) 960s (2nd in
-line): ...` for a job whose class waiting has raised).
+running job and one per waiting job, each with the worktree it was submitted from, or `no jobs
+running or waiting`:
+
+```
+job 3  12s  shop.wt-1  shop/web:test (normal) 1.31 threads 706 MiB
+waiting 9  shop.wt-2  visual (browser, background, as normal) 960s (2nd in line): ...
+```
+
+A running job shows how long it has run (`12s`, `1m05s`, `1h02m`) and its last reading (`-` before
+the first one); `as normal` is a class waiting has raised.
 
 | Field (`--json`) | What it is |
 | --- | --- |
@@ -275,6 +368,43 @@ line): ...` for a job whose class waiting has raised).
 | `waiting[]` | each waiting job, in the order of the last pass: `job`, `key`, `kind`, `class`, `effective_class` (only when waiting has raised it), `submitter`, `waited_s`, `position` (1-based), `reason` (the sentence), `why` (the reason object) and its `estimate` |
 
 Shares and rates are 0 in the first second after the daemon starts, before there are two readings.
+
+### taskslash top
+
+`taskslash top` puts what `status`, `why` and `logs --follow` say on one screen, live:
+
+```
+cpu 35% busy on 12 threads, pressure 14.94   load 7.25 4.14 3.94
+mem 11.1 of 31.3 GiB used, 64% available, pressure 0.09   io some 1.04 full 0.53
+┌ jobs ────────────────────────────────────────────────────┐┌ job 110 web:test: running ───────┐
+│  110 running            normal      repo.wt-1  web:test  ││ RUN  src/app.test.ts             │
+│  111 waiting 1st 4s     background  repo.wt-2  e2e       ││ ✓ renders the list (12 ms)       │
+│  112 exit 3 4s          normal      repo.wt-1  lint      ││                                  │
+└──────────────────────────────────────────────────────────┘└──────────────────────────────────┘
+q quit   up/down or j/k select
+```
+
+- **The strip** on top: CPU busy and the threads jobs may use, CPU pressure, the load average;
+  memory used of total and the share available, memory pressure, and IO pressure (`some` and
+  `full`). All pressures are `some avg10` unless named, in percent. It refreshes once a second.
+- **The job list** on the left: the running jobs, then the waiting ones in queue order (place in
+  line and time waited), then the jobs that finished, newest first (exit code, wall time, `cached`
+  when moon replayed it, or `never started`). Each row has the job number, its state, class, the
+  submitting worktree's directory name and the key.
+- **The output pane** on the right: the selected job's log, as many of its last lines as fit,
+  following new output as it is written. Colours, cursor moves and other control characters are
+  removed, so a job cannot scramble the screen. A waiting job shows why it waits; a job that left
+  the queue before it was admitted shows `never started`.
+
+Keys: up and down, or `j` and `k`, move the selection, which stays on the same job as the list
+changes. `q`, Esc or Ctrl-C quit and give the terminal back.
+
+The finished jobs are the ones that finished **since top opened**, at most 50: top follows the
+daemon's events and asks for no history when it starts. A line at the bottom says when it missed
+events because it read them too slowly, or when the daemon stops answering (top keeps trying).
+
+`top` exits 1 with the message `status` prints when no daemon answers, and 2 when stdout is not a
+terminal.
 
 ### Plugins
 
@@ -293,7 +423,7 @@ There are three kinds:
 | Kind | What it does | |
 | --- | --- | --- |
 | command | `taskslash <name> [args...]` runs `taskslash-<name> [args...]` | here now |
-| listener | follows the daemon's event stream (job queued, started, ended) | coming |
+| listener | follows the daemon's event stream (job queued, started, finished) and changes nothing | here now |
 | filter | rewrites a job's output on its way to the log and the terminal (secret redaction) | coming |
 
 A command plugin replaces the `taskslash` process, so its exit code and signals are its own. Built-in
@@ -327,6 +457,42 @@ fi
 ```
 <!-- plugin-example:end -->
 
+#### Listener plugins
+
+A listener follows what the daemon does with jobs and cannot change any of it. It runs
+`taskslash events`, which prints one line of JSON per job event on stdout as it happens, or it opens
+`TASKSLASH_SOCKET` and subscribes itself: send `{"type":"subscribe"}` on a connection of its own, and
+the daemon answers `{"type":"subscribed","protocol":1}`, then one event line per job event until the
+listener hangs up. `taskslash events` prints only the event lines, exits 0 when the daemon goes away
+and 1 when no daemon answers. The daemon starts no listener: run it yourself, or from a systemd unit
+of your own.
+
+```bash
+taskslash events | jq -c 'select(.event.type == "finished" and .event.exit_code != 0)'
+```
+
+Each line is `{"type":"event","protocol":1,"seq":<n>,"event":{...}}`, with `seq` counting up per
+daemon from 1. There are four events:
+
+| `event.type` | Fields | When |
+| --- | --- | --- |
+| `queued` | `job`, `key`, `kind`, `class`, `submitter`, `cwd`, `argv`, `at` | the job is submitted, before it waits |
+| `started` | `job`, `unit`, `launch`, `log`, `at` | the job is admitted and its command starts |
+| `finished` | `job`, `key`, `exit_code`, `wall_ms`, `cached`, `moon_hash`, `run`, `log`, `at` | its run is recorded, or it left before it started |
+| `dropped` | `count` | before the next event, when this listener missed some |
+
+Every `queued` gets exactly one `finished`. `exit_code` is null when the job's client went away
+before saying how the command ended, and `run` (the id `taskslash history` shows) is null when its
+row was not written. A job that never started (its client hung up while it waited) has
+`exit_code`, `run` and `log` null and `wall_ms` 0. `at` is RFC 3339, UTC. Events carry no output:
+`log` is the job's log file, which the listener reads (`taskslash logs --run <id>`). A listener sees
+only the events after it subscribed; nothing is replayed.
+
+A slow listener never slows a job. The daemon queues at most 1024 events for each listener and
+never waits for one: an event that does not fit is dropped for that listener, and the next event it
+does get is preceded by one `dropped` with how many it missed (its `seq` is the last missed one's).
+A listener whose connection fails is removed.
+
 ### Install the daemon as a systemd user unit
 
 ```bash
@@ -345,7 +511,7 @@ The same command also upgrades: rerun it after pulling a new `main`, and a job r
 | `packages/engine` | the engine, a TypeScript library |
 | `crates/taskslash-core` | the engine, a Rust library |
 | `crates/taskslash` | the `taskslash` command (the Rust binary) |
-| `scripts` | the repo checks |
+| `scripts` | the repo checks, and `record-machine.ts`, which records a proof run |
 
 ## Develop
 

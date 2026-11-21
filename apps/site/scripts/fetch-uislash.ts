@@ -1,8 +1,8 @@
 /**
- * Fetches the UISlash docs data at the commit pinned in uislash.json into .sources/uislash:
+ * Fetches the UISlash docs data at the commit pinned in uislash.sha.json into .sources/uislash:
  * packages/ui-react/docs/components/*.ts, props.json, types.json,
  * apps/hack-cove-site/src/content/ui.ts, and the story closure under apps/storybook/src.
- * Fails, naming both versions, when node_modules/@slashsuite/ui-react differs from uislash.json.
+ * Fails, naming both versions, when node_modules/@slashsuite/ui-react differs from uislash.sha.json.
  */
 import { spawnSync } from "node:child_process";
 import {
@@ -48,15 +48,15 @@ function readInstalledUiReactVersion(siteDir: string): string {
 }
 
 /**
- * Checks that the installed @slashsuite/ui-react version matches uislash.json's "ui-react" field.
+ * Checks that the installed @slashsuite/ui-react version matches uislash.sha.json's "ui-react" field.
  * Fails naming both versions when they differ.
  */
 export function assertUiReactVersionMatches(siteDir = SITE): UislashPin {
-  const pin = readUislashPin(resolve(siteDir, "uislash.json"));
+  const pin = readUislashPin(resolve(siteDir, "uislash.sha.json"));
   const installed = readInstalledUiReactVersion(siteDir);
   if (installed !== pin["ui-react"]) {
     throw new Error(
-      `uislash.json pins ui-react ${pin["ui-react"]}, but installed @slashsuite/ui-react is ${installed}; re-run vendor-uislash.ts and bun install`,
+      `uislash.sha.json pins ui-react ${pin["ui-react"]}, but installed @slashsuite/ui-react is ${installed}; re-run vendor-uislash.ts and bun install`,
     );
   }
   return pin;

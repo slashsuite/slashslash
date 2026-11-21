@@ -1,5 +1,5 @@
 /**
- * Checks out slashsuite/uislash at the commit pinned in uislash.json into .sources/uislash-build
+ * Checks out slashsuite/uislash at the commit pinned in uislash.sha.json into .sources/uislash-build
  * (gitignored), runs uislash's own build for @slashsuite/ui-react, and packs both
  * @slashsuite/ui-react and @slashsuite/themes with `bun pm pack` into apps/site/vendor/.
  * Both tarballs are committed so installs need no npm @slashsuite scope.
@@ -10,7 +10,7 @@ import { resolve } from "node:path";
 
 const REPO_URL = "https://github.com/slashsuite/uislash.git";
 const SITE = resolve(import.meta.dirname, "..");
-const PIN_PATH = resolve(SITE, "uislash.json");
+const PIN_PATH = resolve(SITE, "uislash.sha.json");
 const BUILD_DIR = resolve(SITE, ".sources/uislash-build");
 const VENDOR_DIR = resolve(SITE, "vendor");
 
@@ -24,7 +24,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-/** Reads and validates uislash.json: full 40-char commit SHA plus both package versions. */
+/** Reads and validates uislash.sha.json: full 40-char commit SHA plus both package versions. */
 export function readUislashPin(path = PIN_PATH): UislashPin {
   const parsed: unknown = JSON.parse(readFileSync(path, "utf8"));
   if (!isRecord(parsed)) throw new Error(`${path}: expected a JSON object`);
@@ -72,13 +72,13 @@ function verifyCheckedOutVersions(pin: UislashPin): void {
   const uiReactVersion = readPackageVersion(resolve(BUILD_DIR, "packages/ui-react/package.json"));
   if (uiReactVersion !== pin["ui-react"]) {
     throw new Error(
-      `uislash at ${pin.sha} has packages/ui-react version ${uiReactVersion}, expected ${pin["ui-react"]} from uislash.json`,
+      `uislash at ${pin.sha} has packages/ui-react version ${uiReactVersion}, expected ${pin["ui-react"]} from uislash.sha.json`,
     );
   }
   const themesVersion = readPackageVersion(resolve(BUILD_DIR, "themes/package.json"));
   if (themesVersion !== pin.themes) {
     throw new Error(
-      `uislash at ${pin.sha} has themes version ${themesVersion}, expected ${pin.themes} from uislash.json`,
+      `uislash at ${pin.sha} has themes version ${themesVersion}, expected ${pin.themes} from uislash.sha.json`,
     );
   }
 }

@@ -1,8 +1,8 @@
 /*
  * The /how-it-works flow diagram (flow.tsx), on the theme's variables only. Below md (a phone, or a
  * 1280 px desktop at 200% zoom) the steps are one column, top to bottom, an arrow under each. From md
- * the steps run left to right in rows, and a planned branch (5a, 6a) sits under its step with the arrow
- * coming down into it. Every placement keeps the list's reading order.
+ * the steps run left to right in rows, and a planned branch (6a, 7a) sits directly under its step with
+ * the arrow coming down into it. Every placement keeps the list's reading order.
  */
 .flow {
   display: grid;
@@ -60,15 +60,17 @@
   [data-node="3"] { grid-area: 1 / 3; }
   [data-node="4"] { grid-area: 2 / 1; }
   [data-node="5"] { grid-area: 2 / 2; }
-  [data-node="5a"] { grid-area: 3 / 2; }
   [data-node="6"] { grid-area: 2 / 3; }
   [data-node="6a"] { grid-area: 3 / 3; }
   [data-node="7"] { grid-area: 4 / 1; }
   [data-node="8"] { grid-area: 4 / 2; }
   [data-node="9"] { grid-area: 4 / 3; }
-  /* The last step of a row has nothing beside it to point at. */
+  [data-node="7a"] { grid-area: 5 / 1; }
+  [data-node="10"] { grid-area: 6 / 1; }
+  /* The last step of a 3-column row has nothing beside it to point at. */
   [data-node="3"] > .flow-arrow,
-  [data-node="6"] > .flow-arrow {
+  [data-node="6"] > .flow-arrow,
+  [data-node="9"] > .flow-arrow {
     display: none;
   }
 }
@@ -77,18 +79,24 @@
   .flow {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
+  [data-node="1"] { grid-area: 1 / 1; }
+  [data-node="2"] { grid-area: 1 / 2; }
+  [data-node="3"] { grid-area: 1 / 3; }
   [data-node="4"] { grid-area: 1 / 4; }
   [data-node="5"] { grid-area: 1 / 5; }
-  [data-node="5a"] { grid-area: 2 / 5; }
-  [data-node="6"] { grid-area: 3 / 1; }
-  [data-node="6a"] { grid-area: 4 / 1; }
-  [data-node="7"] { grid-area: 3 / 2; }
-  [data-node="8"] { grid-area: 3 / 3; }
-  [data-node="9"] { grid-area: 3 / 4; }
+  [data-node="6"] { grid-area: 2 / 1; }
+  [data-node="7"] { grid-area: 2 / 2; }
+  [data-node="8"] { grid-area: 2 / 3; }
+  [data-node="9"] { grid-area: 2 / 4; }
+  [data-node="10"] { grid-area: 2 / 5; }
+  [data-node="6a"] { grid-area: 3 / 1; }
+  [data-node="7a"] { grid-area: 3 / 2; }
   [data-node="3"] > .flow-arrow,
-  [data-node="6"] > .flow-arrow {
+  [data-node="6"] > .flow-arrow,
+  [data-node="9"] > .flow-arrow {
     display: flex;
   }
+  /* The last step of row 1 has nothing beside it to point at; step 10 has no arrow. */
   [data-node="5"] > .flow-arrow {
     display: none;
   }

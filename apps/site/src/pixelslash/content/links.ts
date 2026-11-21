@@ -5,4 +5,3 @@ export const REPO_PUBLIC = true;
 
 /** The repository, from the same file `docs/capabilities/build.py` reads it from. */
 export const REPO_URL: string = manifest.url;
-export const CONTACT = "hello@hack-cove.com";

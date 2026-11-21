@@ -1,49 +1,15 @@
-import { Card, CardGrid, Pill, Stack, SubsectionHeading, Text, TextLink } from "@slashsuite/ui-react";
+import { Card, CardGrid, Pill, Stack, Text, TextLink } from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
-import { PRODUCTS, type Product } from "#/content/products";
-import { TOGGLESLASH_REPO_URL } from "#/content/site";
+import type { FactsProduct } from "#/content/facts";
+import { PRODUCTS } from "#/content/products";
 import { STAGES, STAGE_TONE } from "#/content/stages";
 import { DevSection } from "#/developers/section";
 import { Rich } from "#/shell/rich-text";
 
-/** "Not public yet" until the constant holds a URL, then the link in its place. */
-function ToggleSlashAccess(): ReactNode {
-  if (!TOGGLESLASH_REPO_URL) return <Text>Not public yet.</Text>;
+/** /developers: a card per product with its full summary, licence line, and link to its page. */
+export function ToolsInDetail({ licences }: { licences: Record<FactsProduct, string> }): ReactNode {
   return (
-    <Text>
-      <TextLink href={TOGGLESLASH_REPO_URL} external>
-        Repository on GitHub
-      </TextLink>
-    </Text>
-  );
-}
-
-const IDEA_NOTES: Partial<Record<Product["name"], string>> = {
-  BundleSlash:
-    "Research so far is light and no tool has been tried. RelativeCI, Codecov Bundle Analysis and BundleMon are hosted, and bundle-stats is the closest open source tool found. It is not yet known whether one more tool is needed.",
-};
-
-function ToggleSlashDetail(): ReactNode {
-  return (
-    <>
-      <SubsectionHeading as="h4" size="sm">
-        The problem: flag debt
-      </SubsectionHeading>
-      <Text>Many flags stay on, and nobody knows what they do.</Text>
-      <Text tone="muted">
-        <strong>One team's experience with LaunchDarkly, in 2025:</strong> code-reference and cleanup features that
-        barely worked for them, pricing that felt very high, limited seats, and usage so deep that moving off was nearly
-        impossible. Things may have changed since, and it is not a claim about the market.
-      </Text>
-      <ToggleSlashAccess />
-    </>
-  );
-}
-
-/** /developers: a card per tool with its full summary, ToggleSlash's detail and the research notes. */
-export function ToolsInDetail(): ReactNode {
-  return (
-    <DevSection id="tools-detail" title="The tools in detail">
+    <DevSection id="tools-detail" title="Every product in detail">
       <CardGrid columns={2} align="start">
         {PRODUCTS.map((product) => (
           <Card
@@ -67,8 +33,11 @@ export function ToolsInDetail(): ReactNode {
                   <Rich text={paragraph.text} />
                 </Text>
               ))}
-              {product.name === "ToggleSlash" ? <ToggleSlashDetail /> : null}
-              {IDEA_NOTES[product.name] ? <Text>{IDEA_NOTES[product.name]}</Text> : null}
+              {product.facts ? (
+                <Text tone="muted">
+                  <span data-licence-line={product.facts}>{licences[product.facts]}</span>
+                </Text>
+              ) : null}
               {product.page ? (
                 <Text>
                   <TextLink href={product.page}>More about {product.name}</TextLink>

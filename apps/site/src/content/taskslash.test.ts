@@ -26,16 +26,16 @@ describe("the /taskslash content", () => {
     expect(TRY_IT.lead.text).toMatch(/systemd user session/);
   });
 
-  test("its PRODUCTS entry is the approved line, word for word", () => {
+  test("its PRODUCTS entry matches the approved copy", () => {
     const entry = PRODUCTS.find((product) => product.name === "TaskSlash");
     expect({ ...entry, question: entry?.question.text, summary: entry?.summary.map((claim) => claim.text) }).toEqual({
       name: "TaskSlash",
       stage: "alpha",
       facts: "taskslash",
-      question: "Why did the tests time out?",
+      question: "Admission control for builds and tests on one machine.",
       summary: [
-        "It queues builds and tests on one machine, so a test fails because of the code, not because everything ran at once.",
-        "It is being built now. Its source is public under the MIT license. Today it is a daemon and a command line for Linux that run each job in its own systemd scope, measure what it cost, and start a job only when your computer has capacity for it. There is no release you can install yet: you build it from source with cargo.",
+        "Queues builds, tests and browser runs on one Linux machine so a test fails because of the code, not because parallel agents ran everything at once.",
+        "Open source under the MIT licence. A local daemon runs each job in its own systemd scope, measures CPU, memory and disk writes, schedules moon targets by dependency order, and exposes `taskslash top`, `taskslash cancel` and per-job logs. Build from source with cargo.",
       ],
       page: "/taskslash",
     });

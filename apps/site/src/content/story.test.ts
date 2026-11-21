@@ -77,7 +77,7 @@ describe("suite story copy", () => {
       expect(row.does.text.includes("?"), row.tool).toBe(false);
     }
     const plannedRows = rows.filter((row) => planned.has(row.tool));
-    expect(plannedRows.filter((row) => !/\bwill\b/.test(row.does.text)).map((row) => row.tool)).toEqual([]);
+    expect(plannedRows.filter((row) => !/\bwill\b/i.test(row.does.text)).map((row) => row.tool)).toEqual([]);
     const builtRows = rows.filter((row) => !planned.has(row.tool));
     expect(builtRows.filter((row) => row.does.text.startsWith("Will ")).map((row) => row.tool)).toEqual([]);
   });

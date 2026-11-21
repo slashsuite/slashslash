@@ -1,28 +1,30 @@
 ---
-// /developers on the shell, in the suite's section: the page's heading and the story's section for
-// developers, then the walkthrough, env, flags, the tools in detail, how to run PixelSlash today and the
-// ask. The walkthrough and Today hydrate when they scroll into view, for their copy buttons; Motion
-// replays the flags drawing. Nothing else runs in the browser.
-import { licenceLine } from "#/content/facts";
+// /developers on the shell, in the suite's section: hands-on quick-start commands for every built product,
+// self-hosting in one container, every product in detail with its licence line, and the ask. Today and
+// SelfHost hydrate when they scroll into view for their CodeBlock copy buttons; nothing else runs in the browser.
+import { type FactsProduct, licenceLine } from "#/content/facts";
 import { DEVELOPERS_DESCRIPTION, DEVELOPERS_TITLE } from "#/content/site";
 import { Ask } from "#/developers/ask";
-import { Env } from "#/developers/env";
-import { Flags } from "#/developers/flags";
 import { Intro } from "#/developers/intro";
+import { SelfHost } from "#/developers/self-host";
 import { Today } from "#/developers/today";
 import { ToolsInDetail } from "#/developers/tools";
-import { Walkthrough } from "#/developers/walkthrough";
-import { Motion } from "#/illustrations/motion";
 import Slash from "#/layouts/Slash.astro";
+
+const LICENCES: Record<FactsProduct, string> = {
+  omnislash: licenceLine("omnislash"),
+  uislash: licenceLine("uislash"),
+  taskslash: licenceLine("taskslash"),
+  flakeslash: licenceLine("flakeslash"),
+  pixelslash: licenceLine("pixelslash"),
+  toggleslash: licenceLine("toggleslash"),
+};
 ---
 
 <Slash section="suite" title={DEVELOPERS_TITLE} description={DEVELOPERS_DESCRIPTION}>
   <Intro />
-  <Walkthrough client:visible />
-  <Env />
-  <Flags />
-  <ToolsInDetail />
-  <Today client:visible licence={licenceLine("pixelslash")} />
+  <Today client:visible />
+  <SelfHost client:visible />
+  <ToolsInDetail licences={LICENCES} />
   <Ask />
-  <Motion client:load />
 </Slash>

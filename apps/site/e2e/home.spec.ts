@@ -1,21 +1,26 @@
 import { expect, test, type Page } from "@playwright/test";
-import { HERO } from "../src/content/landing.ts";
+import { PIPELINE } from "../src/content/story.ts";
 
 /*
- * The home's hand-drawn hero in a real browser. With motion on, every piece of text in the panes' start
- * frame (the only part of the hero the motion changes) and in its finished drawing reads at 4.5:1 or
- * more on the solid pane behind it, in Slash Day and Slash Night. With reduced motion
- * the hero never moves. On Slash Day a tool card's mark is drawn in the tool's deep text tone even when
- * the system is dark, never in the pastel one.
+ * The home's five-stage pipeline hero in a real browser. With motion on, the strip arms in its start
+ * frame and plays into view, and every piece of text in the finished strip reads at 4.5:1 or more on
+ * the solid surface behind it, in Slash Day and Slash Night. With reduced motion the hero never moves.
+ * On Slash Day a tool card's mark is drawn in the tool's deep text tone even when the system is dark,
+ * never in the pastel one.
  */
 
 const THEMES = ["light", "dark"] as const;
 const STORED = "hackcove:colour-scheme";
+const HERO_SELECTOR = ".pipeline-strip";
+const EXPECTED_HERO_TEXT = [
+  ...PIPELINE.stages.map((stage) => stage.name),
+  ...new Set(PIPELINE.stages.flatMap((stage) => stage.tools.map((item) => item.tool))),
+];
 
 type Rgba = [number, number, number, number];
 /**
- * One text in the panes, with its box's area, whether it sits in a style, script or svg, its colour and
- * each element from it up to the root, as CSS.
+ * One text in the hero strip, with its box's area, whether it sits in a style, script or svg, its
+ * colour and each element from it up to the root, as CSS.
  */
 type RawText = {
   text: string;
@@ -25,11 +30,11 @@ type RawText = {
   layers: { background: string; opacity: string }[];
 };
 
-/** Every text in the hero's panes, with the CSS colours its contrast is worked out from. */
-const paneTexts = (page: Page): Promise<RawText[]> =>
-  page.evaluate(() => {
-    const hero = document.querySelector(".panes");
-    if (!hero) throw new Error("no panes");
+/** Every text in the hero's pipeline strip, with the CSS colours its contrast is worked out from. */
+const heroTexts = (page: Page): Promise<RawText[]> =>
+  page.evaluate((selector) => {
+    const hero = document.querySelector(selector);
+    if (!hero) throw new Error(`no ${selector}`);
     const out: RawText[] = [];
     const walker = document.createTreeWalker(hero, NodeFilter.SHOW_TEXT);
     for (let node = walker.nextNode(); node; node = walker.nextNode()) {
@@ -50,7 +55,7 @@ const paneTexts = (page: Page): Promise<RawText[]> =>
       });
     }
     return out;
-  });
+  }, HERO_SELECTOR);
 
 /** Each CSS colour as sRGB with alpha 0 to 1. A canvas reads them, so any CSS colour syntax works. */
 const toRgba = (page: Page, colours: string[]): Promise<Rgba[]> =>
@@ -99,9 +104,9 @@ function contrast(fg: Rgba, bg: Rgba): number {
 const visible = (t: RawText): boolean =>
   t.text !== "" && t.area > 0 && !t.inert && t.layers.every((l) => Number(l.opacity) !== 0);
 
-/** Every visible text in the hero's panes, with its contrast on the ground behind it. */
-async function paneContrasts(page: Page): Promise<{ text: string; ratio: number }[]> {
-  const shown = (await paneTexts(page)).filter(visible);
+/** Every visible text in the hero strip, with its contrast on the ground behind it. */
+async function heroContrasts(page: Page): Promise<{ text: string; ratio: number }[]> {
+  const shown = (await heroTexts(page)).filter(visible);
   const colours = [...new Set(shown.flatMap((t) => [t.color, ...t.layers.map((l) => l.background)]))];
   const rgba = new Map((await toRgba(page, colours)).map((c, i) => [colours[i], c]));
   const of = (css: string): Rgba => rgba.get(css) ?? [0, 0, 0, 0];
@@ -109,48 +114,47 @@ async function paneContrasts(page: Page): Promise<{ text: string; ratio: number 
 }
 
 for (const theme of THEMES) {
-  test(`with motion on, the panes' start frame reads at 4.5:1 or more in ${theme}`, async ({ page }) => {
+  test(`with motion on, the hero strip arms and plays into view in ${theme}`, async ({ page }) => {
     await page.emulateMedia({ colorScheme: theme, reducedMotion: "no-preference" });
     await page.goto("/");
     await expect(page.locator("html")).toHaveAttribute("data-motion-ready", "");
-    // Held in the start frame: the island is up and `motion` is on, and `.played` (which the panes get
-    // when they scroll into view) is kept off.
     await expect(page.locator("html")).toHaveClass(/\bmotion\b/);
-    await page.evaluate(() => document.querySelector(".panes")?.classList.remove("played"));
-    await expect(page.locator(".pane-after .shop-btn")).toHaveCSS("margin-left", "0px");
+    // Held in the start frame: `.played` is cleared and stages sit at opacity 0 until played.
+    await page.evaluate((selector) => document.querySelector(selector)?.classList.remove("played"), HERO_SELECTOR);
+    await expect(page.locator(`${HERO_SELECTOR} .pipeline-stage`).first()).toHaveCSS("opacity", "0");
 
-    const readings = await paneContrasts(page);
-    expect(readings.map((r) => r.text)).toEqual(expect.arrayContaining(["Pay", "+"]));
+    // Once played into view, every stage is opaque and reads at 4.5:1 or more.
+    await page.evaluate((selector) => document.querySelector(selector)?.classList.add("played"), HERO_SELECTOR);
+    await expect(page.locator(`${HERO_SELECTOR} .pipeline-stage`).last()).toHaveCSS("opacity", "1");
+    const readings = await heroContrasts(page);
+    expect(readings.map((r) => r.text)).toEqual(expect.arrayContaining(EXPECTED_HERO_TEXT));
     expect(readings.filter((r) => r.ratio < 4.5)).toEqual([]);
   });
 
   test(`the finished hero reads at 4.5:1 or more in ${theme}`, async ({ page }) => {
     await page.emulateMedia({ colorScheme: theme, reducedMotion: "reduce" });
     await page.goto("/");
-    const readings = await paneContrasts(page);
-    expect(readings.map((r) => r.text)).toEqual(
-      expect.arrayContaining(["Before", "The change", "After", "Tax", HERO.asked, HERO.notAsked, "Pay"]),
-    );
+    const readings = await heroContrasts(page);
+    expect(readings.map((r) => r.text)).toEqual(expect.arrayContaining(EXPECTED_HERO_TEXT));
     expect(readings.filter((r) => r.ratio < 4.5)).toEqual([]);
   });
 }
 
 test("with reduced motion the hero stands still", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  // Tall enough that the three stacked panes fit on a phone: a shot taller than the window scrolls,
-  // and the sticky header lands on it differently each time.
+  // Tall enough that the stacked stages fit on a phone without sticky header overlap.
   const width = page.viewportSize()?.width ?? 390;
   await page.setViewportSize({ width, height: 2000 });
   await page.goto("/");
   await page.waitForLoadState("networkidle");
   expect(await page.locator("html").getAttribute("class")).not.toMatch(/\bmotion\b/);
-  const panes = page.locator(".panes");
+  const strip = page.locator(HERO_SELECTOR);
   // Chromium's first capture after load can raster text a shade apart from the next one when the
   // pipeline's cards share the tall window. That is not motion, so one shot is taken and dropped first.
-  await panes.screenshot({ animations: "allow" });
-  const first = await panes.screenshot({ animations: "allow" });
+  await strip.screenshot({ animations: "allow" });
+  const first = await strip.screenshot({ animations: "allow" });
   await page.waitForTimeout(1500);
-  const second = await panes.screenshot({ animations: "allow" });
+  const second = await strip.screenshot({ animations: "allow" });
   expect(second.equals(first)).toBe(true);
 });
 

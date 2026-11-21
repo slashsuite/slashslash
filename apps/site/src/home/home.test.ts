@@ -1,20 +1,20 @@
 import { existsSync, globSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
-import { HERO as HERO_DRAWING } from "#/content/landing";
 import { PRODUCTS } from "#/content/products";
 import { CONTACT } from "#/content/site";
 import { STAGES } from "#/content/stages";
 import { HERO, PIPELINE, STANDS, VIEW, VIEW_QUESTIONS } from "#/content/story";
 import { TOOL_CARDS } from "#/home/tools";
+import { HERO_STRIP_LABEL } from "#/illustrations/hero";
 import { isSectionKey, SECTIONS } from "#/shell/sections";
 
 /*
  * The suite home as the site builds it, read from dist (`bunx moon run site:test` builds first):
- * on the shell in the suite's section, the hero from the story module with no link and no button, then
- * the pipeline: its steps in order, a row per tool under the step it runs at with what it does and its
- * release stage, and no count of tools anywhere. Then where it stands and the ask at #your-view, and
- * every drawing finished before any script.
+ * on the shell in the suite's section, the hero from the story module with its two calls to action and
+ * the five-stage pipeline strip, then the pipeline: its steps in order, a row per tool under the step
+ * it runs at with what it does and its release stage, and no count of tools anywhere. Then where it
+ * stands and the ask at #your-view, and every drawing finished before any script.
  */
 
 const DIST = resolve(import.meta.dirname, "../../dist");
@@ -30,8 +30,9 @@ function read(file: string): string {
 function text(html: string): string {
   return html
     .replace(/<(script|style|template)[\s\S]*?<\/\1>/g, " ")
-    // A closing inline tag leaves no space: "in CI</a>)." reads "in CI).".
-    .replace(/<\/(a|span|code|strong|em)>/g, "")
+    // Inline links and code sit inside sentences, so neither opening nor closing tags add spaces.
+    .replace(/<\/?(a|code)\b[^>]*>/g, "")
+    .replace(/<\/(span|strong|em)>/g, "")
     .replace(/<[^>]+>/g, " ")
     .replaceAll("&#39;", "'")
     .replaceAll("&#x27;", "'")
@@ -69,26 +70,21 @@ describe("/", () => {
     expect(hero).not.toContain("@@");
   });
 
-  test("the hero draws three steps in order: Before, the change word for word, and After", () => {
-    const panes = hero.slice(hero.indexOf('data-testid="hero-panes"'));
-    const captions = [...panes.matchAll(/<figcaption[^>]*>([\s\S]*?)<\/figcaption>/g)].map((m) => text(m[1] ?? ""));
-    expect(captions).toEqual([HERO_DRAWING.before, HERO_DRAWING.change, HERO_DRAWING.after]);
-    const words = text(panes);
-    for (const line of HERO_DRAWING.codeLines) expect(words).toContain(`+ ${line}`);
-    expect(words).toContain(HERO_DRAWING.asked);
-    expect(words).toContain(HERO_DRAWING.notAsked);
-    const after = panes.slice(panes.indexOf("pane-after"));
-    for (const part of ["shop-tax", "shop-ring", "shop-note"]) expect(after, part).toContain(part);
+  test("the hero draws the five-stage pipeline strip in order with every product mark", () => {
+    const strip = hero.slice(hero.indexOf('data-testid="hero-pipeline"'));
+    const label = strip.match(/aria-label="([^"]*)"/)?.[1];
+    expect(label && text(label)).toBe(HERO_STRIP_LABEL);
+    const stages = [...strip.matchAll(/class="pipeline-stage-name">([\s\S]*?)<\/span>/g)].map((m) => text(m[1] ?? ""));
+    expect(stages).toEqual(PIPELINE.stages.map((stage) => stage.name));
+    for (const product of PRODUCTS) {
+      expect(strip, product.name).toContain(`/brand/${product.name.toLowerCase()}-mark.svg`);
+      expect(text(strip), product.name).toContain(product.name);
+    }
   });
 
-  test("the hero drawing is one image, described by its description", () => {
-    const label = hero.match(/role="img" aria-label="([^"]*)"/)?.[1];
-    expect(label && text(label)).toBe(HERO_DRAWING.description);
-  });
-
-  test("the hero has no link and no button", () => {
-    expect(hero).not.toMatch(/<a[\s>]/);
-    expect(hero).not.toMatch(/<button[\s>]/);
+  test("the hero links to /how-it-works and #tools", () => {
+    const hrefs = [...hero.matchAll(/<a[^>]*href="([^"]*)"/g)].map((m) => m[1]);
+    expect(hrefs).toEqual(["/how-it-works", "#tools"]);
   });
 
   test("has a row per tool at each step it runs at, each with what it does there and its release stage", () => {
@@ -220,16 +216,18 @@ describe("the home from the pipeline on", () => {
     expect(afterTools).not.toContain("@@");
   });
 
-  test("links the CI walkthrough, the UISlash docs and the FlakeSlash dashboard, and shows no report screenshot", () => {
+  test("links UISlash docs and llms.txt, FlakeSlash dashboard, PixelSlash hosted app, and /developers#self-host, and shows no report screenshot", () => {
     const stands = section("stands");
     const links = [...stands.matchAll(/<a[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/g)].map((m) => ({
       text: text(m[2] ?? ""),
       href: m[1],
     }));
     expect(links).toEqual([
-      { text: "hack-cove.com/ui/", href: "https://hack-cove.com/ui/" },
+      { text: "the component docs", href: "/uislash" },
+      { text: "/uislash/llms.txt", href: "/uislash/llms.txt" },
       { text: "flakeslash.slashslash.build", href: "https://flakeslash.slashslash.build" },
-      { text: "how it works in CI", href: "/developers" },
+      { text: "pixelslash.dev", href: "https://pixelslash.dev" },
+      { text: "See self-hosting details", href: "/developers#self-host" },
     ]);
     const items = [...(stands.match(/data-stands-start[^>]*>([\s\S]*?)<\/ul>/)?.[1] ?? "").matchAll(/<li[^>]*>([\s\S]*?)<\/li>/g)];
     expect(items).toHaveLength(6);

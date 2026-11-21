@@ -1,7 +1,6 @@
 import {
   Button,
   Callout,
-  Text,
   Card,
   CardGrid,
   Cluster,
@@ -13,8 +12,9 @@ import {
 } from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
 import { psHref } from "#/pixelslash/paths";
+import { ContactLine } from "#/shell/contact-line";
 import { LicenceLine } from "#/shell/licence-line";
-import { CONTACT, REPO_PUBLIC, REPO_URL } from "#/pixelslash/content/links";
+import { REPO_PUBLIC, REPO_URL } from "#/pixelslash/content/links";
 import {
   ACTION,
   CARDS,
@@ -68,9 +68,7 @@ export function PricingPage(): ReactNode {
           ) : null}
         </Stack>
       </Callout>
-      <Text>
-        Questions? Write to <TextLink href={`mailto:${CONTACT}`}>{CONTACT}</TextLink>.
-      </Text>
+      <ContactLine />
     </Stack>
   );
 }

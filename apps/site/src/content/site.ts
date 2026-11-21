@@ -6,12 +6,15 @@
 /** The name, as the page shows it. The address is SITE_URL below. */
 export const SITE_NAME = "slashslash.build";
 
+/** The /developers page h1 and title. */
+export const DEVELOPERS_HEADLINE = "Run the Slash suite on your own machine";
+
 /** The /developers page lead, also its description in search results and link previews. */
 export const DEVELOPERS_DESCRIPTION =
-  "The details behind slashslash.build: how the tools would work in a CI pipeline, what exists today, and how to try PixelSlash.";
+  "Install commands, self-hosting with Docker, Proxmox or Helm, licences and release stages for every Slash product.";
 
 /** The title of the /developers page, in the tab and in link previews. */
-export const DEVELOPERS_TITLE = `${SITE_NAME}: for developers`;
+export const DEVELOPERS_TITLE = DEVELOPERS_HEADLINE;
 
 /** The site's own address with no trailing slash, for the share image's absolute URL. */
 export const SITE_URL = "https://slashslash.build";
@@ -27,11 +30,15 @@ export const CONTACT = {
   end: ".",
 } as const;
 
+export const SELF_HOST_REPO_URL = "https://github.com/slashsuite/slashslash/tree/main/self-host";
 export const PIXELSLASH_REPO_URL = "https://github.com/slashsuite/pixelslash";
 export const PIXELSLASH_SITE_URL = "https://pixelslash.dev";
-export const PIXELSLASH_NPM_URL = "https://www.npmjs.com/package/@hackcove/pixelslash";
+export const PIXELSLASH_NPM_URL = "https://www.npmjs.com/package/@slashsuite/pixelslash";
 export const PIXELSLASH_COMMAND =
-  "npx @hackcove/pixelslash --live-png a.png --local-png b.png --out out";
+  "npx @slashsuite/pixelslash --live-png main.png --local-png branch.png --out out";
+export const FLAKESLASH_REPO_URL = "https://github.com/slashsuite/flakeslash";
+export const FLAKESLASH_DASHBOARD_URL = "https://flakeslash.slashslash.build";
+export const UISLASH_REPO_URL = "https://github.com/slashsuite/uislash";
 
 /**
  * The ToggleSlash repository, public under the Elastic License 2.0. /developers links it, and /toggleslash builds its

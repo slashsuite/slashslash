@@ -14,7 +14,7 @@ tasks:
       - "scripts/vendor-uislash.ts"
       - "pixelslash.sha"
       - "facts.sha.json"
-      - "uislash.json"
+      - "uislash.sha.json"
       - "package.json"
       - "vendor/*.tgz"
       # The override, so trying another commit through moon is never a stale cache hit.

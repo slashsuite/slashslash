@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { PALETTE as P } from "#/how-it-works/storybook-data";
-import { GroundLine, INK_STROKE, StoryToken } from "#/how-it-works/storybook-parts";
+import { BuiltPackage, GroundLine, INK_STROKE } from "#/how-it-works/storybook-parts";
 
 /* ==========================================================================
    SCENE 5: AUTOMATED & VISUAL CHECKS (PIXELSLASH, UISLASH, FLAKESLASH)
@@ -28,9 +28,9 @@ function BuilderHandoff(): ReactNode {
         </g>
       </g>
       <line x1={226} y1={72} x2={226} y2={358} stroke={P.inkSoft} strokeWidth={2.2} strokeDasharray="6 6" />
-      <g transform="translate(194 202)">
+      <g transform="translate(190 190)">
         <g className="sb-chk5-parcel">
-          <StoryToken seals={2} />
+          <BuiltPackage seals={2} />
         </g>
       </g>
       <text x={136} y={392} textAnchor="middle" fontSize={15} fontWeight={700} fill={P.inkSoft}>
@@ -245,6 +245,9 @@ export function SceneReviewer(): ReactNode {
       <BuilderFixRecipient />
       <SecondModelReviewer />
       <CodeReviewSheet />
+      <g transform="translate(226 300) scale(0.92)">
+        <BuiltPackage seals={2} />
+      </g>
       <SkepticalReviewerFigure />
       <g transform="translate(36 34)">
         <g className="sb-rev-flag-note">

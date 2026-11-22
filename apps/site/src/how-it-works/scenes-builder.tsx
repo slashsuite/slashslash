@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { PALETTE as P } from "#/how-it-works/storybook-data";
-import { GroundLine, INK_STROKE, StoryToken } from "#/how-it-works/storybook-parts";
+import { BuiltPackage, GroundLine, INK_STROKE, RoleInboxStack, StoryToken } from "#/how-it-works/storybook-parts";
 
 /* ==========================================================================
    SCENE 4: LOCK & BUILD IN ISOLATION (ARCHITECT, BUILDER, LEASE, UISLASH, TASKSLASH)
@@ -9,7 +9,7 @@ import { GroundLine, INK_STROKE, StoryToken } from "#/how-it-works/storybook-par
 function ArchitectLeaseAndOtherAgent(): ReactNode {
   return (
     <g>
-      <g transform="translate(26 62)">
+      <g transform="translate(14 48)">
         <circle cx={34} cy={38} r={16} fill={P.white} {...INK_STROKE} />
         <path d="M18 36 C18 18 52 16 52 34 C42 26 28 30 18 36 Z" fill={P.ink} />
         <circle cx={29} cy={39} r={5} fill="none" stroke={P.ink} strokeWidth={1.8} />
@@ -19,7 +19,13 @@ function ArchitectLeaseAndOtherAgent(): ReactNode {
           Architect
         </text>
       </g>
-      <g transform="translate(94 42)">
+      <g transform="translate(76 80) scale(0.72)">
+        <RoleInboxStack label="Inbox" ticketCount={4} badgeCount={4} seals={1} />
+      </g>
+      <text x={132} y={172} textAnchor="middle" fontSize={13} fontWeight={700} fill={P.inkSoft}>
+        4 waiting
+      </text>
+      <g transform="translate(238 18)">
         <g className="sb-bld-lease-badge">
           <rect x={0} y={0} width={164} height={42} rx={21} fill={P.white} {...INK_STROKE} />
           <g transform="translate(14 9)">
@@ -31,30 +37,19 @@ function ArchitectLeaseAndOtherAgent(): ReactNode {
           </text>
         </g>
       </g>
-      <g transform="translate(104 106)">
-        <g transform="translate(0 6) rotate(-5) scale(0.68)">
-          <StoryToken seals={1} />
-        </g>
-        <g transform="translate(10 14) rotate(3) scale(0.68)">
-          <StoryToken seals={1} />
-        </g>
-        <text x={26} y={64} textAnchor="middle" fontSize={13} fontWeight={700} fill={P.inkSoft}>
-          2 waiting
-        </text>
-      </g>
       <path
         className="sb-bld-handoff-arc"
-        d="M158 124 Q312 36 452 216"
+        d="M178 96 Q368 48 486 226"
         fill="none"
         stroke={P.terracotta}
         strokeWidth={2.2}
         strokeDasharray="5 6"
         strokeLinecap="round"
       />
-      <text x={324} y={76} textAnchor="middle" fontSize={13} fontWeight={700} fill={P.terracotta}>
+      <text x={374} y={88} textAnchor="middle" fontSize={13} fontWeight={700} fill={P.terracotta}>
         1 assigned
       </text>
-      <g transform="translate(76 206)">
+      <g transform="translate(52 214)">
         <g className="sb-bld-second-agent">
           <circle cx={34} cy={46} r={16} fill={P.paperShade} stroke={P.inkSoft} strokeWidth={2.2} strokeDasharray="4 3" />
           <path
@@ -64,7 +59,7 @@ function ArchitectLeaseAndOtherAgent(): ReactNode {
             strokeWidth={2.2}
             strokeDasharray="4 3"
           />
-          <text x={34} y={178} textAnchor="middle" fontSize={15} fontWeight={700} fill={P.inkSoft}>
+          <text x={34} y={172} textAnchor="middle" fontSize={15} fontWeight={700} fill={P.inkSoft}>
             Other agent
           </text>
         </g>
@@ -115,15 +110,31 @@ function BuilderWorkspace(): ReactNode {
       <polygon points="142,164 264,128 360,174 238,216" fill={P.taupeLight} {...INK_STROKE} />
       <rect x={238} y={214} width={9} height={64} fill={P.white} {...INK_STROKE} />
       <rect x={342} y={176} width={9} height={62} fill={P.white} {...INK_STROKE} />
-      <polygon points="208,64 312,96 312,174 208,140" fill={P.ink} {...INK_STROKE} />
-      <polygon points="214,72 306,100 306,166 214,136" fill={P.white} />
-      <polygon className="sb-bld-ui-1" points="220,84 262,97 262,120 220,106" fill={P.terracotta} />
-      <polygon className="sb-bld-ui-2" points="266,98 300,109 300,132 266,121" fill={P.periwinkle} />
-      <polygon className="sb-bld-ui-3" points="220,112 300,138 300,158 220,131" fill={P.periwinkleSoft} stroke={P.periwinkle} strokeWidth={1.6} />
+      <polygon points="208,52 312,84 312,162 208,128" fill={P.ink} {...INK_STROKE} />
+      <polygon points="214,60 306,88 306,154 214,124" fill={P.white} />
+      <polygon className="sb-bld-ui-1" points="220,72 262,85 262,108 220,94" fill={P.terracotta} />
+      <polygon className="sb-bld-ui-2" points="266,86 300,97 300,120 266,109" fill={P.periwinkle} />
+      <polygon className="sb-bld-ui-3" points="220,100 300,126 300,146 220,119" fill={P.periwinkleSoft} stroke={P.periwinkle} strokeWidth={1.6} />
       <polygon points="174,166 222,152 242,164 194,178" fill={P.white} {...INK_STROKE} />
-      <g transform="translate(274 166) scale(0.74)">
+      <g transform="translate(290 166)">
         <g className="sb-bld-handoff-token">
-          <StoryToken seals={1} />
+          <g transform="scale(0.76)">
+            <StoryToken seals={1} />
+          </g>
+        </g>
+      </g>
+      <g transform="translate(284 152)">
+        <g className="sb-bld-built-package">
+          <g transform="scale(0.86)">
+            <BuiltPackage seals={1} />
+          </g>
+        </g>
+      </g>
+      <g transform="translate(312 146)">
+        <g className="sb-bld-pack-spark" stroke={P.terracotta} strokeWidth={2.4} strokeLinecap="round" opacity={0}>
+          <line x1={0} y1={-14} x2={0} y2={-6} />
+          <line x1={-12} y1={-8} x2={-6} y2={-3} />
+          <line x1={12} y1={-8} x2={6} y2={-3} />
         </g>
       </g>
       <g className="sb-bld-type-left">

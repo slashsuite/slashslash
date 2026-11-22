@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { PALETTE as P } from "#/how-it-works/storybook-data";
-import { GroundLine, INK_STROKE, OwnerFigure, StoryToken } from "#/how-it-works/storybook-parts";
+import { BuiltPackage, GroundLine, INK_STROKE, OwnerFigure } from "#/how-it-works/storybook-parts";
 
 /* ==========================================================================
    SCENE 7: SENTINEL -> GATEHOUSE BRIDGE MERGE & DEPLOY
@@ -25,9 +25,9 @@ function GatehouseBridge(): ReactNode {
       <path d="M100 230 Q236 224 360 298 L100 298 Z" fill={P.taupe} {...INK_STROKE} />
       <path d="M100 216 Q236 210 370 288 L360 298 Q236 224 100 230 Z" fill={P.white} {...INK_STROKE} />
       <path d="M134 298 A58 58 0 0 1 250 298 Z" fill={P.ink} />
-      <g transform="translate(140 190)">
+      <g transform="translate(136 178)">
         <g className="sb-sent-parcel">
-          <StoryToken seals={3} sealClasses={["sb-sent-seal-1", "sb-sent-seal-2", "sb-sent-seal-3"]} />
+          <BuiltPackage seals={3} sealClasses={["sb-sent-seal-1", "sb-sent-seal-2", "sb-sent-seal-3"]} />
         </g>
       </g>
       <g transform="translate(114 -24)">

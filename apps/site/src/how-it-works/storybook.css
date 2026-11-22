@@ -1,0 +1,1110 @@
+/*
+ * The /how-it-works animated storybook theatre (storybook.tsx).
+ * Chrome, buttons, pills, and captions strictly use the theme's --hc-* custom properties
+ * so they follow Slash Day and Slash Night. The illustration paper canvas matches the six
+ * role illustrations right above it via --sb-paper. Under reduced motion, when paused before
+ * start, or without JavaScript, every scene renders in its finished end state.
+ */
+
+.sb-theatre {
+  --sb-paper: #faf8f2;
+  --sb-terracotta: #c8561b;
+  --sb-periwinkle: #788ff2;
+  --sb-taupe: #ddd7ca;
+  --sb-sage: #3b8c52;
+  --sb-sage-soft: #d5eedb;
+  border: 2px solid var(--hc-line);
+  border-radius: 0.75rem;
+  background: var(--hc-surface);
+  overflow: hidden;
+}
+
+.sb-figure {
+  margin: 0;
+}
+
+.sb-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--hc-line);
+  background: var(--hc-surface);
+}
+
+.sb-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.sb-chapter-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: var(--hc-ink);
+  color: var(--hc-surface);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.sb-steps-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--hc-mute);
+}
+
+.sb-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.sb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 2.25rem;
+  padding: 0.35rem 0.75rem;
+  border: 1.5px solid var(--hc-line);
+  border-radius: 0.5rem;
+  background: var(--hc-surface);
+  color: var(--hc-ink);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background-color 0.14s ease, border-color 0.14s ease;
+}
+
+.sb-btn:hover {
+  background: var(--hc-subtle);
+  border-color: var(--hc-mute);
+}
+
+.sb-btn:focus-visible {
+  outline: 2px solid var(--hc-accent);
+  outline-offset: 2px;
+}
+
+.sb-btn-primary {
+  border-color: var(--hc-ink);
+  background: var(--hc-ink);
+  color: var(--hc-surface);
+}
+
+.sb-btn-primary:hover {
+  background: var(--hc-ink);
+  opacity: 0.9;
+}
+
+.sb-stage-wrap {
+  position: relative;
+  background: var(--sb-paper);
+  border-bottom: 1px solid var(--hc-line);
+}
+
+.sb-stage {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: var(--font-sans);
+}
+
+.sb-progress-track {
+  height: 4px;
+  background: var(--hc-subtle);
+  overflow: hidden;
+}
+
+.sb-progress-fill {
+  height: 100%;
+  width: 100%;
+  background: var(--hc-accent);
+  transform-origin: left center;
+}
+
+.sb-progress-fill.is-running {
+  animation: sb-progress-bar var(--sb-duration, 6500ms) linear forwards;
+}
+
+.sb-progress-fill.is-paused {
+  animation-play-state: paused;
+}
+
+.sb-caption-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 1rem 1.125rem;
+  border-bottom: 1px solid var(--hc-line);
+}
+
+.sb-caption-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.sb-scene-title {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--hc-ink);
+}
+
+.sb-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sb-tool-chip {
+  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--hc-line);
+  border-radius: 999px;
+  background: var(--hc-subtle);
+  color: var(--hc-ink);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.sb-chapters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+  padding: 0.75rem 1rem;
+  background: var(--hc-subtle);
+}
+
+@media (min-width: 40rem) {
+  .sb-chapters {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .sb-chapters {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+}
+
+.sb-chapter-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.125rem;
+  min-height: 2.75rem;
+  padding: 0.4rem 0.55rem;
+  border: 1.5px solid var(--hc-line);
+  border-radius: 0.5rem;
+  background: var(--hc-surface);
+  color: var(--hc-ink);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.14s ease, background-color 0.14s ease;
+}
+
+.sb-chapter-btn:hover {
+  border-color: var(--hc-mute);
+}
+
+.sb-chapter-btn:focus-visible {
+  outline: 2px solid var(--hc-accent);
+  outline-offset: 2px;
+}
+
+.sb-chapter-btn[aria-current="step"] {
+  border-color: var(--hc-accent);
+  box-shadow: inset 0 0 0 1px var(--hc-accent);
+}
+
+.sb-chapter-num {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--hc-mute);
+}
+
+.sb-chapter-btn[aria-current="step"] .sb-chapter-num {
+  color: var(--hc-accent);
+}
+
+.sb-chapter-name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--hc-ink);
+}
+
+.sb-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sb-noscript-list {
+  margin: 0;
+  padding: 1rem 1.25rem 1.25rem 2.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border-top: 1px solid var(--hc-line);
+  background: var(--hc-surface);
+  color: var(--hc-ink);
+  font-size: 0.9375rem;
+}
+
+/* ==========================================================================
+   SCENE CHARACTER & PROP ANIMATIONS
+   Gated on .sb-stage.is-animated (set by JS only after entering view, or when
+   the user explicitly clicks Play). Pausing sets .is-paused so every animation
+   freezes cleanly in place without snapping back or remounting.
+   ========================================================================== */
+
+.sb-stage.is-animated {
+  animation: sb-scene-enter 0.25s ease-out both;
+}
+
+.sb-stage.is-animated.is-paused,
+.sb-stage.is-animated.is-paused * {
+  animation-play-state: paused !important;
+}
+
+.sb-stage.is-animated [class*="sb-"] {
+  transform-box: fill-box;
+}
+
+/* Articulated limbs pivot strictly around their exact SVG shoulder joint coordinates */
+.sb-stage.is-animated .sb-muse-draw-arm,
+.sb-stage.is-animated .sb-muse-send-arm,
+.sb-stage.is-animated .sb-arch-compass-arm,
+.sb-stage.is-animated .sb-arch-place-arm,
+.sb-stage.is-animated .sb-chk-stamp-arm,
+.sb-stage.is-animated .sb-bld-type-left,
+.sb-stage.is-animated .sb-bld-type-right,
+.sb-stage.is-animated .sb-rev-lens-arm,
+.sb-stage.is-animated .sb-sent-scarf,
+.sb-stage.is-animated .sb-sent-lantern-arm,
+.sb-stage.is-animated .sb-sent-glass-arm {
+  transform-box: view-box;
+}
+
+/* Shared living motions */
+.sb-stage.is-animated .sb-blink {
+  transform-origin: center;
+  animation: sb-blink 3.4s ease-in-out infinite;
+}
+
+.sb-stage.is-animated .sb-twinkle-a {
+  transform-origin: center;
+  animation: sb-twinkle 2.4s ease-in-out infinite;
+}
+
+.sb-stage.is-animated .sb-twinkle-b {
+  transform-origin: center;
+  animation: sb-twinkle 2.8s 0.5s ease-in-out infinite;
+}
+
+.sb-stage.is-animated .sb-twinkle-c {
+  transform-origin: center;
+  animation: sb-twinkle 2.2s 1s ease-in-out infinite;
+}
+
+/* Scene 1: Owner & Muse -> OmniSlash role inbox */
+.sb-stage.is-animated .sb-muse-spark-bulb {
+  transform-origin: center;
+  animation: sb-float 2.4s ease-in-out infinite;
+}
+
+.sb-stage.is-animated .sb-muse-idea-trail {
+  animation: sb-dash-flow-11 1.4s linear infinite;
+}
+
+.sb-stage.is-animated .sb-muse-head {
+  transform-origin: 50% 85%;
+  animation: sb-gentle-nod 3.6s ease-in-out infinite;
+}
+
+.sb-stage.is-animated .sb-muse-draw-arm {
+  transform-origin: 92px 156px;
+  animation: sb-muse-sketch-arm 2.3s 0.25s ease-in-out both;
+}
+
+.sb-stage.is-animated .sb-muse-sketch {
+  stroke-dasharray: 1;
+  animation: sb-draw-unit 1.5s 0.5s ease-out both;
+}
+
+.sb-stage.is-animated .sb-muse-send-arm {
+  transform-origin: 162px 156px;
+  animation: sb-muse-lift 2s 1.85s ease-in-out both;
+}
+
+.sb-stage.is-animated .sb-muse-envelope-1 {
+  transform-origin: center;
+  animation: sb-envelope-fly 1.35s 1.95s cubic-bezier(0.25, 0.8, 0.25, 1) both;
+}
+
+.sb-stage.is-animated .sb-muse-envelope-2 {
+  transform-origin: center;
+  animation: sb-envelope-fly 1.35s 2.35s cubic-bezier(0.25, 0.8, 0.25, 1) both;
+}
+
+.sb-stage.is-animated .sb-muse-envelope-3 {
+  transform-origin: center;
+  animation: sb-envelope-fly 1.35s 2.75s cubic-bezier(0.25, 0.8, 0.25, 1) both;
+}
+
+.sb-stage.is-animated .sb-muse-inbox {
+  transform-origin: 50% 85%;
+  animation: sb-inbox-bounce 0.55s 4.05s ease-out both;
+}
+
+.sb-stage.is-animated .sb-muse-badge {
+  transform-origin: center;
+  animation: sb-pop-in 0.45s 4.15s cubic-bezier(0.2, 1.35, 0.4, 1) both;
+}
+
+/* Scene 2: Architect -> Drill the tickets */
+.sb-stage.is-animated .sb-arch-incoming-1 {
+  animation: sb-arch-token-in 0.75s 0.1s ease-out both;
+}
+
+.sb-stage.is-animated .sb-arch-incoming-2 {
+  animation: sb-arch-token-in 0.75s 0.28s ease-out both;
+}
+
+.sb-stage.is-animated .sb-arch-incoming-3 {
+  animation: sb-arch-token-in 0.75s 0.46s ease-out both;
+}
+
+.sb-stage.is-animated .sb-arch-blueprint {
+  transform-origin: left center;
+  animation: sb-unfurl 1.05s 0.35s ease-out both;
+}
+
+.sb-stage.is-animated .sb-arch-head {
+  transform-origin: 50% 90%;
+  animation: sb-gentle-nod 3.4s ease-in-out infinite;
+}
+
+.sb-stage.is-animated .sb-arch-compass-arm {
+  transform-origin: 150px 114px;
+  animation: sb-compass-swing 2.6s 0.7s ease-in-out infinite;
+}
+
+.sb-stage.is-animated .sb-arch-place-arm {
+  transform-origin: 238px 116px;
+  animation: sb-place-blocks-arm 2.4s 0.95s ease-in-out both;
+}
+
+.sb-stage.is-animated .sb-arch-block-1 {
+  transform-origin: center;
+  animation: sb-drop-in 0.45s 1.15s cubic-bezier(0.2, 1.25, 0.4, 1) both;
+}
+
+.sb-stage.is-animated .sb-arch-block-2 {
+  transform-origin: center;
+  animation: sb-drop-in 0.45s 1.75s cubic-bezier(0.2, 1.25, 0.4, 1) both;
+}
+
+.sb-stage.is-animated .sb-arch-block-3 {
+  transform-origin: center;
+  animation: sb-drop-in 0.45s 2.35s cubic-bezier(0.2, 1.25, 0.4, 1) both;
+}
+
+.sb-stage.is-animated .sb-arch-ticket {
+  animation: sb-slide-up 0.6s 1.35s ease-out both;
+}
+
+.sb-stage.is-animated .sb-arch-line-1 {
+  stroke-dasharray: 1;
+  animation: sb-draw-unit 0.55s 2.05s ease-out both;
+}
+
+.sb-stage.is-animated .sb-arch-line-2 {
+  stroke-dasharray: 1;
+  animation: sb-draw-unit 0.55s 2.4s ease-out both;
+}
+
+.sb-stage.is-animated .sb-arch-check-row-1 {
+  animation: sb-fade-right 0.4s 2.85s ease-out both;
+}
+
+.sb-stage.is-animated .sb-arch-check-row-2 {
+  animation: sb-fade-right 0.4s 3.25s ease-out both;
+}
+
+.sb-stage.is-animated .sb-arch-check-row-3 {
+  animation: sb-fade-right 0.4s 3.65s ease-out both;
+}
+
+/* Scene 3: Checker -> Verify & stamp GO -> OmniSlash gate opens */
+.sb-stage.is-animated .sb-chk-head {
+  transform-origin: 50% 88%;
+  animation: sb-gentle-nod 3.2s ease-in-out infinite;
+}
+
+.sb-stage.is-animated .sb-chk-mark-1 {
+  stroke-dasharray: 1;
+  animation: sb-draw-unit 0.4s 0.35s ease-out both;
+}
+
+.sb-stage.is-animated .sb-chk-mark-2 {
+  stroke-dasharray: 1;
+  animation: sb-draw-unit 0.4s 0.8s ease-out both;
+}
+
+.sb-stage.is-animated .sb-chk-mark-3 {
+  stroke-dasharray: 1;
+  animation: sb-draw-unit 0.4s 1.25s ease-out both;
+}
+
+.sb-stage.is-animated .sb-chk-stamp-arm {
+  transform-origin: 134px 122px;
+  animation: sb-stamp-motion 2.1s 1.8s ease-in-out both;
+}
+
+.sb-stage.is-animated .sb-chk-go-seal {
+  transform-origin: center;
+  animation: sb-pop-in 0.35s 3.15s cubic-bezier(0.2, 1.45, 0.35, 1) both;
+}
+
+.sb-stage.is-animated .sb-chk-gate-arm {
+  transform-origin: 6px 7px;
+  animation: sb-gate-lift 1.05s 3.5s cubic-bezier(0.25, 0.9, 0.3, 1.05) both;
+}
+
+.sb-stage.is-animated .sb-chk-gate-lamp {
+  animation: sb-lamp-turn-green 0.5s 3.5s ease-out both;
+}
+
+.sb-stage.is-animated .sb-chk-gate-badge {
+  transform-origin: center;
+  animation: sb-pop-in 0.45s 4s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+}
+
+/* Scene 4: Architect & Builder -> Lease lock, UISlash, TaskSlash */
+.sb-stage.is-animated .sb-bld-boundary {
+  animation: sb-dash-flow-12 3s linear infinite;
+}
+
+.sb-stage.is-animated .sb-bld-second-agent {
+  animation: sb-agent-deflect 2.6s 0.45s ease-in-out both;
+}
+
+.sb-stage.is-animated .sb-bld-bump-spark {
+  transform-origin: center;
+  animation: sb-bump-spark 0.7s 1.2s ease-out both;
+}
+
+.sb-stage.is-animated .sb-bld-lease-badge {
+  transform-origin: center;
+  animation: sb-pop-in 0.5s 0.45s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+}
+
+.sb-stage.is-animated .sb-bld-handoff-arc {
+  animation: sb-dash-flow-11 1.4s linear infinite;
+}
+
+.sb-stage.is-animated .sb-bld-handoff-token {
+  transform-origin: center;
+  animation: sb-bld-handoff 1.25s 0.25s cubic-bezier(0.25, 0.8, 0.25, 1) both;
+}
+
+.sb-stage.is-animated .sb-bld-head {
+  transform-origin: 50% 90%;
+  animation: sb-type-bob 1.2s ease-in-out infinite;
+}
+
+.sb-stage.is-animated .sb-bld-type-left {
+  transform-origin: 88px 134px;
+  animation: sb-type-tap 0.45s ease-in-out infinite;
+}
+
+.sb-stage.is-animated .sb-bld-type-right {
+  transform-origin: 126px 134px;
+  animation: sb-type-tap 0.45s 0.22s ease-in-out infinite;
+}
+
+.sb-stage.is-animated .sb-bld-ui-1 {
+  transform-origin: center;
+  animation: sb-pop-in 0.45s 1.1s ease-out both;
+}
+
+.sb-stage.is-animated .sb-bld-ui-2 {
+  transform-origin: center;
+  animation: sb-pop-in 0.45s 1.75s ease-out both;
+}
+
+.sb-stage.is-animated .sb-bld-ui-3 {
+  transform-origin: center;
+  animation: sb-pop-in 0.45s 2.4s ease-out both;
+}
+
+.sb-stage.is-animated .sb-bld-capacity {
+  transform-origin: left center;
+  animation: sb-scale-x-grow 2.8s 0.6s ease-out both;
+}
+
+.sb-stage.is-animated .sb-bld-step-1 {
+  animation: sb-fade-right 0.45s 1.6s ease-out both;
+}
+
+.sb-stage.is-animated .sb-bld-step-2 {
+  animation: sb-fade-right 0.45s 2.5s ease-out both;
+}
+
+.sb-stage.is-animated .sb-bld-step-3 {
+  animation: sb-fade-right 0.45s 3.4s ease-out both;
+}
+
+/* Scene 5: Handoff -> PixelSlash, UISlash, FlakeSlash (10m) */
+.sb-stage.is-animated .sb-chk5-builder {
+  animation: sb-step-back 1.3s 0.4s ease-out both;
+}
+
+.sb-stage.is-animated .sb-chk5-parcel {
+  animation: sb-parcel-handoff 1.15s 0.25s ease-out both;
+}
+
+.sb-stage.is-animated .sb-chk5-slash {
+  animation: sb-slash-wipe 1.8s 1.15s ease-in-out both;
+}
+
+.sb-stage.is-animated .sb-chk5-diff-box {
+  animation: sb-pulse-border 1.6s 2.2s ease-in-out infinite;
+}
+
+.sb-stage.is-animated .sb-chk5-approve {
+  transform-origin: center;
+  animation: sb-pop-in 0.45s 3.15s cubic-bezier(0.2, 1.35, 0.4, 1) both;
+}
+
+.sb-stage.is-animated .sb-chk5-uislash {
+  animation: sb-slide-up 0.55s 2.05s ease-out both;
+}
+
+.sb-stage.is-animated .sb-chk5-flakeslash {
+  animation: sb-slide-up 0.55s 2.6s ease-out both;
+}
+
+.sb-stage.is-animated .sb-chk5-scanbar {
+  animation: sb-scan-sweep 2.2s 2.75s ease-in-out infinite;
+}
+
+/* Scene 6: Skeptical reviewer + Second model + Builder fix */
+.sb-stage.is-animated .sb-rev-head {
+  transform-origin: 50% 90%;
+  animation: sb-rev-lean 3.2s ease-in-out both;
+}
+
+.sb-stage.is-animated .sb-rev-lens-arm {
+  transform-origin: 152px 166px;
+  animation: sb-lens-inspect 3.8s 0.35s ease-in-out both;
+}
+
+.sb-stage.is-animated .sb-rev-peer {
+  animation: sb-float 3.4s ease-in-out infinite;
+}
+
+.sb-stage.is-animated .sb-rev-flaw-dot {
+  transform-origin: center;
+  animation: sb-flaw-resolve 4.3s 0.35s ease-in-out both;
+}
+
+.sb-stage.is-animated .sb-rev-flag-note {
+  transform-origin: right center;
+  animation: sb-flag-to-builder 0.6s 2s cubic-bezier(0.2, 1.2, 0.4, 1) both;
+}
+
+.sb-stage.is-animated .sb-rev-builder {
+  transform-origin: 50% 85%;
+  animation: sb-builder-ack 1.1s 2.75s ease-in-out both;
+}
+
+.sb-stage.is-animated .sb-rev-clear-badge {
+  transform-origin: center;
+  animation: sb-pop-in 0.45s 3.95s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+}
+
+/* Scene 7: Sentinel -> Gatehouse bridge lantern & seal check */
+.sb-stage.is-animated .sb-sent-scarf {
+  transform-origin: 112px 104px;
+  animation: sb-scarf-wave 2.6s ease-in-out infinite;
+}
+
+.sb-stage.is-animated .sb-sent-head {
+  transform-origin: 50% 88%;
+  animation: sb-gentle-nod 3.4s ease-in-out infinite;
+}
+
+.sb-stage.is-animated .sb-sent-lantern-arm {
+  transform-origin: 62px 124px;
+  animation: sb-lantern-raise 2.8s 0.25s ease-in-out both;
+}
+
+.sb-stage.is-animated .sb-sent-glow {
+  transform-origin: center;
+  animation: sb-lantern-glow 1.8s ease-in-out infinite;
+}
+
+.sb-stage.is-animated .sb-sent-flame {
+  transform-origin: 50% 85%;
+  animation: sb-flame-flicker 0.9s ease-in-out infinite;
+}
+
+.sb-stage.is-animated .sb-sent-glass-arm {
+  transform-origin: 130px 124px;
+  animation: sb-sent-check 2.4s 0.65s ease-in-out both;
+}
+
+.sb-stage.is-animated .sb-sent-parcel {
+  animation: sb-bridge-cross 4.2s 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.sb-stage.is-animated .sb-sent-seal-1 {
+  transform-origin: center;
+  animation: sb-seal-light 0.45s 1s ease-out both;
+}
+
+.sb-stage.is-animated .sb-sent-seal-2 {
+  transform-origin: center;
+  animation: sb-seal-light 0.45s 1.55s ease-out both;
+}
+
+.sb-stage.is-animated .sb-sent-seal-3 {
+  transform-origin: center;
+  animation: sb-seal-light 0.45s 2.1s ease-out both;
+}
+
+.sb-stage.is-animated .sb-sent-portal-glow {
+  animation: sb-portal-brighten 1.4s 2.8s ease-out both;
+}
+
+.sb-stage.is-animated .sb-sent-merged-badge {
+  transform-origin: center;
+  animation: sb-pop-in 0.5s 4s cubic-bezier(0.2, 1.35, 0.4, 1) both;
+}
+
+/* Scene 8: Owner & ToggleSlash -> Live stepped rollout */
+.sb-stage.is-animated .sb-rol-owner {
+  transform-origin: 50% 88%;
+  animation: sb-gentle-nod 3.4s ease-in-out infinite;
+}
+
+.sb-stage.is-animated .sb-rol-track {
+  animation: sb-switch-track 0.9s 0.35s ease-out both;
+}
+
+.sb-stage.is-animated .sb-rol-knob {
+  animation: sb-switch-knob 0.8s 0.4s cubic-bezier(0.25, 1.25, 0.4, 1) both;
+}
+
+.sb-stage.is-animated .sb-rol-wave-arc {
+  animation: sb-dash-flow-10 1.3s linear infinite;
+}
+
+.sb-stage.is-animated .sb-rol-progress {
+  transform-origin: left center;
+  animation: sb-rollout-grow 3.1s 1.05s ease-in-out both;
+}
+
+.sb-stage.is-animated .sb-rol-win-1 {
+  transform-origin: center;
+  animation: sb-window-pop 0.45s 1.2s ease-out both;
+}
+
+.sb-stage.is-animated .sb-rol-win-2 {
+  transform-origin: center;
+  animation: sb-window-pop 0.45s 2.25s ease-out both;
+}
+
+.sb-stage.is-animated .sb-rol-win-3 {
+  transform-origin: center;
+  animation: sb-window-pop 0.45s 3.3s ease-out both;
+}
+
+.sb-stage.is-animated .sb-rol-accent-1 {
+  animation: sb-light-terracotta 0.4s 1.2s ease-out both;
+}
+
+.sb-stage.is-animated .sb-rol-block-1 {
+  animation: sb-light-periwinkle 0.4s 1.28s ease-out both;
+}
+
+.sb-stage.is-animated .sb-rol-bar-1 {
+  animation: sb-light-sage 0.4s 1.36s ease-out both;
+}
+
+.sb-stage.is-animated .sb-rol-accent-2 {
+  animation: sb-light-terracotta 0.4s 2.25s ease-out both;
+}
+
+.sb-stage.is-animated .sb-rol-block-2 {
+  animation: sb-light-periwinkle 0.4s 2.33s ease-out both;
+}
+
+.sb-stage.is-animated .sb-rol-bar-2 {
+  animation: sb-light-sage 0.4s 2.41s ease-out both;
+}
+
+.sb-stage.is-animated .sb-rol-accent-3 {
+  animation: sb-light-terracotta 0.4s 3.3s ease-out both;
+}
+
+.sb-stage.is-animated .sb-rol-block-3 {
+  animation: sb-light-periwinkle 0.4s 3.38s ease-out both;
+}
+
+.sb-stage.is-animated .sb-rol-bar-3 {
+  animation: sb-light-sage 0.4s 3.46s ease-out both;
+}
+
+.sb-stage.is-animated .sb-rol-audit {
+  animation: sb-fade-right 0.5s 4.05s ease-out both;
+}
+
+/* ==========================================================================
+   KEYFRAMES
+   ========================================================================== */
+
+@keyframes sb-progress-bar {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes sb-scene-enter {
+  from { opacity: 0.55; }
+  to { opacity: 1; }
+}
+
+@keyframes sb-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  96% { transform: scaleY(0.12); }
+}
+
+@keyframes sb-twinkle {
+  0%, 100% { transform: scale(0.88); opacity: 0.65; }
+  50% { transform: scale(1.16); opacity: 1; }
+}
+
+@keyframes sb-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes sb-dash-flow-11 {
+  from { stroke-dashoffset: 22; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes sb-dash-flow-12 {
+  from { stroke-dashoffset: 24; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes sb-dash-flow-10 {
+  from { stroke-dashoffset: 20; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes sb-gentle-nod {
+  0%, 100% { transform: rotate(0deg); }
+  45% { transform: rotate(3deg); }
+  75% { transform: rotate(-1.5deg); }
+}
+
+@keyframes sb-muse-sketch-arm {
+  0% { transform: rotate(0deg); }
+  20% { transform: rotate(-5deg); }
+  40% { transform: rotate(3deg); }
+  60% { transform: rotate(-4deg); }
+  80% { transform: rotate(2.5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes sb-draw-unit {
+  from { stroke-dashoffset: 1; opacity: 0.25; }
+  to { stroke-dashoffset: 0; opacity: 1; }
+}
+
+@keyframes sb-muse-lift {
+  0% { transform: rotate(8deg); }
+  55% { transform: rotate(-10deg); }
+  100% { transform: rotate(-4deg); }
+}
+
+@keyframes sb-envelope-fly {
+  0% { transform: translate(-192px, -12px) rotate(-12deg) scale(0.86); opacity: 0; }
+  14% { transform: translate(-176px, -16px) rotate(-8deg) scale(1); opacity: 1; }
+  58% { transform: translate(-86px, -74px) rotate(10deg) scale(1.04); opacity: 1; }
+  100% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 1; }
+}
+
+@keyframes sb-inbox-bounce {
+  0%, 100% { transform: scale(1); }
+  40% { transform: translateY(4px) scale(1.04, 0.95); }
+  75% { transform: translateY(-2px) scale(0.99, 1.02); }
+}
+
+@keyframes sb-pop-in {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes sb-arch-token-in {
+  from { transform: translate(-36px, -10px) rotate(-8deg); opacity: 0; }
+  to { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+}
+
+@keyframes sb-unfurl {
+  from { transform: scaleX(0.25); opacity: 0.4; }
+  to { transform: scaleX(1); opacity: 1; }
+}
+
+@keyframes sb-compass-swing {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(7deg); }
+}
+
+@keyframes sb-place-blocks-arm {
+  0%, 100% { transform: rotate(0deg); }
+  18% { transform: rotate(15deg); }
+  46% { transform: rotate(-10deg); }
+  72% { transform: rotate(4deg); }
+}
+
+@keyframes sb-drop-in {
+  from { transform: translateY(-22px) scale(0.85); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@keyframes sb-slide-up {
+  from { transform: translateY(16px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes sb-fade-right {
+  from { transform: translateX(-10px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Pure shoulder rotation: dip into ink pad (-11deg), arc up and press GO seal (+10deg), return */
+@keyframes sb-stamp-motion {
+  0% { transform: rotate(0deg); }
+  22% { transform: rotate(-11deg); }
+  44% { transform: rotate(6deg); }
+  64% { transform: rotate(10deg); }
+  74% { transform: rotate(10deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes sb-gate-lift {
+  0% { transform: rotate(52deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes sb-lamp-turn-green {
+  from { fill: var(--sb-terracotta); }
+  to { fill: var(--sb-sage); }
+}
+
+@keyframes sb-agent-deflect {
+  0% { transform: translateX(-8px); }
+  32% { transform: translateX(46px); }
+  42% { transform: translateX(42px); }
+  75% { transform: translateX(2px); }
+  100% { transform: translateX(-6px); opacity: 0.72; }
+}
+
+@keyframes sb-bump-spark {
+  0% { transform: scale(0.3); opacity: 0; }
+  35% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1.3); opacity: 0; }
+}
+
+@keyframes sb-type-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(2px); }
+}
+
+@keyframes sb-type-tap {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-3.5deg); }
+}
+
+@keyframes sb-scale-x-grow {
+  from { transform: scaleX(0.18); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes sb-bld-handoff {
+  0% { transform: translate(-448px, -146px) rotate(-6deg) scale(0.92); opacity: 0.9; }
+  52% { transform: translate(-189px, -195px) rotate(6deg) scale(1.04); opacity: 1; }
+  100% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 1; }
+}
+
+@keyframes sb-step-back {
+  0% { transform: translateX(18px); }
+  100% { transform: translateX(-10px); }
+}
+
+@keyframes sb-parcel-handoff {
+  0% { transform: translateX(-40px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes sb-slash-wipe {
+  0% { transform: translateX(-28px); opacity: 0; }
+  15% { opacity: 1; }
+  85% { transform: translateX(176px); opacity: 1; }
+  100% { transform: translateX(196px); opacity: 0; }
+}
+
+@keyframes sb-scan-sweep {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(128px); }
+}
+
+@keyframes sb-pulse-border {
+  0%, 100% { stroke-opacity: 1; }
+  50% { stroke-opacity: 0.4; }
+}
+
+@keyframes sb-rev-lean {
+  0%, 100% { transform: rotate(0deg); }
+  45% { transform: rotate(-4deg); }
+  80% { transform: rotate(2deg); }
+}
+
+/* Pure shoulder rotation: sweep magnifying glass from top of code sheet down onto the flaw dot */
+@keyframes sb-lens-inspect {
+  0% { transform: rotate(15deg); }
+  36% { transform: rotate(0deg); }
+  70% { transform: rotate(-3deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes sb-flaw-resolve {
+  0%, 74% { fill: var(--sb-terracotta); transform: scale(1.16); }
+  86%, 100% { fill: var(--sb-sage); transform: scale(1); }
+}
+
+@keyframes sb-flag-to-builder {
+  from { transform: translateX(84px) scale(0.75); opacity: 0; }
+  to { transform: translateX(0) scale(1); opacity: 1; }
+}
+
+@keyframes sb-builder-ack {
+  0%, 100% { transform: rotate(0deg); }
+  35% { transform: rotate(5deg) translateY(-3px); }
+  70% { transform: rotate(-2deg); }
+}
+
+@keyframes sb-scarf-wave {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-5deg); }
+}
+
+@keyframes sb-lantern-raise {
+  0% { transform: rotate(9deg); }
+  45% { transform: rotate(-7deg); }
+  100% { transform: rotate(-3deg); }
+}
+
+@keyframes sb-lantern-glow {
+  0%, 100% { transform: scale(0.92); opacity: 0.48; }
+  50% { transform: scale(1.12); opacity: 0.78; }
+}
+
+@keyframes sb-flame-flicker {
+  0%, 100% { transform: scale(1, 1); }
+  50% { transform: scale(0.9, 1.12); }
+}
+
+@keyframes sb-sent-check {
+  0%, 100% { transform: rotate(0deg); }
+  35%, 70% { transform: rotate(-7deg); }
+}
+
+/* Parcel waits on bridge right under Sentinel's lantern & glass, then glides into the glowing arch */
+@keyframes sb-bridge-cross {
+  0% { transform: translate(184px, 34px); }
+  56% { transform: translate(184px, 34px); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes sb-seal-light {
+  from { fill: var(--sb-taupe); transform: scale(0.75); }
+  65% { fill: var(--sb-sage); transform: scale(1.25); }
+  to { fill: var(--sb-sage); transform: scale(1); }
+}
+
+@keyframes sb-portal-brighten {
+  from { fill-opacity: 0.2; }
+  to { fill-opacity: 0.68; }
+}
+
+@keyframes sb-switch-track {
+  from { fill: var(--sb-taupe); }
+  to { fill: var(--sb-sage); }
+}
+
+@keyframes sb-switch-knob {
+  from { transform: translateX(-56px); }
+  to { transform: translateX(0); }
+}
+
+/* Pauses clearly at 10%, 50%, and 100% matching the three window waves */
+@keyframes sb-rollout-grow {
+  0% { transform: scaleX(0.04); }
+  12%, 34% { transform: scaleX(0.1); }
+  48%, 68% { transform: scaleX(0.5); }
+  86%, 100% { transform: scaleX(1); }
+}
+
+@keyframes sb-window-pop {
+  0% { transform: scale(0.96); }
+  60% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+@keyframes sb-light-terracotta {
+  from { fill: var(--sb-taupe); }
+  to { fill: var(--sb-terracotta); }
+}
+
+@keyframes sb-light-periwinkle {
+  from { fill: var(--sb-taupe); }
+  to { fill: var(--sb-periwinkle); }
+}
+
+@keyframes sb-light-sage {
+  from { fill: var(--sb-taupe); stroke: var(--sb-taupe); }
+  to { fill: var(--sb-sage-soft); stroke: var(--sb-sage); }
+}

@@ -28,6 +28,7 @@ import * as developersSelfHost from "#/developers/self-host";
 import * as developersToday from "#/developers/today";
 import * as developersTools from "#/developers/tools";
 import * as homeTools from "#/home/tools";
+import * as howItWorksStorybook from "#/how-it-works/storybook-data";
 import * as psPages from "#/pixelslash/content/pages";
 import * as psPricing from "#/pixelslash/content/pricing";
 import * as psCompare from "#/pixelslash/pages/compare";
@@ -48,6 +49,7 @@ const MODULES: Record<string, object> = {
   "content/how-it-works": howItWorks,
   "content/how-it-works-roles": howItWorksRoles,
   "content/how-it-works-steps": howItWorksSteps,
+  "how-it-works/storybook-data": howItWorksStorybook,
   "content/toggleslash": toggleslash,
   "content/flakeslash": flakeslash,
   "content/taskslash": taskslash,

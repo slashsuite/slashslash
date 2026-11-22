@@ -1,11 +1,14 @@
 ---
-// /how-it-works on the shell, in the suite's section: one cycle from an idea to merged code, with the
-// role, rule and Slash tool at each step. Static: nothing on it runs in the browser.
+// /how-it-works on the shell, in the suite's section: one cycle from an idea to live release, with the
+// illustrated roles, terms, interactive storybook animation, flow diagram, and steps in words.
 import { HOW_IT_WORKS_DESCRIPTION, HOW_IT_WORKS_HEADLINE } from "#/content/how-it-works";
-import { HowItWorks } from "#/how-it-works/page";
+import { HowItWorksAfterStory, HowItWorksBeforeStory } from "#/how-it-works/page";
+import { StorybookSection } from "#/how-it-works/storybook";
 import Slash from "#/layouts/Slash.astro";
 ---
 
 <Slash section="suite" title={HOW_IT_WORKS_HEADLINE} description={HOW_IT_WORKS_DESCRIPTION}>
-  <HowItWorks />
+  <HowItWorksBeforeStory />
+  <StorybookSection client:visible />
+  <HowItWorksAfterStory />
 </Slash>

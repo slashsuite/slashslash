@@ -9,8 +9,9 @@ import { FlowDiagram } from "#/illustrations/flow";
 import { Rich } from "#/shell/rich-text";
 
 /*
- * /how-it-works: the h1 and its two paragraphs, the illustrated roles, the terms, the flow diagram,
- * the steps in words, today and planned, the tools, and the close. Static: nothing here runs in the browser.
+ * /how-it-works static sections: the h1 and its two paragraphs, the illustrated roles, and the terms
+ * before the interactive storybook island; the flow diagram, the steps in words, today and planned,
+ * the tools, and the close after it.
  */
 
 const words = (run: Run): string => (typeof run === "string" ? run : run.text);
@@ -116,7 +117,7 @@ function ToolLine({ tool }: { tool: FlowTool }): ReactNode {
   );
 }
 
-export function HowItWorks(): ReactNode {
+export function HowItWorksBeforeStory(): ReactNode {
   return (
     <>
       <div className="pt-12 md:pt-16">
@@ -145,6 +146,13 @@ export function HowItWorks(): ReactNode {
           ))}
         </ul>
       </HomeSection>
+    </>
+  );
+}
+
+export function HowItWorksAfterStory(): ReactNode {
+  return (
+    <>
       <HomeSection id="flow" title={DIAGRAM.title}>
         <FlowDiagram nodes={DIAGRAM.nodes} caption={DIAGRAM.caption} />
       </HomeSection>

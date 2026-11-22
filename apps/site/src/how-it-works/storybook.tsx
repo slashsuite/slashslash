@@ -5,6 +5,7 @@ import { SceneBuilder } from "#/how-it-works/scenes-builder";
 import { SceneArchitect, SceneMuse } from "#/how-it-works/scenes-early";
 import { SceneChecker } from "#/how-it-works/scenes-middle";
 import { SceneRollout, SceneSentinel } from "#/how-it-works/scenes-release";
+import { SceneRetro } from "#/how-it-works/scenes-retro";
 import { SceneChecks, SceneReviewer } from "#/how-it-works/scenes-review";
 import {
   PALETTE,
@@ -30,6 +31,7 @@ const SCENE_COMPONENTS: Record<StorybookSceneId, () => ReactNode> = {
   reviewer: SceneReviewer,
   sentinel: SceneSentinel,
   rollout: SceneRollout,
+  retro: SceneRetro,
 };
 
 function vars(style: CSSProperties & Record<`--${string}`, number | string>): CSSProperties {

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { PALETTE as P } from "#/how-it-works/storybook-data";
-import { GroundLine, INK_STROKE, OwnerFigure, StoryToken } from "#/how-it-works/storybook-parts";
+import { GroundLine, INK_STROKE, OwnerFigure, RoleInboxStack } from "#/how-it-works/storybook-parts";
 
 function Starburst({ cx, cy, r, className }: { cx: number; cy: number; r: number; className?: string }): ReactNode {
   return (
@@ -104,45 +104,30 @@ function MuseDeskCharacter(): ReactNode {
   );
 }
 
+const MUSE_ENVELOPE_CLASSES = [
+  "sb-muse-envelope-1",
+  "sb-muse-envelope-2",
+  "sb-muse-envelope-3",
+  "sb-muse-envelope-4",
+  "sb-muse-envelope-5",
+] as const;
+
 function RoleInboxTray(): ReactNode {
   return (
-    <g transform="translate(566 226)">
+    <g transform="translate(574 236)">
       <g className="sb-muse-inbox">
-        <rect x={0} y={48} width={178} height={66} rx={10} fill={P.white} {...INK_STROKE} />
-        <g transform="translate(22 28) rotate(-5) scale(0.84)">
-          <g className="sb-muse-envelope-1">
-            <StoryToken seals={0} />
-          </g>
+        <g transform="scale(1.08)">
+          <RoleInboxStack
+            label="Architect inbox"
+            ticketCount={5}
+            badgeCount={5}
+            ticketClasses={MUSE_ENVELOPE_CLASSES}
+            badgeClass="sb-muse-badge"
+          />
         </g>
-        <g transform="translate(64 21) scale(0.88)">
-          <g className="sb-muse-envelope-2">
-            <StoryToken seals={0} />
-          </g>
-        </g>
-        <g transform="translate(106 27) rotate(5) scale(0.84)">
-          <g className="sb-muse-envelope-3">
-            <StoryToken seals={0} />
-          </g>
-        </g>
-        <path
-          d="M0 74 L48 74 L58 86 L120 86 L130 74 L178 74 L178 104 Q178 114 168 114 L10 114 Q0 114 0 104 Z"
-          fill={P.taupeLight}
-          {...INK_STROKE}
-        />
-        <text x={89} y={106} textAnchor="middle" fontSize={15} fontWeight={700} fill={P.ink}>
-          Architect inbox
-        </text>
-        <text x={89} y={163} textAnchor="middle" fontSize={15} fontWeight={700} fill={P.inkSoft}>
+        <text x={84} y={153} textAnchor="middle" fontSize={15} fontWeight={700} fill={P.inkSoft}>
           OmniSlash inbox
         </text>
-        <g transform="translate(166 46)">
-          <g className="sb-muse-badge">
-            <circle cx={0} cy={0} r={15} fill={P.terracotta} {...INK_STROKE} />
-            <text x={0} y={5} textAnchor="middle" fontSize={15} fontWeight={800} fill={P.white}>
-              3
-            </text>
-          </g>
-        </g>
       </g>
     </g>
   );
@@ -165,7 +150,7 @@ export function SceneMuse(): ReactNode {
 
 function ArchitectFigure(): ReactNode {
   return (
-    <g transform="translate(106 54)">
+    <g transform="translate(132 54)">
       <g className="sb-arch-head">
         <path d="M168 48 C168 24 214 24 214 52 C214 72 204 86 190 86 C176 86 168 72 168 48 Z" fill={P.white} {...INK_STROKE} />
         <path d="M166 48 C164 20 218 16 218 46 C206 34 182 40 166 48 Z" fill={P.ink} />
@@ -221,7 +206,7 @@ function ArchitectFigure(): ReactNode {
 
 function DrilledTicketCard(): ReactNode {
   return (
-    <g transform="translate(524 94)">
+    <g transform="translate(534 94)">
       <g className="sb-arch-ticket">
         <g transform="translate(18 -18)">
           <rect x={0} y={0} width={226} height={228} rx={12} fill={P.paperShade} {...INK_STROKE} />
@@ -237,7 +222,7 @@ function DrilledTicketCard(): ReactNode {
           Drilled ticket
         </text>
         <text x={202} y={35} textAnchor="end" fontSize={12} fontWeight={700} fill={P.terracottaSoft}>
-          1 of 3
+          1 of 5
         </text>
         <text x={18} y={70} fontSize={15} fontWeight={700} fill={P.inkSoft}>
           Breakdown
@@ -278,21 +263,23 @@ export function SceneArchitect(): ReactNode {
   return (
     <g>
       <GroundLine />
-      <g transform="translate(36 184) rotate(-6) scale(0.84)">
-        <g className="sb-arch-incoming-1">
-          <StoryToken seals={0} />
+      <path
+        className="sb-arch-inbox-arc"
+        d="M120 268 Q154 224 206 238"
+        fill="none"
+        stroke={P.terracotta}
+        strokeWidth={2.2}
+        strokeDasharray="5 6"
+        strokeLinecap="round"
+      />
+      <g transform="translate(20 278) scale(0.86)">
+        <g className="sb-arch-inbox">
+          <RoleInboxStack label="Architect inbox" ticketCount={5} badgeCount={5} />
         </g>
       </g>
-      <g transform="translate(46 206) rotate(-1) scale(0.86)">
-        <g className="sb-arch-incoming-2">
-          <StoryToken seals={0} />
-        </g>
-      </g>
-      <g transform="translate(56 228) rotate(4) scale(0.88)">
-        <g className="sb-arch-incoming-3">
-          <StoryToken seals={0} />
-        </g>
-      </g>
+      <text x={87} y={389} textAnchor="middle" fontSize={14} fontWeight={700} fill={P.inkSoft}>
+        OmniSlash inbox
+      </text>
       <ArchitectFigure />
       <DrilledTicketCard />
     </g>

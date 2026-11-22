@@ -13,7 +13,8 @@ export type StorybookSceneId =
   | "checks"
   | "reviewer"
   | "sentinel"
-  | "rollout";
+  | "rollout"
+  | "retro";
 
 export type StorybookScene = {
   id: StorybookSceneId;
@@ -67,7 +68,7 @@ export const STORYBOOK_SCENES: readonly StorybookScene[] = [
       facts: ["omnislash/role-inbox"],
     },
     altSummary:
-      "Owner sends an idea spark to Muse, which sketches in its open sketchbook and sends three blue design tickets with orange bands into the architect's OmniSlash role inbox.",
+      "Owner sends an idea spark to Muse, which sketches in its open sketchbook and sends five blue design tickets with orange bands into the architect's OmniSlash role inbox.",
   },
   {
     id: "architect",
@@ -78,11 +79,11 @@ export const STORYBOOK_SCENES: readonly StorybookScene[] = [
     role: "Architect",
     tools: ["OmniSlash drilled ticket"],
     caption: {
-      text: "Architect receives the tickets, opens the design into a blueprint, breaks the work into small blocks, and writes drilled tickets with a breakdown and done checklist.",
-      facts: ["omnislash/drilled-ticket-gate"],
+      text: "Architect receives the tickets in the inbox, opens the design into a blueprint, breaks the work into small blocks, and writes drilled tickets with a breakdown and done checklist.",
+      facts: ["omnislash/role-inbox", "omnislash/drilled-ticket-gate"],
     },
     altSummary:
-      "Architect receives three blue tickets, opens the blueprint on a drafting table, measures with a compass, places orange blocks, and writes a stack of drilled tickets.",
+      "Architect receives five blue tickets in the OmniSlash role inbox, opens the blueprint on a drafting table, measures with a compass, places orange blocks, and writes a stack of drilled tickets.",
   },
   {
     id: "checker",
@@ -97,7 +98,7 @@ export const STORYBOOK_SCENES: readonly StorybookScene[] = [
       facts: ["omnislash/drilled-ticket-gate"],
     },
     altSummary:
-      "Checker ticks three items on the drilled ticket, dips a stamp into an orange ink pad, stamps GO onto the ticket, and the OmniSlash gate lifts open.",
+      "Checker ticks three items on the drilled ticket, dips a stamp into an orange ink pad, and stamps GO onto the ticket so the OmniSlash gate lifts open and the stamped ticket glides through.",
   },
   {
     id: "builder",
@@ -108,8 +109,9 @@ export const STORYBOOK_SCENES: readonly StorybookScene[] = [
     role: "Architect and Builder",
     tools: ["OmniSlash lease", "TaskSlash", "UISlash"],
     caption: {
-      text: "Architect holds the waiting tickets and hands off just one to a builder inside a lease-locked isolated workspace. Builder composes screens with UISlash while TaskSlash queues builds by machine capacity.",
+      text: "Architect keeps waiting tickets in the inbox and hands off just one to a builder inside a lease-locked isolated workspace. Builder builds it into a wrapped package with UISlash while TaskSlash queues builds by machine capacity.",
       facts: [
+        "omnislash/role-inbox",
         "omnislash/leases",
         "omnislash/agent-build-worktree",
         "taskslash/admission-by-capacity",
@@ -118,7 +120,7 @@ export const STORYBOOK_SCENES: readonly StorybookScene[] = [
       ],
     },
     altSummary:
-      "Architect holds two waiting tickets and hands off only one ticket to Builder inside a lease-locked isolated workspace while a second agent bumps the boundary and bounces back. Builder types at a monitor as UISlash blocks snap in and TaskSlash runs steps in order.",
+      "Architect keeps four waiting tickets in an inbox and hands off only one ticket to Builder inside a lease-locked isolated workspace while a second agent bumps the boundary and bounces back. Builder builds with UISlash and TaskSlash until the ticket turns into a wrapped blue package.",
   },
   {
     id: "checks",
@@ -129,7 +131,7 @@ export const STORYBOOK_SCENES: readonly StorybookScene[] = [
     role: "Builder handoff",
     tools: ["PixelSlash", "UISlash", "FlakeSlash"],
     caption: {
-      text: "Builder submits the proposed change and steps back. PixelSlash highlights visual changes for human approval, UISlash checks the design system, and FlakeSlash scans connected projects every 10 minutes.",
+      text: "Builder submits the built package and steps back. PixelSlash highlights visual changes for human approval, UISlash checks the design system, and FlakeSlash scans connected projects every 10 minutes.",
       facts: [
         "pixelslash/upload-to-review-app",
         "pixelslash/block-ci-on-review",
@@ -139,7 +141,7 @@ export const STORYBOOK_SCENES: readonly StorybookScene[] = [
       ],
     },
     altSummary:
-      "Builder pushes the blue token across the handoff line and steps back. PixelSlash highlights a visual change for human approval alongside a UISlash design check and the 10-minute FlakeSlash dashboard scan.",
+      "Builder pushes the wrapped blue package across the handoff line and steps back. PixelSlash highlights a visual change for human approval alongside a UISlash design check and the 10-minute FlakeSlash dashboard scan.",
   },
   {
     id: "reviewer",
@@ -154,7 +156,7 @@ export const STORYBOOK_SCENES: readonly StorybookScene[] = [
       facts: ["omnislash/review-merge-skills"],
     },
     altSummary:
-      "Skeptical reviewer sweeps a magnifying glass across the code sheet alongside a second AI model, spots a flaw, sends a read-only flag to Builder, and sees the line turn green once fixed.",
+      "Skeptical reviewer sweeps a magnifying glass across the code sheet above the wrapped blue package alongside a second AI model, spots a flaw, sends a read-only flag to Builder, and sees the line turn green once fixed.",
   },
   {
     id: "sentinel",
@@ -165,11 +167,11 @@ export const STORYBOOK_SCENES: readonly StorybookScene[] = [
     role: "Sentinel",
     tools: ["OmniSlash role inbox"],
     caption: {
-      text: "At the gatehouse bridge, Sentinel checks by lantern light that every automated, visual, and skeptical check passed, then merges and deploys the proposed change.",
+      text: "At the gatehouse bridge, Sentinel checks by lantern light that every automated, visual, and skeptical check passed, then merges and deploys the built package.",
       facts: ["omnislash/role-inbox", "omnislash/review-merge-skills", "omnislash/role-delivery"],
     },
     altSummary:
-      "Sentinel holds a glowing lantern and magnifying glass over the blue token on the gatehouse bridge, verifies all three green seals one by one, and lets it cross into the arch to merge and deploy.",
+      "Sentinel holds a glowing lantern and magnifying glass over the wrapped blue package on the gatehouse bridge, verifies all three green seals one by one, and lets it cross into the arch to merge and deploy.",
   },
   {
     id: "rollout",
@@ -185,5 +187,20 @@ export const STORYBOOK_SCENES: readonly StorybookScene[] = [
     },
     altSummary:
       "Owner watches as ToggleSlash flips the feature switch live, stepping from 10 to 50 to 100 percent while user app windows light up in waves and an audit trail entry records the change.",
+  },
+  {
+    id: "retro",
+    chapter: 9,
+    stepsLabel: "End of day",
+    shortLabel: "Retro",
+    title: "Good night and learn from the day",
+    role: "All roles",
+    tools: ["OmniSlash good night"],
+    caption: {
+      text: "At the end of the day, every role gathers for a good-night retro. Together they review what worked, capture lessons from past runs, and update their shared playbook so the next cycle starts smarter.",
+      facts: ["omnislash/role-tick", "omnislash/role-brief", "omnislash/role-end"],
+    },
+    altSummary:
+      "Under a crescent moon and stars, Owner, Muse, Architect, Checker, Builder, Reviewer, and Sentinel gather below a good-night retro board. Notes from the day flow into the shared playbook so the next cycle starts smarter.",
   },
 ];

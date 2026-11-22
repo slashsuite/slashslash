@@ -78,13 +78,13 @@ test("the animated storybook steps through scenes with buttons and arrow keys", 
   await expect(book).toHaveAttribute("data-scene", "muse");
   await expect(book).toHaveAttribute("data-playing", "false");
   await expect(book).toHaveAttribute("data-animated", "false");
-  await expect(book.getByText("Scene 1 of 8", { exact: true })).toBeVisible();
+  await expect(book.getByText("Scene 1 of 9", { exact: true })).toBeVisible();
 
   const nextBtn = book.getByRole("button", { name: "Next scene" });
   await nextBtn.click();
   await expect(book).toHaveAttribute("data-scene", "architect");
-  await expect(book.getByText("Scene 2 of 8", { exact: true })).toBeVisible();
-  await expect(book.locator('[aria-live="polite"]')).toHaveText("Scene 2 of 8: Plan and drill the ticket");
+  await expect(book.getByText("Scene 2 of 9", { exact: true })).toBeVisible();
+  await expect(book.locator('[aria-live="polite"]')).toHaveText("Scene 2 of 9: Plan and drill the ticket");
 
   await book.getByRole("button", { name: "Previous scene" }).click();
   await expect(book).toHaveAttribute("data-scene", "muse");
@@ -97,7 +97,11 @@ test("the animated storybook steps through scenes with buttons and arrow keys", 
 
   await book.locator('[data-storybook-chapter="sentinel"]').click();
   await expect(book).toHaveAttribute("data-scene", "sentinel");
-  await expect(book.getByText("Scene 7 of 8", { exact: true })).toBeVisible();
+  await expect(book.getByText("Scene 7 of 9", { exact: true })).toBeVisible();
+
+  await book.locator('[data-storybook-chapter="retro"]').click();
+  await expect(book).toHaveAttribute("data-scene", "retro");
+  await expect(book.getByText("Scene 9 of 9", { exact: true })).toBeVisible();
 
   const playBtn = book.getByRole("button", { name: "Play animation" });
   await playBtn.click();

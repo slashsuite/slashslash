@@ -188,21 +188,15 @@
 
 .sb-chapters {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.45rem;
   padding: 0.75rem 1rem;
   background: var(--hc-subtle);
 }
 
-@media (min-width: 40rem) {
-  .sb-chapters {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-
 @media (min-width: 64rem) {
   .sb-chapters {
-    grid-template-columns: repeat(8, minmax(0, 1fr));
+    grid-template-columns: repeat(9, minmax(0, 1fr));
   }
 }
 
@@ -366,40 +360,47 @@
 
 .sb-stage.is-animated .sb-muse-envelope-1 {
   transform-origin: center;
-  animation: sb-envelope-fly 1.35s 1.95s cubic-bezier(0.25, 0.8, 0.25, 1) both;
+  animation: sb-envelope-fly 1.2s 1.85s cubic-bezier(0.25, 0.8, 0.25, 1) both;
 }
 
 .sb-stage.is-animated .sb-muse-envelope-2 {
   transform-origin: center;
-  animation: sb-envelope-fly 1.35s 2.35s cubic-bezier(0.25, 0.8, 0.25, 1) both;
+  animation: sb-envelope-fly 1.2s 2.15s cubic-bezier(0.25, 0.8, 0.25, 1) both;
 }
 
 .sb-stage.is-animated .sb-muse-envelope-3 {
   transform-origin: center;
-  animation: sb-envelope-fly 1.35s 2.75s cubic-bezier(0.25, 0.8, 0.25, 1) both;
+  animation: sb-envelope-fly 1.2s 2.45s cubic-bezier(0.25, 0.8, 0.25, 1) both;
+}
+
+.sb-stage.is-animated .sb-muse-envelope-4 {
+  transform-origin: center;
+  animation: sb-envelope-fly 1.2s 2.75s cubic-bezier(0.25, 0.8, 0.25, 1) both;
+}
+
+.sb-stage.is-animated .sb-muse-envelope-5 {
+  transform-origin: center;
+  animation: sb-envelope-fly 1.2s 3.05s cubic-bezier(0.25, 0.8, 0.25, 1) both;
 }
 
 .sb-stage.is-animated .sb-muse-inbox {
   transform-origin: 50% 85%;
-  animation: sb-inbox-bounce 0.55s 4.05s ease-out both;
+  animation: sb-inbox-bounce 0.55s 4.2s ease-out both;
 }
 
 .sb-stage.is-animated .sb-muse-badge {
   transform-origin: center;
-  animation: sb-pop-in 0.45s 4.15s cubic-bezier(0.2, 1.35, 0.4, 1) both;
+  animation: sb-pop-in 0.45s 4.3s cubic-bezier(0.2, 1.35, 0.4, 1) both;
 }
 
 /* Scene 2: Architect -> Drill the tickets */
-.sb-stage.is-animated .sb-arch-incoming-1 {
-  animation: sb-arch-token-in 0.75s 0.1s ease-out both;
+.sb-stage.is-animated .sb-arch-inbox {
+  transform-origin: 50% 85%;
+  animation: sb-inbox-bounce 0.55s 0.2s ease-out both;
 }
 
-.sb-stage.is-animated .sb-arch-incoming-2 {
-  animation: sb-arch-token-in 0.75s 0.28s ease-out both;
-}
-
-.sb-stage.is-animated .sb-arch-incoming-3 {
-  animation: sb-arch-token-in 0.75s 0.46s ease-out both;
+.sb-stage.is-animated .sb-arch-inbox-arc {
+  animation: sb-dash-flow-11 1.4s linear infinite;
 }
 
 .sb-stage.is-animated .sb-arch-blueprint {
@@ -494,21 +495,38 @@
   animation: sb-pop-in 0.35s 3.15s cubic-bezier(0.2, 1.45, 0.35, 1) both;
 }
 
+.sb-stage.is-animated .sb-chk-lane-arrow {
+  animation: sb-dash-flow-12 1.4s linear infinite;
+}
+
+.sb-stage.is-animated .sb-chk-seal {
+  transform-origin: center;
+  animation: sb-seal-light 0.4s 3.2s ease-out both;
+}
+
 .sb-stage.is-animated .sb-chk-gate-arm {
   transform-origin: 6px 7px;
-  animation: sb-gate-lift 1.05s 3.5s cubic-bezier(0.25, 0.9, 0.3, 1.05) both;
+  animation: sb-gate-lift 0.9s 3.4s cubic-bezier(0.25, 0.9, 0.3, 1.05) both;
 }
 
 .sb-stage.is-animated .sb-chk-gate-lamp {
-  animation: sb-lamp-turn-green 0.5s 3.5s ease-out both;
+  animation: sb-lamp-turn-green 0.45s 3.4s ease-out both;
 }
 
 .sb-stage.is-animated .sb-chk-gate-badge {
   transform-origin: center;
-  animation: sb-pop-in 0.45s 4s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+  animation: sb-pop-in 0.45s 3.85s cubic-bezier(0.2, 1.3, 0.4, 1) both;
 }
 
-/* Scene 4: Architect & Builder -> Lease lock, UISlash, TaskSlash */
+.sb-stage.is-animated .sb-chk-ticket-pass {
+  animation: sb-chk-ticket-pass 1.15s 3.75s cubic-bezier(0.35, 0, 0.2, 1) both;
+}
+
+/* Scene 4: Architect & Builder -> Lease lock, UISlash, TaskSlash, BuiltPackage */
+.sb-bld-handoff-token {
+  opacity: 0;
+}
+
 .sb-stage.is-animated .sb-bld-boundary {
   animation: sb-dash-flow-12 3s linear infinite;
 }
@@ -533,7 +551,17 @@
 
 .sb-stage.is-animated .sb-bld-handoff-token {
   transform-origin: center;
-  animation: sb-bld-handoff 1.25s 0.25s cubic-bezier(0.25, 0.8, 0.25, 1) both;
+  animation: sb-bld-handoff 4.1s 0.25s cubic-bezier(0.25, 0.8, 0.25, 1) both;
+}
+
+.sb-stage.is-animated .sb-bld-built-package {
+  transform-origin: center;
+  animation: sb-pop-in 0.5s 4.05s cubic-bezier(0.2, 1.4, 0.35, 1) both;
+}
+
+.sb-stage.is-animated .sb-bld-pack-spark {
+  transform-origin: center;
+  animation: sb-bump-spark 0.75s 4.1s ease-out both;
 }
 
 .sb-stage.is-animated .sb-bld-head {
@@ -789,6 +817,60 @@
   animation: sb-fade-right 0.5s 4.05s ease-out both;
 }
 
+/* Scene 9: Good-night retro -> All roles learn from past runs */
+.sb-stage.is-animated .sb-retro-nod-a {
+  transform-origin: 50% 88%;
+  animation: sb-gentle-nod 3.4s ease-in-out infinite;
+}
+
+.sb-stage.is-animated .sb-retro-nod-b {
+  transform-origin: 50% 88%;
+  animation: sb-gentle-nod 3.6s 0.9s ease-in-out infinite;
+}
+
+.sb-stage.is-animated .sb-retro-note-1 {
+  transform-origin: center;
+  animation: sb-pop-in 0.45s 0.5s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+}
+
+.sb-stage.is-animated .sb-retro-note-2 {
+  transform-origin: center;
+  animation: sb-pop-in 0.45s 1.2s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+}
+
+.sb-stage.is-animated .sb-retro-note-3 {
+  transform-origin: center;
+  animation: sb-pop-in 0.45s 1.9s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+}
+
+.sb-stage.is-animated .sb-retro-arrow {
+  animation: sb-dash-flow-10 1.3s linear infinite;
+}
+
+.sb-stage.is-animated .sb-retro-playbook {
+  animation: sb-slide-up 0.55s 2.4s ease-out both;
+}
+
+.sb-stage.is-animated .sb-retro-rule-1 {
+  stroke-dasharray: 1;
+  animation: sb-draw-unit 0.45s 2.95s ease-out both;
+}
+
+.sb-stage.is-animated .sb-retro-rule-2 {
+  stroke-dasharray: 1;
+  animation: sb-draw-unit 0.45s 3.3s ease-out both;
+}
+
+.sb-stage.is-animated .sb-retro-rule-3 {
+  stroke-dasharray: 1;
+  animation: sb-draw-unit 0.45s 3.65s ease-out both;
+}
+
+.sb-stage.is-animated .sb-retro-badge {
+  transform-origin: center;
+  animation: sb-pop-in 0.45s 4.1s cubic-bezier(0.2, 1.35, 0.4, 1) both;
+}
+
 /* ==========================================================================
    KEYFRAMES
    ========================================================================== */
@@ -877,11 +959,6 @@
   100% { transform: scale(1); opacity: 1; }
 }
 
-@keyframes sb-arch-token-in {
-  from { transform: translate(-36px, -10px) rotate(-8deg); opacity: 0; }
-  to { transform: translate(0, 0) rotate(0deg); opacity: 1; }
-}
-
 @keyframes sb-unfurl {
   from { transform: scaleX(0.25); opacity: 0.4; }
   to { transform: scaleX(1); opacity: 1; }
@@ -925,8 +1002,13 @@
 }
 
 @keyframes sb-gate-lift {
-  0% { transform: rotate(52deg); }
+  0% { transform: rotate(103deg); }
   100% { transform: rotate(0deg); }
+}
+
+@keyframes sb-chk-ticket-pass {
+  0% { transform: translateX(-172px); }
+  100% { transform: translateX(0); }
 }
 
 @keyframes sb-lamp-turn-green {
@@ -964,9 +1046,11 @@
 }
 
 @keyframes sb-bld-handoff {
-  0% { transform: translate(-448px, -146px) rotate(-6deg) scale(0.92); opacity: 0.9; }
-  52% { transform: translate(-189px, -195px) rotate(6deg) scale(1.04); opacity: 1; }
-  100% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 1; }
+  0% { transform: translate(-330px, -120px) rotate(-6deg) scale(0.88); opacity: 0; }
+  8% { transform: translate(-310px, -130px) rotate(-4deg) scale(1); opacity: 1; }
+  22% { transform: translate(-150px, -172px) rotate(6deg) scale(1.04); opacity: 1; }
+  34%, 86% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 1; }
+  100% { transform: translate(0, -4px) scale(0.45); opacity: 0; }
 }
 
 @keyframes sb-step-back {

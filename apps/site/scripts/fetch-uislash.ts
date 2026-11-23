@@ -19,10 +19,35 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, posix, resolve } from "node:path";
-import { readUislashPin, type UislashPin } from "./vendor-uislash";
 
 const REPO = "slashsuite/uislash";
 const SITE = resolve(import.meta.dirname, "..");
+
+type UislashPin = {
+  sha: string;
+  "ui-react": string;
+  themes: string;
+};
+
+/** Reads and validates uislash.sha.json: full 40-char commit SHA plus both package versions. */
+function readUislashPin(path: string): UislashPin {
+  const parsed: unknown = JSON.parse(readFileSync(path, "utf8"));
+  if (!isRecord(parsed)) throw new Error(`${path}: expected a JSON object`);
+  const sha = parsed["sha"];
+  const uiReact = parsed["ui-react"];
+  const themes = parsed["themes"];
+  if (typeof sha !== "string" || !/^[0-9a-f]{40}$/.test(sha)) {
+    throw new Error(`${path}: sha is not a full commit SHA: "${String(sha)}"`);
+  }
+  if (typeof uiReact !== "string" || uiReact.trim() === "") {
+    throw new Error(`${path}: ui-react version is missing`);
+  }
+  if (typeof themes !== "string" || themes.trim() === "") {
+    throw new Error(`${path}: themes version is missing`);
+  }
+  return { sha, "ui-react": uiReact, themes };
+}
+
 const DOCS_COMPONENTS = "packages/ui-react/docs/components";
 const DOCS_DATA = [
   "packages/ui-react/docs/props.json",
@@ -56,7 +81,7 @@ export function assertUiReactVersionMatches(siteDir = SITE): UislashPin {
   const installed = readInstalledUiReactVersion(siteDir);
   if (installed !== pin["ui-react"]) {
     throw new Error(
-      `uislash.sha.json pins ui-react ${pin["ui-react"]}, but installed @slashsuite/ui-react is ${installed}; re-run vendor-uislash.ts and bun install`,
+      `uislash.sha.json pins ui-react ${pin["ui-react"]}, but installed @slashsuite/ui-react is ${installed}; set "ui-react" in uislash.sha.json (and "sha" to the uislash commit that built it) to ${installed}`,
     );
   }
   return pin;

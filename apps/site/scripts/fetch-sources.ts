@@ -115,7 +115,7 @@ async function download(sha: string, path: string, repo = REPO, name = "PixelSla
 }
 
 async function main(): Promise<void> {
-  // Check the vendored package version before any network call so a mismatch fails fast.
+  // Check the installed package version before any network call so a mismatch fails fast.
   assertUiReactVersionMatches(SITE);
   const sha = pinnedSha();
   const pins = factsPins();

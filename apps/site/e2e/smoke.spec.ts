@@ -60,6 +60,7 @@ const PAGE_CONCURRENCY = 8;
 
 test("each page the sitemap lists answers 200 with itself as canonical", async ({ request }) => {
   const queue = [...(await sitemapLocs(request))];
+  expect(queue, "the sitemap lists pages to ask").not.toHaveLength(0);
   const check = async (): Promise<void> => {
     for (let loc = queue.shift(); loc !== undefined; loc = queue.shift()) {
       // The loc is the live URL; its path is asked of the host under test.

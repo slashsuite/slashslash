@@ -258,7 +258,7 @@ The agent status (`working`, `readying`, `needs-human`, `blocked`) helps tell `b
 | ticketed | `open` | none | no Drilled section yet |
 | drilling, checking, owner_plan_call | `open` | none | Drilled section present; check records on the ticket |
 | go | `open` | none | a go is recorded on the current text |
-| spike | `open` | `launched` → building | tag `spike`; the row stays `launched` after its handoff |
+| spike | `open` | `launched` → building | tag `spike`; a spike's handoff leaves the row `launched` and never moves it to `ready-for-gate` (`skills/ob-architect/SKILL.md:436`) |
 | queued | `open` | `pending` → queued | |
 | launching | `open` | `launching` → launching | |
 | building | `open` | `launched` → building | no verdict; agent status `working` |
@@ -269,7 +269,7 @@ The agent status (`working`, `readying`, `needs-human`, `blocked`) helps tell `b
 | partial | `open` | `launched` → building | verdict `partial` |
 | handed_off | `open` | `ready-for-gate` → handed-off | handoff unread in the sentinel or architect inbox |
 | gating, updating_pr, owner_merge_call | `open` | `ready-for-gate` → handed-off | handoff read; the gating thread holds the `ticket:` lease. These three cannot be told apart from stored data today. |
-| merged_deployed | `open` | `ready-for-gate` or `merged` → landed | PR merged; ticket not yet closed |
+| merged_deployed | `open` | `ready-for-gate` → handed-off (until close or reconcile lands it), or `merged` → landed | PR merged; ticket not yet closed. Only the PR's merged state separates this from gating. |
 | closed | `done` | `merged` → landed | |
 | spike_closed | `done` | `failed` with a spike error | tag `spike` |
 | failed | `open` | `failed` → failed | row error says why |

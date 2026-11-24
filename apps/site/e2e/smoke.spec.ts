@@ -66,15 +66,11 @@ for (const { path } of PAGES) {
 
 /**
  * One fresh read of the home page's build commit: a new query each time, so no cache answers with an
- * older copy. A dropped connection reads as no commit, like an older sha.
+ * older copy.
  */
 async function readCommit(request: APIRequestContext): Promise<{ status: number; seen: string | undefined }> {
-  try {
-    const response = await request.get(`/?commit-check=${crypto.randomUUID()}`, { timeout: 15_000 });
-    return { status: response.status(), seen: response.ok() ? buildCommitOf(await response.text()) : undefined };
-  } catch {
-    return { status: 0, seen: undefined };
-  }
+  const response = await request.get(`/?commit-check=${crypto.randomUUID()}`, { timeout: 15_000 });
+  return { status: response.status(), seen: response.ok() ? buildCommitOf(await response.text()) : undefined };
 }
 
 test("the home page names the commit it was built from", async ({ request }) => {
@@ -92,7 +88,8 @@ if (EXPECT_COMMIT !== undefined && EXPECT_COMMIT !== "") {
   test("the home page names the deployed commit", async ({ request }) => {
     test.setTimeout(COMMIT_WAIT_MS + 30_000);
     await expect
-      .poll(async () => (await readCommit(request)).seen, {
+      // A dropped connection while the edge switches over counts as not yet, like an older sha.
+      .poll(async () => (await readCommit(request).catch(() => undefined))?.seen, {
         message: `the live home page never named the deployed ${EXPECT_COMMIT}`,
         intervals: [5_000],
         timeout: COMMIT_WAIT_MS,

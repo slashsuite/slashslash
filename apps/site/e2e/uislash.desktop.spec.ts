@@ -4,11 +4,10 @@ import { resolve } from "node:path";
 import { open } from "./ready.ts";
 
 /*
- * UISlash in the Slash shell, with the viewport set here (1440px and 390px): /uislash and /uislash/button
- * render under the site's header and over its footer and never scroll sideways, the component list is
- * shown from md up, every example frame on /uislash/button holds visible DOM, and the SiteSearch dialog
- * finds components. When WRITE_PR_SHOTS=1 is set, it also captures full-page light and dark shots at 1440px
- * and 390px under apps/site/pr-shots/. The phone's menu is uislash.phone.spec.ts.
+ * UISlash in the Slash shell, with the viewport set here: the component list is shown from md up, every
+ * example frame on /uislash/button holds visible DOM, and the SiteSearch dialog finds components. When
+ * WRITE_PR_SHOTS=1 is set, it also captures full-page light and dark shots at 1440px and 390px under
+ * apps/site/pr-shots/. The phone's menu is uislash.phone.spec.ts.
  */
 
 const SHOTS_DIR = resolve(import.meta.dirname, "../pr-shots");
@@ -45,20 +44,6 @@ test("SiteSearch on /uislash finds Button and links to /uislash/button", async (
     await expect(hit).toHaveAttribute("href", "/uislash/button");
   });
 });
-
-for (const { path, theme, width, height } of CASES) {
-  test(`${path} (${theme}, ${width}px) renders in the Slash shell with no overflow`, async ({ page }) => {
-    await page.setViewportSize({ width, height });
-    await page.emulateMedia({ colorScheme: theme, reducedMotion: "reduce" });
-    await open(page, path);
-
-    await expect(page.getByRole("banner")).toBeVisible();
-    await expect(page.getByRole("contentinfo")).toBeVisible();
-    await expect(page.getByRole("banner").getByRole("link", { name: "slashslash.build" })).toHaveAttribute("href", "/");
-    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-    expect(overflow, `${path} overflows horizontally at ${width}px`).toBe(0);
-  });
-}
 
 for (const target of TARGETS) {
   test(`${target.path} shows the component list from md up`, async ({ page }) => {

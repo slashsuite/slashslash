@@ -13,7 +13,8 @@ test("phone component menu stays open when viewport height changes", async ({ pa
   // Once hydrated, the menu's summary names the list and the page it is on.
   await menu.getByText("All components: Button", { exact: true }).click();
   await expect(button).toBeVisible();
-  const { width } = page.viewportSize() ?? { width: 393 };
-  await page.setViewportSize({ width, height: 700 });
+  // Shorter, as when the phone's toolbar or keyboard comes up.
+  const { width, height } = page.viewportSize() ?? { width: 393, height: 659 };
+  await page.setViewportSize({ width, height: height - 144 });
   await expect(button).toBeVisible();
 });

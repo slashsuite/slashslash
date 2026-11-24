@@ -6,6 +6,14 @@ import { expect, type Page, type Response } from "@playwright/test";
  */
 export async function open(page: Page, path: string): Promise<Response | null> {
   const response = await page.goto(path);
-  await expect(page.locator("html[data-hydrated]")).toBeAttached();
+  await hydrated(page);
   return response;
 }
+
+/** Reloads the page and waits until it is ready to use again, as `open` does. */
+export async function reload(page: Page): Promise<void> {
+  await page.reload();
+  await hydrated(page);
+}
+
+const hydrated = (page: Page): Promise<void> => expect(page.locator("html[data-hydrated]")).toBeAttached();

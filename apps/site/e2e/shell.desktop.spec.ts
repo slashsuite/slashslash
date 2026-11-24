@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { open } from "./ready.ts";
+import { open, reload } from "./ready.ts";
 
 /*
  * The shell in a real browser, on the 404 page (the suite's section), on the desktop: the theme
@@ -21,16 +21,14 @@ test("the toggle switches Slash Day and Slash Night, and the choice survives a r
   await test.step("to Slash Night, kept over a reload", async () => {
     await toDark.click();
     await expect(toLight).toBeVisible();
-    await page.reload();
-    await expect(page.locator("html[data-hydrated]")).toBeAttached();
+    await reload(page);
     await expect(toLight).toBeVisible();
   });
 
   await test.step("back to Slash Day, kept over a reload", async () => {
     await toLight.click();
     await expect(toDark).toBeVisible();
-    await page.reload();
-    await expect(page.locator("html[data-hydrated]")).toBeAttached();
+    await reload(page);
     await expect(toDark).toBeVisible();
   });
 });

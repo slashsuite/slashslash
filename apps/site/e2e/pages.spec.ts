@@ -1,5 +1,5 @@
 import { AxeBuilder } from "@axe-core/playwright";
-import { expect, type Page, test } from "@playwright/test";
+import { type BrowserContext, expect, type Page, test } from "@playwright/test";
 import { resolve } from "node:path";
 import { PAGES } from "../src/content/pages.ts";
 import { open } from "./ready.ts";
@@ -14,9 +14,10 @@ import { open } from "./ready.ts";
  */
 
 const THEMES = ["light", "dark"] as const;
+type Theme = (typeof THEMES)[number];
 
 /** The pages whose full-page shot is kept for the flip review, by path, with the shot's name. */
-const FLIP_SHOTS: Partial<Record<string, string>> = {
+const FLIP_SHOTS: Record<string, string> = {
   "/": "home-full",
   "/pixelslash": "pixelslash-home",
   "/pixelslash/pricing": "pixelslash-pricing",
@@ -50,59 +51,72 @@ async function scrollToBottom(page: Page): Promise<void> {
     .toBe(true);
 }
 
-for (const { path, status } of ROUTES) {
+type Route = { path: string; status: number };
+type Fixtures = { page: Page; context: BrowserContext; baseURL: string | undefined };
+
+/** The page at `path` in `theme`: its status, axe, the load to the bottom with no request off the site, no sideways scroll. */
+async function checkPage(fixtures: Fixtures, route: Route, theme: Theme): Promise<void> {
+  const { page, context, baseURL } = fixtures;
+  const { path, status } = route;
   // UISlash Table's overflow-x-auto wrapper does not yet set tabindex="0"; drop this exclusion once
   // @slashsuite/ui-react makes Table's scroll container keyboard-focusable.
   const axeExcluded = path === "/uislash" || path.startsWith("/uislash/") ? ["scrollable-region-focusable"] : [];
-  const shot = FLIP_SHOTS[path];
+  const origin = new URL(baseURL ?? "").origin;
+  const leaked: string[] = [];
+  await context.route("**/*", async (request) => {
+    const url = new URL(request.request().url());
+    if (url.origin === origin || url.hostname === "127.0.0.1") return request.fallback();
+    leaked.push(url.href);
+    return request.abort();
+  });
+  await page.emulateMedia({ colorScheme: theme, reducedMotion: "reduce" });
 
+  await test.step("answers its status and hydrates", async () => {
+    const response = await open(page, path);
+    expect(response?.status()).toBe(status);
+  });
+
+  await test.step("passes axe", async () => {
+    const axe = await new AxeBuilder({ page }).disableRules(axeExcluded).analyze();
+    const violations = axe.violations.flatMap((v) =>
+      v.nodes.map((n) => `${v.id}: ${n.target.join(" ")} (${n.any.map((c) => c.message).join("; ")})`),
+    );
+    expect(violations).toEqual([]);
+  });
+
+  await test.step("loads to the bottom without leaving the site", async () => {
+    await scrollToBottom(page);
+    expect(leaked).toEqual([]);
+  });
+
+  // After the scroll, so lazy content that loaded on the way down counts too.
+  await test.step("never scrolls sideways", async () => {
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(overflow, "the page scrolls sideways").toBe(0);
+  });
+}
+
+for (const route of ROUTES.filter((r) => !Object.hasOwn(FLIP_SHOTS, r.path))) {
+  for (const theme of THEMES) {
+    test(`${route.path} in ${theme}`, async ({ page, context, baseURL }) => {
+      await checkPage({ page, context, baseURL }, route, theme);
+    });
+  }
+}
+
+// The pages a person looks at before the flip also leave the whole page in test-results/flip-shots.
+for (const [path, shot] of Object.entries(FLIP_SHOTS)) {
+  const route = { path, status: 200 };
   for (const theme of THEMES) {
     test(`${path} in ${theme}`, async ({ page, context, baseURL }, info) => {
-      const origin = new URL(baseURL ?? "").origin;
-      const leaked: string[] = [];
-      await context.route("**/*", async (route) => {
-        const url = new URL(route.request().url());
-        if (url.origin === origin || url.hostname === "127.0.0.1") return route.fallback();
-        leaked.push(url.href);
-        return route.abort();
-      });
-      await page.emulateMedia({ colorScheme: theme, reducedMotion: "reduce" });
-
-      await test.step("answers its status and hydrates", async () => {
-        const response = await open(page, path);
-        expect(response?.status()).toBe(status);
-      });
-
-      await test.step("passes axe", async () => {
-        const axe = await new AxeBuilder({ page }).disableRules(axeExcluded).analyze();
-        const violations = axe.violations.flatMap((v) =>
-          v.nodes.map((n) => `${v.id}: ${n.target.join(" ")} (${n.any.map((c) => c.message).join("; ")})`),
-        );
-        expect(violations).toEqual([]);
-      });
-
-      await test.step("loads to the bottom without leaving the site", async () => {
-        await scrollToBottom(page);
-        expect(leaked).toEqual([]);
-      });
-
-      // After the scroll, so lazy content that loaded on the way down counts too.
-      await test.step("never scrolls sideways", async () => {
-        const overflow = await page.evaluate(
-          () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-        );
-        expect(overflow, "the page scrolls sideways").toBe(0);
-      });
-
-      // The pages a person looks at before the flip: the whole page, kept in test-results/flip-shots.
-      // oxlint-disable-next-line playwright/no-conditional-in-test -- look test, moves to PixelSlash in SS-17
-      if (shot !== undefined) {
+      await checkPage({ page, context, baseURL }, route, theme);
+      await test.step("leaves a full-page shot", async () => {
         await page.evaluate(() => window.scrollTo(0, 0));
         await page.screenshot({
           path: resolve(import.meta.dirname, `../test-results/flip-shots/${shot}-${theme}-${info.project.name}.png`),
           fullPage: true,
         });
-      }
+      });
     });
   }
 }

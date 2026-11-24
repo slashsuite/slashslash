@@ -2,7 +2,7 @@
  * The /flakeslash page, as plain data so a test can check it. Written by hand from flakeslash 61f9697:
  * packages/cli/src/cli.ts and packages/cli/src/issue.ts (the CLI help) for what works today, and
  * docs/product.md for what is planned. Nothing is fetched at build time, so a change in that repo
- * changes this file by hand. Every product claim here cites the product's FACTS.md (facts.test.ts).
+ * changes this file by hand. Every product claim here cites the product's FACTS.md (facts.built.test.ts).
  *
  * Commands stay free of `&` and quotes. The one placeholder, `<your key>`, stands where a reader puts
  * their own key; a test decodes the page's `&lt;` and `&gt;` before it looks for a command.

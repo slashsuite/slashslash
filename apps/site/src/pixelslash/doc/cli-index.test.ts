@@ -11,6 +11,18 @@ import { findPage } from "#/pixelslash/doc/docs-map";
 
 const INDEX = buildCommandIndex(CLI_SPLIT.pages);
 const COMMANDS = INDEX.map((entry) => entry.command);
+type Entry = (typeof INDEX)[number];
+type Flag = Entry["flags"][number];
+
+/** Whether an entry's owner is a real page that shows its synopsis. `compare` is the bare `pixelslash --live …` form: it has no word after `pixelslash`. */
+function ownerShowsSynopsis(entry: Entry): boolean {
+  const shown = entry.command === "compare" ? "pixelslash" : `pixelslash ${entry.command}`;
+  const tokens = JSON.stringify(CLI_SPLIT.pages.get(entry.page));
+  return findPage(entry.page) !== undefined && tokens.includes(shown);
+}
+
+/** Whether a flag starts with -- and says what it does. */
+const flagIsSound = ({ flag, what }: Flag): boolean => /^--[a-z]/.test(flag) && what !== "";
 
 describe("the command index", () => {
   test("finds the commands in cli.md, each once", () => {
@@ -24,12 +36,7 @@ describe("the command index", () => {
   });
 
   test("each command's owner is a real page that shows its synopsis", () => {
-    const wrong = INDEX.filter((entry) => {
-      // `compare` is the bare `pixelslash --live …` form: it has no word after `pixelslash`.
-      const shown = entry.command === "compare" ? "pixelslash" : `pixelslash ${entry.command}`;
-      const tokens = JSON.stringify(CLI_SPLIT.pages.get(entry.page));
-      return findPage(entry.page) === undefined || !tokens.includes(shown);
-    }).map((entry) => `${entry.command} on ${entry.page}`);
+    const wrong = INDEX.filter((entry) => !ownerShowsSynopsis(entry)).map((entry) => `${entry.command} on ${entry.page}`);
     expect(wrong).toEqual([]);
   });
 
@@ -39,7 +46,7 @@ describe("the command index", () => {
     );
     expect(flags.length).toBeGreaterThan(40);
     const bad = flags
-      .filter(({ flag, what }) => !/^--[a-z]/.test(flag) || what === "")
+      .filter((flag) => !flagIsSound(flag))
       .map(({ command, flag }) => `pixelslash ${command} ${flag}`);
     expect(bad).toEqual([]);
   });
@@ -116,13 +123,15 @@ describe("the Takes column", () => {
   const PLACEHOLDER = new RegExp(
     String.raw`^(?:${OPTION}(?:\|${OPTION})+|0\.\.1|x,y,w,h|${ATOM}(?:,${ATOM})*(?:,\.\.\.)?)$`,
   );
+  /** A flag row's Takes cell: nothing, or a placeholder. */
+  const takesPlaceholder = (takes: string): boolean => takes === "" || PLACEHOLDER.test(takes);
 
   test("every flag row takes nothing or a placeholder, never an example value", () => {
     const rows = INDEX.flatMap((entry) =>
       entry.flags.map((flag) => ({ command: entry.command, ...flag })),
     );
     const bad = rows
-      .filter(({ takes }) => takes !== "" && !PLACEHOLDER.test(takes))
+      .filter(({ takes }) => !takesPlaceholder(takes))
       .map(({ command, flag, takes }) => `pixelslash ${command} ${flag} shows ${takes}`);
     expect(bad).toEqual([]);
     for (const { takes } of rows) {

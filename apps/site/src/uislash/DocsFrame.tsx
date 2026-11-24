@@ -1,6 +1,7 @@
 import { DocsLayout, type DocsHeading, type DocsNeighbour } from "@slashsuite/ui-react";
 import { componentSections } from "@uislash-src/packages/ui-react/docs/components/index";
 import type { ReactNode } from "react";
+import { Island } from "#/shell/island";
 import { InlineCode } from "./docs/InlineCode";
 
 const plain = (path: string): string => {
@@ -39,16 +40,18 @@ export function DocsFrame({
     })),
   ];
   return (
-    <DocsLayout
-      nav={nav}
-      navLabel="All components"
-      title={title}
-      description={description !== undefined ? <InlineCode text={description} /> : undefined}
-      contents={contents}
-      previous={previous}
-      next={next}
-    >
-      {children}
-    </DocsLayout>
+    <Island>
+      <DocsLayout
+        nav={nav}
+        navLabel="All components"
+        title={title}
+        description={description !== undefined ? <InlineCode text={description} /> : undefined}
+        contents={contents}
+        previous={previous}
+        next={next}
+      >
+        {children}
+      </DocsLayout>
+    </Island>
   );
 }

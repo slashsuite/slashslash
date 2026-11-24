@@ -164,10 +164,11 @@ describe("built /uislash pages", () => {
     expect(html).not.toContain("@hackcove/");
   });
 
+  // SearchIsland is the kit's SiteSearch, wrapped so it reports its hydration (src/uislash/SearchIsland.tsx).
   test("/uislash pages include the SiteSearch island", () => {
     for (const file of ["uislash.html", "uislash/button.html"]) {
       const html = readDist(file);
-      expect(html, file).toMatch(/<astro-island[^>]*component-export="SiteSearch"/);
+      expect(html, file).toMatch(/<astro-island[^>]*component-export="SearchIsland"/);
     }
   });
 });

@@ -1,5 +1,6 @@
 import { Input, ListRow, Stack, Text } from "@slashsuite/ui-react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
+import { Island } from "#/shell/island";
 import { type SearchEntry, type SearchHit, search } from "#/pixelslash/doc/search";
 
 /** The index pages/pixelslash/search-index.json.ts writes at build time. */
@@ -35,9 +36,18 @@ async function fetchEntries(): Promise<SearchEntry[]> {
 
 /**
  * The docs search box: a static index fetched from this site's own origin the first time the box
- * is used, queried in the browser. It sends nothing anywhere.
+ * is used, queried in the browser. It sends nothing anywhere. An eager island, so it reports its
+ * hydration (see Island).
  */
 export function DocsSearch(): ReactNode {
+  return (
+    <Island>
+      <SearchBox />
+    </Island>
+  );
+}
+
+function SearchBox(): ReactNode {
   const [query, setQuery] = useState("");
   const [entries, setEntries] = useState<SearchEntry[] | null>(null);
   const [failed, setFailed] = useState(false);

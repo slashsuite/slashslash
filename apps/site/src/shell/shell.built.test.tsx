@@ -36,8 +36,15 @@ const links = (html: string): { href: string; text: string }[] =>
 const notFound = (): string => built("404.html");
 
 describe("the shell on the 404 page", () => {
-  test("<html> is built in the suite's light scope", () => {
-    expect(notFound().match(/<html[^>]*class="([^"]*)"/)?.[1]?.split(/\s+/)).toContain(SECTIONS.suite.day);
+  // What a reader with JavaScript off gets: no script swaps the scope.
+  test("<html> is built in the suite's light scope, and not its dark one", () => {
+    const scopes = notFound().match(/<html[^>]*class="([^"]*)"/)?.[1]?.split(/\s+/);
+    expect(scopes).toContain(SECTIONS.suite.day);
+    expect(scopes).not.toContain(SECTIONS.suite.night);
+  });
+
+  test("its Back to home link goes home", () => {
+    expect(links(notFound()).filter((link) => link.text === "Back to home")).toEqual([{ href: "/", text: "Back to home" }]);
   });
 
   test("one header, whose suite lockup links home", () => {

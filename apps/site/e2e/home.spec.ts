@@ -1,17 +1,17 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, type Locator, type Page, test } from "@playwright/test";
 import { PIPELINE } from "../src/content/story.ts";
+import { open } from "./ready.ts";
 
 /*
  * The home's five-stage pipeline hero in a real browser. With motion on, the strip arms in its start
  * frame and plays into view, and every piece of text in the finished strip reads at 4.5:1 or more on
- * the solid surface behind it, in Slash Day and Slash Night. With reduced motion the hero never moves.
- * On Slash Day a tool card's mark is drawn in the tool's deep text tone even when the system is dark,
- * never in the pastel one.
+ * the solid surface behind it, in Slash Day and Slash Night. With reduced motion the hero runs no
+ * animation. (The tool marks' tone is home.desktop.spec.ts.)
  */
 
 const THEMES = ["light", "dark"] as const;
-const STORED = "hackcove:colour-scheme";
-const HERO_SELECTOR = ".pipeline-strip";
+/** The hero strip, by its accessible name (HERO_STRIP_LABEL in src/illustrations/hero.tsx). */
+const heroStrip = (page: Page): Locator => page.getByRole("list", { name: /^The Slash pipeline from idea to release/ });
 const EXPECTED_HERO_TEXT = [
   ...PIPELINE.stages.map((stage) => stage.name),
   ...new Set(PIPELINE.stages.flatMap((stage) => stage.tools.map((item) => item.tool))),
@@ -30,11 +30,10 @@ type RawText = {
   layers: { background: string; opacity: string }[];
 };
 
+/* oxlint-disable no-restricted-globals -- look test (contrast read from computed colours), moves to PixelSlash in SS-17 */
 /** Every text in the hero's pipeline strip, with the CSS colours its contrast is worked out from. */
 const heroTexts = (page: Page): Promise<RawText[]> =>
-  page.evaluate((selector) => {
-    const hero = document.querySelector(selector);
-    if (!hero) throw new Error(`no ${selector}`);
+  heroStrip(page).evaluate((hero) => {
     const out: RawText[] = [];
     const walker = document.createTreeWalker(hero, NodeFilter.SHOW_TEXT);
     for (let node = walker.nextNode(); node; node = walker.nextNode()) {
@@ -55,7 +54,8 @@ const heroTexts = (page: Page): Promise<RawText[]> =>
       });
     }
     return out;
-  }, HERO_SELECTOR);
+  });
+/* oxlint-enable no-restricted-globals */
 
 /** Each CSS colour as sRGB with alpha 0 to 1. A canvas reads them, so any CSS colour syntax works. */
 const toRgba = (page: Page, colours: string[]): Promise<Rgba[]> =>
@@ -114,18 +114,20 @@ async function heroContrasts(page: Page): Promise<{ text: string; ratio: number 
 }
 
 for (const theme of THEMES) {
+  /* oxlint-disable playwright/no-raw-locators, no-restricted-properties, ui-testing/no-style-assertions, playwright/no-restricted-matchers -- look test (start frame and contrast), moves to PixelSlash in SS-17 */
   test(`with motion on, the hero strip arms and plays into view in ${theme}`, async ({ page }) => {
     await page.emulateMedia({ colorScheme: theme, reducedMotion: "no-preference" });
-    await page.goto("/");
+    await open(page, "/");
     await expect(page.locator("html")).toHaveAttribute("data-motion-ready", "");
     await expect(page.locator("html")).toHaveClass(/\bmotion\b/);
+    const strip = heroStrip(page);
     // Held in the start frame: `.played` is cleared and stages sit at opacity 0 until played.
-    await page.evaluate((selector) => document.querySelector(selector)?.classList.remove("played"), HERO_SELECTOR);
-    await expect(page.locator(`${HERO_SELECTOR} .pipeline-stage`).first()).toHaveCSS("opacity", "0");
+    await strip.evaluate((hero) => hero.classList.remove("played"));
+    await expect(strip.locator(".pipeline-stage").first()).toHaveCSS("opacity", "0");
 
     // Once played into view, every stage is opaque and reads at 4.5:1 or more.
-    await page.evaluate((selector) => document.querySelector(selector)?.classList.add("played"), HERO_SELECTOR);
-    await expect(page.locator(`${HERO_SELECTOR} .pipeline-stage`).last()).toHaveCSS("opacity", "1");
+    await strip.evaluate((hero) => hero.classList.add("played"));
+    await expect(strip.locator(".pipeline-stage").last()).toHaveCSS("opacity", "1");
     const readings = await heroContrasts(page);
     expect(readings.map((r) => r.text)).toEqual(expect.arrayContaining(EXPECTED_HERO_TEXT));
     expect(readings.filter((r) => r.ratio < 4.5)).toEqual([]);
@@ -133,60 +135,18 @@ for (const theme of THEMES) {
 
   test(`the finished hero reads at 4.5:1 or more in ${theme}`, async ({ page }) => {
     await page.emulateMedia({ colorScheme: theme, reducedMotion: "reduce" });
-    await page.goto("/");
+    await open(page, "/");
     const readings = await heroContrasts(page);
     expect(readings.map((r) => r.text)).toEqual(expect.arrayContaining(EXPECTED_HERO_TEXT));
     expect(readings.filter((r) => r.ratio < 4.5)).toEqual([]);
   });
+  /* oxlint-enable playwright/no-raw-locators, no-restricted-properties, ui-testing/no-style-assertions, playwright/no-restricted-matchers */
 }
 
-test("with reduced motion the hero stands still", async ({ page }) => {
+test("with reduced motion the hero runs no animation", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  // Tall enough that the stacked stages fit on a phone without sticky header overlap.
-  const width = page.viewportSize()?.width ?? 390;
-  await page.setViewportSize({ width, height: 2000 });
-  await page.goto("/");
-  await page.waitForLoadState("networkidle");
-  expect(await page.locator("html").getAttribute("class")).not.toMatch(/\bmotion\b/);
-  const strip = page.locator(HERO_SELECTOR);
-  // Chromium's first capture after load can raster text a shade apart from the next one when the
-  // pipeline's cards share the tall window. That is not motion, so one shot is taken and dropped first.
-  await strip.screenshot({ animations: "allow" });
-  const first = await strip.screenshot({ animations: "allow" });
-  await page.waitForTimeout(1500);
-  const second = await strip.screenshot({ animations: "allow" });
-  expect(second.equals(first)).toBe(true);
-});
-
-test("on Slash Day a tool's mark is its deep tone, even on a dark system", async ({ page }, info) => {
-  test.skip(info.project.name !== "desktop", "the mark is the same image on a phone");
-  await page.addInitScript((key) => localStorage.setItem(key, "light"), STORED);
-  await page.emulateMedia({ colorScheme: "dark", reducedMotion: "reduce" });
-  await page.goto("/");
-  const mark = page.locator('[data-tool="PixelSlash"] img');
-  await mark.scrollIntoViewIfNeeded();
-  const shot = (await mark.screenshot()).toString("base64");
-  // The mark's most saturated pixel, read back through a canvas.
-  const pixel = await page.evaluate(async (png) => {
-    const img = new Image();
-    img.src = `data:image/png;base64,${png}`;
-    await img.decode();
-    const c = document.createElement("canvas");
-    c.width = img.width;
-    c.height = img.height;
-    const ctx = c.getContext("2d");
-    if (!ctx) throw new Error("no canvas");
-    ctx.drawImage(img, 0, 0);
-    const d = ctx.getImageData(0, 0, c.width, c.height).data;
-    let best = [0, 0, 0];
-    let spread = -1;
-    for (let i = 0; i < d.length; i += 4) {
-      const p = [d[i] ?? 0, d[i + 1] ?? 0, d[i + 2] ?? 0];
-      const s = Math.max(...p) - Math.min(...p);
-      if (s > spread) [best, spread] = [p, s];
-    }
-    return best;
-  }, shot);
-  // PixelSlash's deep tone is #8839ef; its pastel #cba6f7 would read near 203.
-  expect(pixel[0]).toBeLessThan(160);
+  await open(page, "/");
+  // The motion island has hydrated by now (open waits for it), and it arms nothing under reduced motion.
+  expect(await page.evaluate(() => "motionReady" in document.documentElement.dataset)).toBe(false);
+  expect(await heroStrip(page).evaluate((hero) => hero.getAnimations({ subtree: true }).length)).toBe(0);
 });

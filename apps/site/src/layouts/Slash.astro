@@ -4,6 +4,7 @@ import { thisBuildCommit } from "#/content/build-commit";
 import { OG_HEIGHT, OG_WIDTH, ogCardFor } from "#/content/og";
 import { SITE_NAME, SITE_URL } from "#/content/site";
 import { SECTIONS, type SectionKey } from "#/shell/sections";
+import { HYDRATED_SCRIPT } from "#/shell/island";
 import { SlashShell } from "#/shell/SlashShell";
 import "#/styles.css";
 
@@ -65,5 +66,7 @@ const toggleScript = `(function(c){document.querySelectorAll("[data-scheme-toggl
       <slot />
     </SlashShell>
     <script is:inline set:html={toggleScript} />
+    <!-- Last in <body>: marks <html data-hydrated> once every eager island has hydrated. -->
+    <script is:inline set:html={HYDRATED_SCRIPT} />
   </body>
 </html>

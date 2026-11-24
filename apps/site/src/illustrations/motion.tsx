@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import type { ReactNode } from "react";
+import { Island } from "#/shell/island";
 
 /**
  * Motion on scroll. It only adds classes. `.motion` itself is set before first
@@ -40,7 +41,7 @@ export function Motion(): ReactNode {
       once.disconnect();
     };
   }, []);
-  return null;
+  return <Island />;
 }
 
 /**

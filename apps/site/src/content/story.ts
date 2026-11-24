@@ -2,7 +2,7 @@
  * The suite story: what Slash is for, in plain words, on the home page and on /developers. Plain
  * typed data, no markup. Pages render these strings as they are; the tests in story.test.ts hold the
  * rules (no counted tools, no dashes, no banned words, every tool in the right place), and every sentence
- * about a tool is a Claim that facts.test.ts holds to the tools' facts files.
+ * about a tool is a Claim that facts.built.test.ts holds to the tools' facts files.
  */
 
 import type { Claim, FactId } from "#/content/facts";

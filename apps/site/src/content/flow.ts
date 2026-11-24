@@ -1,6 +1,6 @@
 /**
  * One feature's trip from ticket to cleanup, and where each tool would plug in. Plain data. What each tool
- * does at a stop is a Claim citing its facts (facts.test.ts).
+ * does at a stop is a Claim citing its facts (facts.built.test.ts).
  */
 import type { Claim } from "#/content/facts";
 import type { Product } from "#/content/products";

@@ -1,7 +1,7 @@
 /**
  * Each product's facts, read from the FACTS.md that scripts/fetch-sources.ts downloads into .sources/facts at
  * the commit facts.sha.json pins. A product claim on this site is a `Claim`: its words and the ids of the facts
- * that back it. facts.test.ts holds every claim to these files.
+ * that back it. facts.built.test.ts holds every claim to these files.
  *
  * A FACTS.md has a fixed shape: a `# <Name> facts` title, a `Checked against ...` line, then the sections
  * What it is (a paragraph), Today, Planned, Licence and Where it runs, each fact a line `` - `id`: text ``.

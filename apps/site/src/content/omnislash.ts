@@ -1,7 +1,7 @@
 /**
  * The /omnislash page, as plain data so a test can check it. Every word is the approved copy, transcribed as it was
  * written: change it only through new approved copy. A word in backticks is set as code, as the copy marks it; the
- * backticks themselves are not shown. Every product claim here cites OmniSlash's FACTS.md (facts.test.ts).
+ * backticks themselves are not shown. Every product claim here cites OmniSlash's FACTS.md (facts.built.test.ts).
  */
 
 import type { Claim } from "#/content/facts";

@@ -2,7 +2,7 @@
  * /how-it-works: one cycle from an idea to a live release, written for non-technical readers using the six
  * roles and nine terms in how-it-works-roles.ts. The steps in words and the today and planned lists are in
  * how-it-works-steps.ts. Every sentence that says what a product does is a `Claim`, held to the facts files
- * by facts.test.ts.
+ * by facts.built.test.ts.
  */
 import type { Claim } from "#/content/facts";
 import { OMNISLASH_REPO_URL } from "#/content/site";

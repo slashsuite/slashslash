@@ -1,6 +1,6 @@
 /**
  * The tools, each with the label that is shown next to its name. Plain data, so a test can check it. Every
- * sentence about a tool is a Claim citing the facts that back it (facts.test.ts).
+ * sentence about a tool is a Claim citing the facts that back it (facts.built.test.ts).
  */
 
 import type { Claim, FactsProduct } from "#/content/facts";

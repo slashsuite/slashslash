@@ -2,7 +2,7 @@
  * /how-it-works: the six illustrated roles and the nine plain-English terms introduced before the flow diagram.
  * Written for non-technical readers (founders, CEOs, product owners): every concept used on the page is defined
  * here, with no git or command-line jargon. Every sentence that says what a product does is a `Claim`, held to
- * the facts files by facts.test.ts.
+ * the facts files by facts.built.test.ts.
  */
 import type { Claim } from "#/content/facts";
 

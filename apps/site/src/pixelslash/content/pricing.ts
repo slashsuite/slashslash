@@ -1,7 +1,7 @@
 import type { Claim, FactsProduct } from "#/content/facts";
 
 /*
- * The pricing page's words. Each product claim cites PixelSlash's facts (facts.test.ts); the licence card
+ * The pricing page's words. Each product claim cites PixelSlash's facts (facts.built.test.ts); the licence card
  * shows the facts file's own licence line. PixelSlash costs nothing today and there is no paid plan to buy.
  */
 

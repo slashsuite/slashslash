@@ -1,7 +1,7 @@
 /**
  * Scene metadata and shared editorial palette for the /how-it-works animated storybook.
  * Plain English only: no developer jargon, no en or em dashes. Every scene caption is a
- * `Claim` held to the product facts files by facts.test.ts.
+ * `Claim` held to the product facts files by facts.built.test.ts.
  */
 import type { Claim } from "#/content/facts";
 

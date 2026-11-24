@@ -8,17 +8,18 @@ import { TRY_IT, WORKS_TODAY } from "#/content/taskslash";
 /** taskslash's README.md at the commit content/taskslash.ts was written from, kept beside it. */
 const README = readFileSync(resolve(import.meta.dirname, "taskslash-readme.md"), "utf8");
 
+/** Every try-it command but the clone and the cd that the repository URL makes. */
+const CLONE = new Set([`git clone ${TASKSLASH_REPO_URL}`, "cd taskslash"]);
+const TRY_IT_COMMANDS = TRY_IT.steps.flatMap((step) => step.commands).filter((command) => !CLONE.has(command));
+
 describe("the /taskslash content", () => {
   test("every command it says works today is in taskslash's README, as the README writes it", () => {
     for (const feature of WORKS_TODAY) expect(README, feature.title).toContain(feature.command);
   });
 
   test("every try-it command is in the README, bar the clone and the cd that the repository URL makes", () => {
-    const clone = [`git clone ${TASKSLASH_REPO_URL}`, "cd taskslash"];
-    for (const command of TRY_IT.steps.flatMap((step) => step.commands)) {
-      if (clone.includes(command)) continue;
-      expect(README, command).toContain(command);
-    }
+    expect(TRY_IT_COMMANDS.length).toBeGreaterThan(0);
+    for (const command of TRY_IT_COMMANDS) expect(README, command).toContain(command);
   });
 
   test("says plainly that it needs Linux and a systemd user session to measure", () => {

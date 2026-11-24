@@ -1,161 +1,82 @@
-import { expect, type Page, test } from "@playwright/test";
+import { expect, type Locator, test } from "@playwright/test";
+import { open } from "./ready.ts";
+import { steps } from "./flow.ts";
 
 /*
- * The /how-it-works flow diagram in a real browser: on a phone, and on a desktop at 200% zoom (a 1280 px
- * window is then 640 px wide), every step sits under the one before it at the same left edge and the page
- * never scrolls sideways; on a full desktop the steps run left to right; the planned steps, and only
- * they, have a dashed outline and the word Planned.
+ * /how-it-works in a real browser, on a desktop and a phone: the planned steps, and only they, have a
+ * dashed outline (their data-stage and Planned pill are in src/how-it-works/approved-copy.built.test.ts),
+ * and the animated storybook steps through its scenes with its buttons and the arrow keys. Where the
+ * steps sit, and the storybook's autoplay, are how-it-works.desktop.spec.ts and how-it-works.phone.spec.ts.
  */
 
 const PLANNED = new Set(["6a", "7a"]);
 
-async function boxes(page: Page): Promise<{ id: string; x: number; y: number; bottom: number }[]> {
-  return page.locator("[data-node]").evaluateAll((nodes) =>
-    nodes.map((node) => {
-      const box = node.getBoundingClientRect();
-      return { id: node.getAttribute("data-node") ?? "", x: box.left, y: box.top, bottom: box.bottom };
-    }),
-  );
-}
+/** The storybook's button for one scene, by the scene's short label. */
+const chapter = (book: Locator, label: string): Locator =>
+  book.getByRole("group", { name: "Storybook scenes" }).getByRole("button", { name: new RegExp(`${label}$`) });
 
-async function expectStacked(page: Page): Promise<void> {
-  await page.goto("/how-it-works");
-  const nodes = await boxes(page);
-  expect(nodes.map((node) => node.id)).toEqual(["1", "2", "3", "4", "5", "6", "6a", "7", "7a", "8", "9", "10"]);
-  for (const [index, node] of nodes.entries()) {
-    const before = nodes[index - 1];
-    if (before === undefined) continue;
-    expect(node.y, `${node.id} is below ${before.id}`).toBeGreaterThanOrEqual(before.bottom);
-    expect(Math.abs(node.x - before.x), `${node.id} lines up with ${before.id}`).toBeLessThan(1);
-  }
-  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-  expect(overflow, "the page scrolls sideways").toBe(0);
-}
-
-test("on a phone the steps stack top to bottom", async ({ page }, info) => {
-  test.skip(info.project.name !== "phone", "phone only");
-  await expectStacked(page);
-});
-
-test("on a desktop at 200% zoom the steps stack top to bottom", async ({ page }, info) => {
-  test.skip(info.project.name !== "desktop", "desktop only");
-  await page.setViewportSize({ width: 640, height: 720 });
-  await expectStacked(page);
-});
-
-test("on a desktop the steps run left to right", async ({ page }, info) => {
-  test.skip(info.project.name !== "desktop", "desktop only");
-  await page.setViewportSize({ width: 1280, height: 720 });
-  await page.goto("/how-it-works");
-  const [one, two] = await boxes(page);
-  if (one === undefined || two === undefined) throw new Error("the diagram has fewer than two steps");
-  expect([one.id, two.id]).toEqual(["1", "2"]);
-  expect(two.x).toBeGreaterThan(one.x);
-  expect(Math.abs(two.y - one.y)).toBeLessThan(1);
-});
-
-test("the planned steps, and only they, are dashed and say Planned", async ({ page }) => {
-  await page.goto("/how-it-works");
-  const nodes = page.locator("[data-node]");
+/* oxlint-disable ui-testing/no-style-assertions, playwright/no-restricted-matchers -- look test (dashed outline), moves to PixelSlash in SS-17 */
+test("the planned steps, and only they, are dashed", async ({ page }) => {
+  await open(page, "/how-it-works");
+  const nodes = steps(page);
   await expect(nodes).toHaveCount(12);
   for (const node of await nodes.all()) {
     const id = (await node.getAttribute("data-node")) ?? "";
-    const planned = PLANNED.has(id);
-    await expect(node, id).toHaveAttribute("data-stage", planned ? "planned" : "today");
-    await expect(node, id).toHaveCSS("border-top-style", planned ? "dashed" : "solid");
-    if (planned) await expect(node.getByText("Planned", { exact: true }), id).toBeVisible();
-    else await expect(node.getByText("Planned", { exact: true }), id).toHaveCount(0);
+    await expect(node, id).toHaveCSS("border-top-style", PLANNED.has(id) ? "dashed" : "solid");
   }
 });
+/* oxlint-enable ui-testing/no-style-assertions, playwright/no-restricted-matchers */
 
 test("the animated storybook steps through scenes with buttons and arrow keys", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/how-it-works");
+  await open(page, "/how-it-works");
+  // The storybook's scene and playback state are attributes on its root, which has no role of its own.
   const book = page.getByTestId("how-it-works-storybook");
-  await book.scrollIntoViewIfNeeded();
-  await expect(book).toBeVisible();
-  await expect(book).toHaveAttribute("data-ready", "true");
-  await expect(book).toHaveAttribute("data-scene", "muse");
-  await expect(book).toHaveAttribute("data-playing", "false");
-  await expect(book).toHaveAttribute("data-animated", "false");
-  await expect(book.getByText("Scene 1 of 9", { exact: true })).toBeVisible();
-
   const nextBtn = book.getByRole("button", { name: "Next scene" });
-  await nextBtn.click();
-  await expect(book).toHaveAttribute("data-scene", "architect");
-  await expect(book.getByText("Scene 2 of 9", { exact: true })).toBeVisible();
-  await expect(book.locator('[aria-live="polite"]')).toHaveText("Scene 2 of 9: Plan and drill the ticket");
 
-  await book.getByRole("button", { name: "Previous scene" }).click();
-  await expect(book).toHaveAttribute("data-scene", "muse");
+  await test.step("opens still, on the first scene", async () => {
+    await book.scrollIntoViewIfNeeded();
+    await expect(book).toBeVisible();
+    await expect(book).toHaveAttribute("data-ready", "true");
+    await expect(book).toHaveAttribute("data-scene", "muse");
+    await expect(book).toHaveAttribute("data-playing", "false");
+    await expect(book).toHaveAttribute("data-animated", "false");
+    await expect(book.getByText("Scene 1 of 9", { exact: true })).toBeVisible();
+  });
 
-  await nextBtn.focus();
-  await page.keyboard.press("ArrowRight");
-  await expect(book).toHaveAttribute("data-scene", "architect");
-  await page.keyboard.press("ArrowLeft");
-  await expect(book).toHaveAttribute("data-scene", "muse");
+  await test.step("the Next and Previous buttons move one scene and announce it", async () => {
+    await nextBtn.click();
+    await expect(book).toHaveAttribute("data-scene", "architect");
+    await expect(book.getByText("Scene 2 of 9", { exact: true })).toBeVisible();
+    await expect(book.getByText("Scene 2 of 9: Plan and drill the ticket", { exact: true })).toBeAttached();
+    await book.getByRole("button", { name: "Previous scene" }).click();
+    await expect(book).toHaveAttribute("data-scene", "muse");
+  });
 
-  await book.locator('[data-storybook-chapter="sentinel"]').click();
-  await expect(book).toHaveAttribute("data-scene", "sentinel");
-  await expect(book.getByText("Scene 7 of 9", { exact: true })).toBeVisible();
+  await test.step("the arrow keys move one scene", async () => {
+    await nextBtn.focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(book).toHaveAttribute("data-scene", "architect");
+    await page.keyboard.press("ArrowLeft");
+    await expect(book).toHaveAttribute("data-scene", "muse");
+  });
 
-  await book.locator('[data-storybook-chapter="retro"]').click();
-  await expect(book).toHaveAttribute("data-scene", "retro");
-  await expect(book.getByText("Scene 9 of 9", { exact: true })).toBeVisible();
+  await test.step("a scene's button jumps to it", async () => {
+    await chapter(book, "Sentinel").click();
+    await expect(book).toHaveAttribute("data-scene", "sentinel");
+    await expect(book.getByText("Scene 7 of 9", { exact: true })).toBeVisible();
+    await chapter(book, "Retro").click();
+    await expect(book).toHaveAttribute("data-scene", "retro");
+    await expect(book.getByText("Scene 9 of 9", { exact: true })).toBeVisible();
+  });
 
-  const playBtn = book.getByRole("button", { name: "Play animation" });
-  await playBtn.click();
-  await expect(book).toHaveAttribute("data-playing", "true");
-  await expect(book).toHaveAttribute("data-animated", "true");
-  await expect(book).toHaveAttribute("data-paused", "false");
-
-  const pauseBtn = book.getByRole("button", { name: "Pause animation" });
-  await pauseBtn.click();
-  await expect(book).toHaveAttribute("data-playing", "false");
-  await expect(book).toHaveAttribute("data-paused", "true");
-});
-
-test("the storybook autoplays in view and pauses when scrolled away", async ({ page }, info) => {
-  test.skip(info.project.name !== "desktop", "desktop only");
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.clock.install();
-  await page.goto("/how-it-works");
-
-  const book = page.getByTestId("how-it-works-storybook");
-  await book.scrollIntoViewIfNeeded();
-  await expect(book).toHaveAttribute("data-ready", "true");
-  await expect(book).toHaveAttribute("data-playing", "true");
-  await expect(book).toHaveAttribute("data-animated", "true");
-  await expect(book).toHaveAttribute("data-paused", "false");
-  await expect(book).toHaveAttribute("data-scene", "muse");
-
-  // Scene 1 (muse) stays active for its full 6500ms duration, then advances to Scene 2 (architect)
-  await page.clock.runFor(6000);
-  await expect(book).toHaveAttribute("data-scene", "muse");
-  await page.clock.runFor(600);
-  await expect(book).toHaveAttribute("data-scene", "architect");
-
-  // Scene 2 (architect) must also get its full 6500ms duration (regression test against 50ms skip)
-  await page.clock.runFor(500);
-  await expect(book).toHaveAttribute("data-scene", "architect");
-  await page.clock.runFor(5500);
-  await expect(book).toHaveAttribute("data-scene", "architect");
-  await page.clock.runFor(700);
-  await expect(book).toHaveAttribute("data-scene", "checker");
-
-  // Selecting a scene mid-way through Scene 3 resets the timer to a full 6500ms for the chosen scene
-  await page.clock.runFor(4000);
-  await expect(book).toHaveAttribute("data-scene", "checker");
-  await book.locator('[data-storybook-chapter="builder"]').click();
-  await expect(book).toHaveAttribute("data-scene", "builder");
-  await page.clock.runFor(6000);
-  await expect(book).toHaveAttribute("data-scene", "builder");
-  await page.clock.runFor(700);
-  await expect(book).toHaveAttribute("data-scene", "checks");
-
-  // Scrolling away pauses playback so the scene does not advance while off-screen
-  await page.evaluate(() => window.scrollTo(0, 0));
-  await expect(book).toHaveAttribute("data-paused", "true");
-  await page.clock.runFor(7000);
-  await expect(book).toHaveAttribute("data-scene", "checks");
+  await test.step("Play and Pause start and stop the animation", async () => {
+    await book.getByRole("button", { name: "Play animation" }).click();
+    await expect(book).toHaveAttribute("data-playing", "true");
+    await expect(book).toHaveAttribute("data-animated", "true");
+    await expect(book).toHaveAttribute("data-paused", "false");
+    await book.getByRole("button", { name: "Pause animation" }).click();
+    await expect(book).toHaveAttribute("data-playing", "false");
+    await expect(book).toHaveAttribute("data-paused", "true");
+  });
 });

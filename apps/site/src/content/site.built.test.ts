@@ -22,7 +22,7 @@ function builtHtml(): string {
 /**
  * Every built slashslash page: the home, /developers, each tool's page and the 404 page. The PixelSlash pages
  * (pixelslash/**) and UISlash component docs (uislash/**) carry each tool's own fetched copy and stories, with
- * their own checks in src/pixelslash/pages.test.ts and src/uislash/uislash.dist.test.ts.
+ * their own checks in src/pixelslash/pages.built.test.ts and src/uislash/uislash.built.test.ts.
  */
 function builtPages(): string[] {
   builtHtml();

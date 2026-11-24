@@ -27,9 +27,12 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
     "@playwright/test": "1.65.1",
+    "@slashsuite/oxlint-testing": "file:./vendor/slashsuite-oxlint-testing-0.1.0.tgz",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "eslint-plugin-playwright": "2.12.2",
+    "eslint-plugin-testing-library": "7.16.2",
     "oxlint": "^1.94.0",
     "typescript": "6",
     "vitest": "^5.1.1"

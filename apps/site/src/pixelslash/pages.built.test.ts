@@ -112,7 +112,7 @@ const CITED = new Set(
 
 test("the pages built here are the ones LOCAL names and the docs, and no other PixelSlash page", () => {
   expect(SERVED.map((page) => page.path).toSorted()).toEqual([...LOCAL].toSorted());
-  // The docs pages are checked by doc/docs.test.tsx.
+  // The docs pages are checked by doc/docs.built.test.tsx.
   const built = globSync(["pixelslash.html", "pixelslash/**/*.html"], { cwd: DIST });
   expect(built.filter((file) => file !== "pixelslash/docs.html" && !file.startsWith("pixelslash/docs/")).toSorted()).toEqual(
     SERVED.map((page) => page.file).toSorted(),
@@ -238,7 +238,7 @@ function refProblem(file: string, ref: string): string[] {
     const path = ref.split(/[?#]/)[0] ?? "";
     const exists = [path, `${path}.html`, `${path}/index.html`].some((f) => existsSync(resolve(DIST, `.${f}`)));
     // The shell's own links (the suite home, the other tools, /developers) reach pages this app
-    // has not built yet; the link check (site/src/content/links.test.ts) holds those to PAGES.
+    // has not built yet; the link check (site/src/content/links.built.test.ts) holds those to PAGES.
     return path.startsWith("/pixelslash") && !exists ? [`${file} links ${ref}, which is not in dist`] : [];
   }
   if (!/^https?:/.test(ref)) return [];

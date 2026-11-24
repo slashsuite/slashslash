@@ -2,7 +2,7 @@
  * Where the docs live on the site, in one place. `docs/cli.md` stays one file and the contract;
  * the site cuts it at build time into the pages below, each owning whole sections of it.
  * `sections` are heading texts of cli.md: an H2 brings its subsections along, and an H3 listed
- * here is cut out of its H2 and shown on this page instead. A test (docs.test.tsx) fails when an
+ * here is cut out of its H2 and shown on this page instead. A test (docs.built.test.tsx) fails when an
  * H2 of cli.md is on no page, on two, or a listed heading no longer exists, so this cannot rot.
  *
  * Ported from PixelSlash's site, words, slugs, groups and order unchanged. Plain data only:

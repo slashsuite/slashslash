@@ -2,14 +2,15 @@ import { existsSync, globSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { licenceOf } from "#/content/facts";
+import { PAGES } from "#/content/pages";
 import { PRODUCTS } from "#/content/products";
 import { HERO } from "#/content/story";
 import { renderToStaticMarkup } from "react-dom/server";
 import { SECTIONS, markFor } from "#/shell/sections";
 import { SlashShell } from "#/shell/SlashShell";
 
-// The shell as it is built: the 404 page's header, switcher and footer, and the stylesheet that
-// defines every section's scopes.
+// The shell as it is built: the 404 page's header, switcher and footer, the header and footer on every
+// page, and the stylesheet that defines every section's scopes.
 
 const DIST = resolve(import.meta.dirname, "../../dist");
 
@@ -36,8 +37,15 @@ const links = (html: string): { href: string; text: string }[] =>
 const notFound = (): string => built("404.html");
 
 describe("the shell on the 404 page", () => {
-  test("<html> is built in the suite's light scope", () => {
-    expect(notFound().match(/<html[^>]*class="([^"]*)"/)?.[1]?.split(/\s+/)).toContain(SECTIONS.suite.day);
+  // What a reader with JavaScript off gets: no script swaps the scope.
+  test("<html> is built in the suite's light scope, and not its dark one", () => {
+    const scopes = notFound().match(/<html[^>]*class="([^"]*)"/)?.[1]?.split(/\s+/);
+    expect(scopes).toContain(SECTIONS.suite.day);
+    expect(scopes).not.toContain(SECTIONS.suite.night);
+  });
+
+  test("its Back to home link goes home", () => {
+    expect(links(notFound()).filter((link) => link.text === "Back to home")).toEqual([{ href: "/", text: "Back to home" }]);
   });
 
   test("one header, whose suite lockup links home", () => {
@@ -93,6 +101,18 @@ describe("the shell on the 404 page", () => {
     const head = notFound().match(/<head>[\s\S]*<\/head>/)?.[0] ?? "";
     const scripts = elements(head, "script").join("");
     expect(scripts).toContain(SECTIONS.suite.night);
+  });
+});
+
+/** The built file of a page path: `/` is index.html, any other path is `<path>.html`. */
+const fileOf = (path: string): string => (path === "/" ? "index.html" : `${path.slice(1)}.html`);
+
+describe("the shell on every page", () => {
+  test.each(PAGES.map((page) => page.path))("%s opens under the site header, whose suite lockup links home, and over its footer", (path) => {
+    const html = built(fileOf(path));
+    // The site header comes first; a page may hold more headers inside its articles.
+    expect(links(elements(html, "header")[0] ?? "")[0]).toEqual({ href: "/", text: SECTIONS.suite.name });
+    expect(elements(html, "footer")).not.toEqual([]);
   });
 });
 

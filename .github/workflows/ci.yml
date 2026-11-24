@@ -34,3 +34,13 @@ jobs:
       - run: bunx playwright install --with-deps chromium
         working-directory: apps/site
       - run: bunx moon run site:e2e
+      # A failed run keeps the HTML report and each failed test's trace (the config retains them on
+      # failure), so a CI-only failure can be read without reproducing it.
+      - if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: playwright-report
+          path: |
+            apps/site/playwright-report/
+            apps/site/test-results/
+          retention-days: 14

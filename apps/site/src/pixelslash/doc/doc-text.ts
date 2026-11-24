@@ -78,7 +78,7 @@ export function slugger(): (text: string) => string {
 /*
  * The repo's documents cite the maintainer's private ticket ids (`PS-228`) to say why a
  * line exists. They mean nothing to a reader, so the site drops them when it reads a file; the file
- * keeps them. pages.test.ts fails on any that this misses.
+ * keeps them. pages.built.test.ts fails on any that this misses.
  */
 const TICKET = String.raw`(?:PS-\d+|OB-\d+|ob \d{3,4})`;
 const TICKET_RULES: readonly (readonly [RegExp, string])[] = [
@@ -94,5 +94,5 @@ export function stripTicketIds(markdown: string): string {
   return TICKET_RULES.reduce((text, [pattern, to]) => text.replace(pattern, to), markdown);
 }
 
-/** An id the rules above did not catch; pages.test.ts requires none in a rendered page. */
+/** An id the rules above did not catch; pages.built.test.ts requires none in a rendered page. */
 export const TICKET_ID = new RegExp(String.raw`\b${TICKET}\b`);

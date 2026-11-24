@@ -50,6 +50,15 @@ describe("the search island", () => {
     for (const file of pages) expect(read(file).match(ISLAND)?.length, file).toBe(1);
   });
 
+  test("is a search landmark whose field is named, hints at the / key and has a decorative glass", () => {
+    const pages = ["pixelslash/docs.html", ...globSync("pixelslash/docs/*.html", { cwd: DIST })];
+    for (const file of pages) {
+      const box = read(file).match(/<div role="search">[\s\S]*?<input[^>]*>/)?.[0] ?? "";
+      expect(box, file).toMatch(/<input type="search" aria-label="Search the docs" placeholder="Search the docs \(press \/\)"/);
+      expect(box, file).toMatch(/<span aria-hidden="true"[^>]*><svg /);
+    }
+  });
+
   test("is on no other page", () => {
     const others = globSync("**/*.html", { cwd: DIST }).filter(
       (file) => file !== "pixelslash/docs.html" && !file.startsWith("pixelslash/docs/"),

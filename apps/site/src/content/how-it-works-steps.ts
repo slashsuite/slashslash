@@ -1,7 +1,7 @@
 /**
  * /how-it-works: the ten steps in plain English and the today and planned lists, written for non-technical
  * readers using the six roles and nine terms in how-it-works-roles.ts. Every sentence that says what a
- * product does is a `Claim`, held to the facts files by facts.test.ts.
+ * product does is a `Claim`, held to the facts files by facts.built.test.ts.
  */
 import type { Claim } from "#/content/facts";
 

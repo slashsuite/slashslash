@@ -20,11 +20,13 @@ const standIns = (): string[] =>
     .filter((file) => statSync(resolve(DIR, file)).isFile() && file !== "README.md" && file !== SELF)
     .toSorted();
 
+/** Whether a stand-in's first comment names the UISlash package it stands in for. */
+const namesItsPackage = (file: string): boolean =>
+  /@slashsuite\/(?:ui-react|themes)\b/.test(firstComment(readFileSync(resolve(DIR, file), "utf8")) ?? "");
+
 describe("stand-ins", () => {
   test("every stand-in's first comment names the UISlash package it stands in for", () => {
-    const missing = standIns().filter(
-      (file) => !/@slashsuite\/(?:ui-react|themes)\b/.test(firstComment(readFileSync(resolve(DIR, file), "utf8")) ?? ""),
-    );
+    const missing = standIns().filter((file) => !namesItsPackage(file));
     expect(missing).toEqual([]);
   });
 });

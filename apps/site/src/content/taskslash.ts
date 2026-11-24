@@ -3,7 +3,7 @@
  * README.md, kept beside this file as taskslash-readme.md so a test can check every command against it, and
  * scripts/install-service.ts for what the install step does (it cargo installs the binary into ~/.cargo/bin).
  * Nothing is fetched at build time, so a change in that repo changes this file, and that copy, by hand.
- * Every product claim here cites TaskSlash's FACTS.md (facts.test.ts).
+ * Every product claim here cites TaskSlash's FACTS.md (facts.built.test.ts).
  *
  * Commands stay free of `&` and quotes, and each is written exactly as the README writes it.
  */

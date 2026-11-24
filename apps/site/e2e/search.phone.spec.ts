@@ -1,21 +1,15 @@
 import { expect, test } from "@playwright/test";
-import { PLACES, THEMES, place, shoot, sideways } from "./search-place.ts";
+import { open } from "./ready.ts";
 
 /*
- * Where the docs search box sits on a phone: above the page title, with the docs nav after the page, and
- * the page never scrolls sideways, before a query or with its results.
+ * The docs search on a phone: its results open in the page, and the page still never scrolls sideways.
+ * Where the box sits, before a query and with results, is the visual check's (pixelslash.config.ts).
  */
 
-for (const path of PLACES) {
-  for (const theme of THEMES) {
-    test(`the box's place on ${path} in ${theme}`, async ({ page }) => {
-      const { box, allDocs, title } = await place(page, path, theme);
-      expect(box.y + box.height, "the box is above All docs").toBeLessThan(allDocs.y);
-      expect(box.y + box.height, "the box is above the page title").toBeLessThan(title.y);
-      expect(allDocs.y, "the nav is after the page").toBeGreaterThan(title.y);
-      expect(await sideways(page), "the page scrolls sideways").toBe(0);
-      await shoot(page, `${path.split("/").at(-1)}-${theme}-phone`);
-      expect(await sideways(page), "the page scrolls sideways with results").toBe(0);
-    });
-  }
-}
+test("search results on a phone never push the page sideways", async ({ page }) => {
+  await open(page, "/pixelslash/docs");
+  await page.getByRole("searchbox", { name: "Search the docs" }).fill("baseline");
+  await expect(page.getByRole("search").getByRole("link").first()).toBeVisible();
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  expect(overflow, "the page scrolls sideways with results").toBe(0);
+});

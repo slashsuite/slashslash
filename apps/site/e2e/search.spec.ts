@@ -4,8 +4,8 @@ import { open } from "./ready.ts";
 /*
  * The docs search: the index is one static file on this site's own origin, queried in the browser.
  * Using the box asks for that file and for nothing else, and the / key reaches the box. The field's
- * name, hint and glass as built are in src/pixelslash/doc/search.built.test.ts; where the box sits is
- * search.desktop.spec.ts and search.phone.spec.ts.
+ * name, hint and glass as built are in src/pixelslash/doc/search.built.test.ts; that its results never
+ * push a phone's page sideways is search.phone.spec.ts, and where the box sits is the visual check's.
  */
 
 const ERROR = 'has no "entries": needs Storybook 7 or later';

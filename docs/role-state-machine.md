@@ -274,6 +274,9 @@ The agent status (`working`, `readying`, `needs-human`, `blocked`) helps tell `b
 | spike_closed | `done` | `failed` with a spike error | tag `spike` |
 | failed | `open` | `failed` → failed | row error says why |
 
+A spike runs on its own spinoff row, so it also passes `pending` and `launching`. Check the tag first: a `pending` or
+`launching` row on a `spike` ticket is drawn on the `drilling → spike` arrow, not on `queued` or `launching`.
+
 Because the item stays `open` from ticket to land, the item status alone separates only three groups: no item, `open`,
 and `done`. The row status and the verdict do the rest.
 

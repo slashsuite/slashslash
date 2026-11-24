@@ -1,7 +1,7 @@
 /**
  * `/uislash/llms.txt`: the component docs as plain text for agents, one section per component. It is
- * made from the same sources as the pages (`packages/ui-react/docs/components/`, the stories and
- * `packages/ui-react/docs/props.json`), so the two cannot drift.
+ * made from the same sources as the pages (`packages/ui-react/docs/components/`,
+ * `packages/ui-react/docs/examples/` and `packages/ui-react/docs/props.json`), so the two cannot drift.
  */
 import {
   componentPageOf,

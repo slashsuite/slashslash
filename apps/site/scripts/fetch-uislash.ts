@@ -1,7 +1,7 @@
 /**
  * Fetches the UISlash docs data at the commit pinned in uislash.sha.json into .sources/uislash:
  * packages/ui-react/docs/components/*.ts, props.json, types.json,
- * apps/hack-cove-site/src/content/ui.ts, and the story closure under apps/storybook/src.
+ * apps/hack-cove-site/src/content/ui.ts, and the docs examples closure under packages/ui-react/docs/examples.
  * Fails, naming both versions, when node_modules/@slashsuite/ui-react differs from uislash.sha.json.
  */
 import { spawnSync } from "node:child_process";
@@ -54,7 +54,7 @@ const DOCS_DATA = [
   "packages/ui-react/docs/types.json",
   "apps/hack-cove-site/src/content/ui.ts",
 ] as const;
-const STORIES_ROOT = "apps/storybook/src";
+const EXAMPLES_ROOT = "packages/ui-react/docs/examples";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -100,7 +100,7 @@ function addListStems(source: string, listPattern: RegExp, itemPattern: RegExp, 
   }
 }
 
-/** Collects every story stem named by pairs, fullPage or stories in the component docs files. */
+/** Collects every example stem named by pairs, fullPage or stories in the component docs files. */
 export function collectStoryStems(componentSources: readonly string[]): Set<string> {
   const stems = new Set<string>();
   for (const source of componentSources) {
@@ -144,13 +144,13 @@ function relativeSpecifiers(source: string): string[] {
   return found;
 }
 
-/** Resolves the story files for `stems` plus every relative helper file they import. */
-function resolveStoryClosure(extractDir: string, stems: ReadonlySet<string>): string[] {
-  const storyTree = listRelativeFiles(extractDir, STORIES_ROOT);
-  const allFiles = new Set(storyTree);
-  const queue = storyTree.filter((file) => {
-    if (!file.endsWith(".stories.tsx")) return false;
-    const stem = posix.basename(file, ".stories.tsx");
+/** Resolves the example files for `stems` plus every relative helper file they import. */
+function resolveExampleClosure(extractDir: string, stems: ReadonlySet<string>): string[] {
+  const exampleTree = listRelativeFiles(extractDir, EXAMPLES_ROOT);
+  const allFiles = new Set(exampleTree);
+  const queue = exampleTree.filter((file) => {
+    if (!file.endsWith(".examples.tsx")) return false;
+    const stem = posix.basename(file, ".examples.tsx");
     return stems.has(stem);
   });
   const seen = new Set<string>();
@@ -186,7 +186,6 @@ function extractArchivePaths(tarball: string, sha: string, outDir: string): void
   const members = [
     `${prefix}/packages/ui-react/docs`,
     `${prefix}/apps/hack-cove-site/src/content/ui.ts`,
-    `${prefix}/${STORIES_ROOT}`,
   ];
   const result = spawnSync("tar", ["-xzf", tarball, "-C", outDir, "--strip-components=1", ...members], {
     encoding: "utf8",
@@ -214,7 +213,7 @@ function copyIntoStaging(extractDir: string, stageDir: string, files: readonly s
 export async function fetchUislashSources(siteDir = SITE): Promise<{
   sha: string;
   docsCount: number;
-  storyCount: number;
+  exampleCount: number;
 }> {
   const pin = assertUiReactVersionMatches(siteDir);
   const workDir = mkdtempSync(join(tmpdir(), "slashslash-uislash-"));
@@ -230,15 +229,15 @@ export async function fetchUislashSources(siteDir = SITE): Promise<{
     const componentFiles = listRelativeFiles(extractDir, DOCS_COMPONENTS).filter((file) => file.endsWith(".ts"));
     const componentSources = componentFiles.map((file) => readFileSync(resolve(extractDir, file), "utf8"));
     const stems = collectStoryStems(componentSources);
-    const storyFiles = resolveStoryClosure(extractDir, stems);
+    const exampleFiles = resolveExampleClosure(extractDir, stems);
 
     const docsFiles = [...componentFiles, ...DOCS_DATA];
     rmSync(stageDir, { recursive: true, force: true });
     mkdirSync(stageDir, { recursive: true });
-    copyIntoStaging(extractDir, stageDir, [...docsFiles, ...storyFiles]);
+    copyIntoStaging(extractDir, stageDir, [...docsFiles, ...exampleFiles]);
     rmSync(outDir, { recursive: true, force: true });
     renameSync(stageDir, outDir);
-    return { sha: pin.sha, docsCount: docsFiles.length, storyCount: storyFiles.length };
+    return { sha: pin.sha, docsCount: docsFiles.length, exampleCount: exampleFiles.length };
   } finally {
     rmSync(stageDir, { recursive: true, force: true });
     rmSync(workDir, { recursive: true, force: true });

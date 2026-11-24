@@ -142,7 +142,7 @@ async function main(): Promise<void> {
   });
   console.log(`fetched ${PIXELSLASH_FILES.length} PixelSlash files at ${sha}`);
   for (const [product, pin] of pins) console.log(`fetched ${product} ${FACTS_PATH} at ${pin}`);
-  console.log(`fetched ${uislash.docsCount} UISlash docs files and ${uislash.storyCount} story files at ${uislash.sha}`);
+  console.log(`fetched ${uislash.docsCount} UISlash docs files and ${uislash.exampleCount} example files at ${uislash.sha}`);
 }
 
 // Run only as a script, so a test can import PIXELSLASH_FILES without a fetch.

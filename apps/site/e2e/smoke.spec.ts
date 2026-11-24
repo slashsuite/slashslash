@@ -3,14 +3,17 @@ import { NotFound } from "@slashsuite/ui-react";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { BUILD_COMMIT_PATTERN } from "../src/content/build-commit.ts";
-import { PAGES } from "../src/content/pages.ts";
 
 /*
  * After a deploy, against the live host (SMOKE_BASE_URL): robots.txt names the sitemap, the sitemap lists
- * every page, and each page it lists answers 200 itself (no redirect) with its canonical the same URL; the
+ * pages, and each page it lists answers 200 itself (no redirect) with its canonical the same URL; the
  * home page names the commit it was built from, and the deployed one when SMOKE_EXPECT_COMMIT is set; and
  * an unknown path answers a real 404 with the site's 404 page, not a 200 fallback. The host has no
  * redirect table, so there is no 301 check.
+ *
+ * The spec imports nothing from the page list (src/content/pages.ts): that pulls in the uislash source,
+ * which the deploy's smoke job does not check out. The live sitemap is the page list here; the built-output
+ * test (site.built.test.ts) already holds the sitemap to exactly the page list.
  */
 
 const h1 = (html: string): string | undefined => /<h1[^>]*>(.*?)<\/h1>/s.exec(html)?.[1];
@@ -45,24 +48,29 @@ test("robots.txt answers as plain text and names the sitemap", async ({ request 
   expect(await response.text()).toMatch(/^Sitemap: https:\/\/\S+\/sitemap\.xml$/m);
 });
 
-test("the sitemap answers as XML and lists every page", async ({ request }) => {
+test("the sitemap answers as XML and lists pages", async ({ request }) => {
   const response = await request.get("/sitemap.xml", { maxRedirects: 0 });
   expect(response.status()).toBe(200);
   expect(response.headers()["content-type"]).toMatch(/^(application|text)\/xml\b/);
-  const paths = (await sitemapLocs(request)).map((loc) => new URL(loc).pathname);
-  expect(paths.toSorted()).toEqual(PAGES.map((page) => page.path).toSorted());
+  expect(await sitemapLocs(request)).not.toHaveLength(0);
 });
 
-for (const { path } of PAGES) {
-  test(`${path}, as the sitemap lists it, answers 200 with itself as canonical`, async ({ request }) => {
-    const loc = (await sitemapLocs(request)).find((url) => new URL(url).pathname === path);
-    expect(loc, `the sitemap lists ${path}`).toBeDefined();
-    // The loc is the live URL; its path is asked of the host under test.
-    const response = await request.get(path, { maxRedirects: 0 });
-    expect(response.status()).toBe(200);
-    expect(canonicalOf(await response.text())).toBe(loc);
-  });
-}
+/** Pages asked of the host at once: the sitemap lists well over a hundred, too many to ask one by one. */
+const PAGE_CONCURRENCY = 8;
+
+test("each page the sitemap lists answers 200 with itself as canonical", async ({ request }) => {
+  const queue = [...(await sitemapLocs(request))];
+  const check = async (): Promise<void> => {
+    for (let loc = queue.shift(); loc !== undefined; loc = queue.shift()) {
+      // The loc is the live URL; its path is asked of the host under test.
+      const path = new URL(loc).pathname;
+      const response = await request.get(path, { maxRedirects: 0 });
+      expect.soft(response.status(), `${path} answers 200`).toBe(200);
+      expect.soft(canonicalOf(await response.text()), `${path} names itself as canonical`).toBe(loc);
+    }
+  };
+  await Promise.all(Array.from({ length: PAGE_CONCURRENCY }, check));
+});
 
 /**
  * One fresh read of the home page's build commit: a new query each time, so no cache answers with an

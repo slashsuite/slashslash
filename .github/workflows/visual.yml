@@ -5,8 +5,8 @@ name: Visual
 # the shots to the slashslash-site project on the PixelSlash server, which diffs them against main.
 # The server's address is the PIXELSLASH_SERVER secret, so it is never written in this repo. A pull
 # request uploads its head commit on its own branch; a push to main uploads main, which the server
-# takes as the new baseline. It uses the plain `pull_request` trigger, so a fork's pull request, which
-# gets no secrets, skips with a notice and passes. Never switch
+# takes as the new baseline. It uses the plain `pull_request` trigger, so a pull request that gets no
+# secrets (a fork's or Dependabot's) skips with a notice and passes. Never switch
 # it to `pull_request_target`: this job runs the pull request's code with the token in its env.
 on:
   pull_request:
@@ -30,7 +30,7 @@ jobs:
     steps:
       - name: Check for the PixelSlash token
         if: env.PIXELSLASH_TOKEN == ''
-        run: echo "::notice::The visual check needs the PIXELSLASH_TOKEN and PIXELSLASH_SERVER secrets, so it was skipped. A fork's pull request gets no secrets."
+        run: echo "::notice::The visual check needs the PIXELSLASH_TOKEN and PIXELSLASH_SERVER secrets, so it was skipped. A fork's or Dependabot's pull request gets no secrets."
 
       # The pull request's head commit, never GitHub's synthetic merge commit: the server keys the
       # build on the commit it was given. Full history, since the upload finds the merge-base with

@@ -1,0 +1,81 @@
+%% Mirrors docs/role-state-machine.json: one state per JSON state and one arrow per JSON transition, in JSON order.
+%% Human states carry class human. Terminal states lead to [*].
+stateDiagram-v2
+    state "Idea (owner)" as idea
+    state "Exploring the design (muse)" as exploring
+    state "Is the thought complete? (owner)" as confirm_complete
+    state "Parked idea (tag idea) (muse)" as parked_idea
+    state "Ticketed, in the queue (architect)" as ticketed
+    state "Drilling (## Drilled, ## Done when) (architect)" as drilling
+    state "Blind check (measure twice) (checker)" as checking
+    state "Planning call only the owner can make (owner)" as owner_plan_call
+    state "Spike running (builder)" as spike
+    state "Go recorded, ready to dispatch (architect)" as go
+    state "Spinoff queued (system)" as queued
+    state "Spinoff launching (system)" as launching
+    state "Building (builder)" as building
+    state "Skeptical review round (reviewer)" as reviewing
+    state "PR open, waiting on CI (builder)" as pr_ci
+    state "Blocked (verdict) (owner)" as blocked
+    state "Partial (verdict) (builder)" as partial
+    state "Needs human (verdict) (owner)" as needs_human
+    state "Handed off, in the sentinel inbox (sentinel)" as handed_off
+    state "Sentinel gating the PR head (sentinel)" as gating
+    state "Sentinel updating a conflicting PR (sentinel)" as updating_pr
+    state "Merge call only the owner can make (owner)" as owner_merge_call
+    state "Merged and deployed (sentinel)" as merged_deployed
+    state "Closed (ticket done) (sentinel)" as closed
+    state "Spike closed (architect)" as spike_closed
+    state "Failed or abandoned (system)" as failed
+    [*] --> idea
+    idea --> exploring: opens muse
+    exploring --> confirm_complete: looks whole
+    confirm_complete --> exploring: no, keep going
+    confirm_complete --> ticketed: yes, ticket it
+    exploring --> parked_idea: note a raw idea
+    parked_idea --> confirm_complete: picks it up
+    ticketed --> drilling: next three in queue
+    drilling --> checking: seal score, run checker
+    checking --> go: go
+    checking --> drilling: no-go, change ticket
+    drilling --> owner_plan_call: owner's call
+    owner_plan_call --> drilling: answer
+    drilling --> spike: only by trying
+    spike --> drilling: answers on parent
+    spike --> spike_closed: spike closed
+    drilling --> go: no-check with reason
+    go --> queued: ob spinoff
+    queued --> launching: claim
+    launching --> building: thread opened
+    launching --> queued: retry launch
+    launching --> failed: attempt cap hit
+    queued --> failed: abandon
+    building --> failed: abandon or lost trial
+    building --> reviewing: review legs run
+    reviewing --> building: open finding, fix
+    reviewing --> pr_ci: 0 open, open PR
+    pr_ci --> building: CI fails, fix
+    pr_ci --> handed_off: handoff, CI green
+    pr_ci --> needs_human: verdict needs-human
+    needs_human --> handed_off: owner hands off
+    needs_human --> building: owner asks a change
+    building --> blocked: verdict blocked
+    building --> partial: verdict partial
+    blocked --> building: owner unblocks
+    partial --> building: redispatch
+    handed_off --> gating: read inbox
+    gating --> building: sendback
+    gating --> updating_pr: conflict or overlap
+    updating_pr --> gating: pushed, re-gate
+    gating --> owner_merge_call: taste, waiver or flake
+    owner_merge_call --> gating: owner answers
+    gating --> merged_deployed: merge and deploy
+    merged_deployed --> closed: ob close
+    closed --> building: reopen
+    closed --> [*]
+    spike_closed --> [*]
+    failed --> [*]
+    classDef human fill:#ffe08a,stroke:#b8860b,stroke-width:3px,color:#000
+    classDef terminal fill:#d9d9d9,stroke:#555,color:#000
+    class idea,confirm_complete,owner_plan_call,blocked,needs_human,owner_merge_call human
+    class closed,spike_closed,failed terminal

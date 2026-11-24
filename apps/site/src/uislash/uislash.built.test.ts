@@ -38,7 +38,7 @@ const propsMap = new Map<string, number>(
   ]),
 );
 
-/** Topics in the pinned uislash storybook that intentionally ship only a Do story (no Dont export). */
+/** Topics in the pinned uislash docs examples that intentionally ship only a Do example (no Dont export). */
 const ONE_SIDED_TOPICS = new Set(["Switch/Row", "ListRow/RowActions"]);
 
 function expectedExamples(slug: string): number {
@@ -68,9 +68,9 @@ function addStoryTokens(source: string, tokens: Set<string>): void {
   }
 }
 
-/** Extracts static className string tokens from fetched Storybook story files. */
+/** Extracts static className string tokens from the fetched docs example files. */
 function storyClassTokens(): string[] {
-  const storyDir = resolve(FETCHED_UISLASH, "apps/storybook/src");
+  const storyDir = resolve(FETCHED_UISLASH, "packages/ui-react/docs/examples");
   const files = globSync("**/*.{ts,tsx}", { cwd: storyDir });
   expect(files.length).toBeGreaterThan(0);
   const tokens = new Set<string>();

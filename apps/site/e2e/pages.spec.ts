@@ -1,6 +1,5 @@
 import { AxeBuilder } from "@axe-core/playwright";
 import { type BrowserContext, expect, type Page, test } from "@playwright/test";
-import { resolve } from "node:path";
 import { PAGES } from "../src/content/pages.ts";
 import { open } from "./ready.ts";
 
@@ -8,25 +7,12 @@ import { open } from "./ready.ts";
  * Every page, plus one unknown path, in each theme, on a desktop and a phone: it answers its status
  * and loads, never scrolls sideways, passes axe, and makes no request off the site. What a page
  * contains (its title, meta, canonical, headings and links) is checked on the built files in Vitest
- * (the src/**\/*.built.test.* files). The suite home, the PixelSlash home, pricing, security and
- * self-host pages, the FlakeSlash home, /developers and /how-it-works also leave a full-page shot in
- * each theme and viewport, for a person to look at.
+ * (the src/**\/*.built.test.* files). How each page looks, in each theme and viewport, is the visual
+ * check's (pixelslash.config.ts).
  */
 
 const THEMES = ["light", "dark"] as const;
 type Theme = (typeof THEMES)[number];
-
-/** The pages whose full-page shot is kept for the flip review, by path, with the shot's name. */
-const FLIP_SHOTS: Record<string, string> = {
-  "/": "home-full",
-  "/pixelslash": "pixelslash-home",
-  "/pixelslash/pricing": "pixelslash-pricing",
-  "/pixelslash/security": "pixelslash-security",
-  "/pixelslash/self-host": "pixelslash-self-host",
-  "/flakeslash": "flakeslash-home",
-  "/developers": "developers",
-  "/how-it-works": "how-it-works",
-};
 
 const ROUTES = [...PAGES.map((page) => ({ path: page.path, status: 200 })), { path: "/no-such-page", status: 404 }];
 
@@ -96,27 +82,10 @@ async function checkPage(fixtures: Fixtures, route: Route, theme: Theme): Promis
   });
 }
 
-for (const route of ROUTES.filter((r) => !Object.hasOwn(FLIP_SHOTS, r.path))) {
+for (const route of ROUTES) {
   for (const theme of THEMES) {
     test(`${route.path} in ${theme}`, async ({ page, context, baseURL }) => {
       await checkPage({ page, context, baseURL }, route, theme);
-    });
-  }
-}
-
-// The pages a person looks at before the flip also leave the whole page in test-results/flip-shots.
-for (const [path, shot] of Object.entries(FLIP_SHOTS)) {
-  const route = { path, status: 200 };
-  for (const theme of THEMES) {
-    test(`${path} in ${theme}`, async ({ page, context, baseURL }, info) => {
-      await checkPage({ page, context, baseURL }, route, theme);
-      await test.step("leaves a full-page shot", async () => {
-        await page.evaluate(() => window.scrollTo(0, 0));
-        await page.screenshot({
-          path: resolve(import.meta.dirname, `../test-results/flip-shots/${shot}-${theme}-${info.project.name}.png`),
-          fullPage: true,
-        });
-      });
     });
   }
 }

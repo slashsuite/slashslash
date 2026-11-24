@@ -1,31 +1,16 @@
 import { expect, type Locator, test } from "@playwright/test";
 import { open } from "./ready.ts";
-import { steps } from "./flow.ts";
 
 /*
- * /how-it-works in a real browser, on a desktop and a phone: the planned steps, and only they, have a
- * dashed outline (their data-stage and Planned pill are in src/how-it-works/approved-copy.built.test.ts),
- * and the animated storybook steps through its scenes with its buttons and the arrow keys. Where the
- * steps sit, and the storybook's autoplay, are how-it-works.desktop.spec.ts and how-it-works.phone.spec.ts.
+ * /how-it-works in a real browser, on a desktop and a phone: the animated storybook steps through its
+ * scenes with its buttons and the arrow keys. Its autoplay is how-it-works.desktop.spec.ts. The planned
+ * steps' data-stage and Planned pill are in src/how-it-works/approved-copy.built.test.ts; how the flow
+ * diagram looks is the visual check's (pixelslash.config.ts).
  */
-
-const PLANNED = new Set(["6a", "7a"]);
 
 /** The storybook's button for one scene, by the scene's short label. */
 const chapter = (book: Locator, label: string): Locator =>
   book.getByRole("group", { name: "Storybook scenes" }).getByRole("button", { name: new RegExp(`${label}$`) });
-
-/* oxlint-disable ui-testing/no-style-assertions, playwright/no-restricted-matchers -- look test (dashed outline), moves to PixelSlash in SS-17 */
-test("the planned steps, and only they, are dashed", async ({ page }) => {
-  await open(page, "/how-it-works");
-  const nodes = steps(page);
-  await expect(nodes).toHaveCount(12);
-  for (const node of await nodes.all()) {
-    const id = (await node.getAttribute("data-node")) ?? "";
-    await expect(node, id).toHaveCSS("border-top-style", PLANNED.has(id) ? "dashed" : "solid");
-  }
-});
-/* oxlint-enable ui-testing/no-style-assertions, playwright/no-restricted-matchers */
 
 test("the animated storybook steps through scenes with buttons and arrow keys", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });

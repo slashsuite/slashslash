@@ -69,6 +69,36 @@ that made-up material says so, that no privacy claim and no forbidden word is pr
 or in a start state without motion, that every page links the one stylesheet, and that the site is open to
 search engines (`robots.txt`, `sitemap.xml`, a canonical address per page, no robots meta tag).
 
+The browser tests prove behaviour only: each page answers, passes axe, loads without leaving the site and
+never scrolls sideways (the one layout check, kept because content off the side of a phone cannot be
+reached), and the theme toggle, the docs search, the storybook, the hero's motion island and the UISlash
+menu work. How a page looks is the visual check's, never a spec's: no style, class, geometry, pixel or
+screenshot assertion goes in `apps/site/e2e/`.
+
+### Visual check
+
+`.github/workflows/visual.yml` builds the site and shoots every page in `dist/sitemap.xml` plus the 404 page,
+in Slash Day and Slash Night, on a desktop (1440×900) and a phone (393×852), with PixelSlash
+(`apps/site/pixelslash.config.ts`). It uploads the shots to the `slashslash-site` project on the PixelSlash
+server, which diffs a pull request against main and posts its check. It runs on every pull request and every
+push to main. The server's address is the `PIXELSLASH_SERVER` secret and the upload token is
+`PIXELSLASH_TOKEN`; without the token the job skips with a notice and passes. The PixelSlash CLI is pinned to
+one commit in the workflow.
+
+To shoot locally (no upload), with a pixelslash checkout at that commit beside this repo, `bun install` run in it,
+and Chromium installed from its `packages/engine` (`bunx playwright install chromium`):
+
+```bash
+bunx moon run site:build
+cd apps/site
+bun ../../../pixelslash/packages/cli/src/index.ts capture --config pixelslash.config.ts --out "$TMPDIR/site-shots"
+# one page: add --only <route name>, e.g. --only index or --only pixelslash-docs
+```
+
+Add `--upload` (with `PIXELSLASH_TOKEN` and `PIXELSLASH_SERVER` set) to send a build to the server. A new page
+needs nothing here: it is in the sitemap, so it is shot. A changed shot is read before it is approved; an
+unexpected change is fixed, not approved.
+
 ## How the page is built
 
 Astro renders every page to HTML at build time (`src/pages/`), on one layout, `src/layouts/Slash.astro`, which

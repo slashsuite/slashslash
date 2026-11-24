@@ -1,26 +1,10 @@
 import { expect, test } from "@playwright/test";
-import { boxes, expectStacked } from "./flow.ts";
 import { open } from "./ready.ts";
 
 /*
- * /how-it-works on a desktop: at 200% zoom (a 1280 px window is then 640 px wide) every step of the flow
- * diagram sits under the one before it and the page never scrolls sideways; at full width the steps run
- * left to right; and the storybook plays its scenes on its own while in view and pauses when scrolled away.
+ * /how-it-works on a desktop: the storybook plays its scenes on its own while in view and pauses when
+ * scrolled away.
  */
-
-test("on a desktop at 200% zoom the steps stack top to bottom", async ({ page }) => {
-  await page.setViewportSize({ width: 640, height: 720 });
-  await expectStacked(page);
-});
-
-test("on a desktop the steps run left to right", async ({ page }) => {
-  await page.setViewportSize({ width: 1280, height: 720 });
-  await open(page, "/how-it-works");
-  const [one, two] = await boxes(page);
-  expect([one?.id, two?.id]).toEqual(["1", "2"]);
-  expect(two?.x).toBeGreaterThan(one?.x ?? Infinity);
-  expect(Math.abs((two?.y ?? 0) - (one?.y ?? Infinity))).toBeLessThan(1);
-});
 
 test("the storybook autoplays in view and pauses when scrolled away", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });

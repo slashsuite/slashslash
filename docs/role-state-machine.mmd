@@ -1,4 +1,4 @@
-%% Generated from docs/role-state-machine.json: one state per JSON state, one arrow per JSON transition.
+%% Mirrors docs/role-state-machine.json: one state per JSON state and one arrow per JSON transition, in JSON order.
 %% Human states carry class human. Terminal states lead to [*].
 stateDiagram-v2
     state "Idea (owner)" as idea
@@ -16,14 +16,14 @@ stateDiagram-v2
     state "Building (builder)" as building
     state "Skeptical review round (reviewer)" as reviewing
     state "PR open, waiting on CI (builder)" as pr_ci
-    state "Blocked (verdict) (builder)" as blocked
+    state "Blocked (verdict) (owner)" as blocked
     state "Partial (verdict) (builder)" as partial
     state "Needs human (verdict) (owner)" as needs_human
     state "Handed off, in the sentinel inbox (sentinel)" as handed_off
     state "Sentinel gating the PR head (sentinel)" as gating
     state "Sentinel updating a conflicting PR (sentinel)" as updating_pr
     state "Merge call only the owner can make (owner)" as owner_merge_call
-    state "Merged and deployed (sentinel)" as landed
+    state "Merged and deployed (sentinel)" as merged_deployed
     state "Closed (ticket done) (sentinel)" as closed
     state "Spike closed (architect)" as spike_closed
     state "Failed or abandoned (system)" as failed
@@ -63,14 +63,14 @@ stateDiagram-v2
     building --> partial: verdict partial
     blocked --> building: owner unblocks
     partial --> building: redispatch
-    handed_off --> gating: read inbox, take leases
+    handed_off --> gating: read inbox
     gating --> building: sendback
     gating --> updating_pr: conflict or overlap
     updating_pr --> gating: pushed, re-gate
     gating --> owner_merge_call: taste, waiver or flake
     owner_merge_call --> gating: owner answers
-    gating --> landed: merge and deploy
-    landed --> closed: ob close
+    gating --> merged_deployed: merge and deploy
+    merged_deployed --> closed: ob close
     closed --> building: reopen
     closed --> [*]
     spike_closed --> [*]

@@ -7,8 +7,9 @@ is written so `/how-it-works` can be checked against it, and so a dashboard can 
   human is required, and whether it is terminal. Each transition has its event, actor and source `file:line`.
 - `docs/role-state-machine.mmd` is the Mermaid `stateDiagram-v2` drawn from that JSON. It has one state per JSON state and
   one arrow per JSON transition, and the arrow labels are the JSON `label` field. Human states carry the `human` class
-  (yellow, thick border), and the terminal states lead to `[*]`. If you change the JSON, regenerate the diagram from it;
-  do not edit the diagram by hand.
+  (yellow, thick border), and the terminal states lead to `[*]`. If you change the JSON,
+  keep the two in step: there is no generator in this repo, so a change to the JSON is copied into the diagram by hand,
+  one arrow per transition in JSON order.
 
 **Sources and the commits read.** Paths starting `skills/` are `skills/<name>/SKILL.md` in the omnibus repo at `74cca003`
 (2026-11-21). Paths starting `platform/` or `apps/cli/` are in the omnislash repo at `08b9917` (2026-11-23). Line numbers
@@ -91,22 +92,28 @@ The table lists every transition in the JSON, in the same order.
 
 | From | To | Event | Actor | Source |
 |---|---|---|---|---|
-| handed_off | gating | sentinel reads its inbox, oldest first, and takes the ticket and worktree leases | sentinel | `apps/cli/src/inbox.ts:93` |
+| handed_off | gating | the sentinel (else the architect) reads its inbox, oldest first, and starts the gate | sentinel | `apps/cli/src/inbox.ts:93` |
 | gating | building | red CI, an unmet Done when item, or a claim it cannot verify: `ob spinoff sendback` | sentinel | `platform/cli-coord/src/commands/spinoff.ts:3580` |
 | gating | updating_pr | the PR conflicts, or is behind main with an overlap | sentinel | `skills/ob-sentinel/SKILL.md:35` |
 | updating_pr | gating | rebased or merged main, pushed; re-gate the new head | sentinel | `skills/ob-land/SKILL.md:75` |
 | gating | owner_merge_call | a taste call, a waived check, or a known flake | sentinel | `skills/ob-sentinel/SKILL.md:51` |
 | owner_merge_call | gating | owner answers | owner | `skills/ob-land/SKILL.md:198` |
-| gating | landed | every gate question is yes: `gh pr merge --squash`, then `ob deploy run --sha` | sentinel | `skills/ob-sentinel/SKILL.md:33` |
-| landed | closed | `ob close`: ticket done, rows landed, unread handoffs withdrawn | sentinel | `apps/cli/src/close.ts:20` |
-| closed | building | `ob spinoff reopen`, when a land was wrong | architect | `platform/cli-coord/src/commands/spinoff.ts:3622` |
+| gating | merged_deployed | every gate question is yes: `gh pr merge --squash`, then `ob deploy run --sha` | sentinel | `skills/ob-sentinel/SKILL.md:33` |
+| merged_deployed | closed | `ob close`: ticket done, rows landed, unread handoffs withdrawn | sentinel | `apps/cli/src/close.ts:20` |
+| closed | building | `ob spinoff reopen`: an exception for a row that reconcile landed although nothing merged | architect | `platform/cli-coord/src/commands/spinoff.ts:3622` |
 
 **Spinoff rows have their own small machine underneath.** `SPINOFF_TRANSITIONS`
-(`platform/cli-coord/src/commands/spinoff.ts:497-506`) allows these moves, and `moveSpinoff` (`spinoff.ts:531`) is the
+(`platform/cli-coord/src/commands/spinoff.ts:497-506`) is the whole table, and `moveSpinoff` (`spinoff.ts:531`) is the
 only writer:
 
-- `pending` → `launching` → `launched` → `ready-for-gate` → `merged`;
-- `failed` from `pending`, `launching` or `launched`.
+| Row status | May move to |
+|---|---|
+| `pending` | `launching`, `failed` |
+| `launching` | `launched`, `pending` (retry), `failed` |
+| `launched` | `launched`, `ready-for-gate`, `merged`, `pending`, `failed` |
+| `ready-for-gate` | `launched` (sendback, `spinoff.ts:3580`), `merged`, `failed` |
+| `merged` | `launched` (reopen only, `spinoff.ts:3622`) |
+| `failed` | nothing |
 
 The stored words show as queued, launching, building, handed-off, landed and failed
 (`platform/cli-coord/src/spinoff-vocab.ts:17-24`). Every state in this document from `queued` to `closed` sits on one of
@@ -151,6 +158,8 @@ per model, all read-only (`skills/ob-spinoff/SKILL.md:181`).
   called from `platform/cli-coord/src/commands/spinoff.ts:4116`). The note goes to the ticket's team sentinel when that
   seat has a thread (`team.ts:329`). It is stored in the role inbox with `sendRoleMessage` (`spinoff.ts:4132`). Every
   builder on every project of that team lands in the same inbox.
+- **Taking the work.** Before it gates, the gating thread takes the `ticket:` and `worktree:` leases under its own
+  holder name (`skills/ob-land/SKILL.md:59-60`). A live hold by someone else stops it (`skills/ob-land/SKILL.md:44`).
 - **Ordering.** The inbox lists unread messages oldest first (`apps/cli/src/inbox.ts:93-99`). Delivery queues them into
   the sentinel's open run, so a busy sentinel finishes its turn before it reads the next one
   (`apps/cli/src/role-deliver.ts:1-6`). With no open run, a new run starts with every unread message in its brief.
@@ -192,7 +201,10 @@ Of these, only `landable` and `needs-human` reach the gate. None of the four is 
 wait for someone to act. `partial` has no transition of its own in the code; it is only a verdict recorded on a
 `launched` row.
 
-**Terminal states:**
+**Terminal states.** Terminal means no move in the normal flow. `closed` has one exception, `ob spinoff reopen`, which
+exists only for a row that reconcile marked landed although nothing merged (`spinoff.ts:3616-3622`). The JSON keeps
+`closed` terminal and lists the reopen transition, so a dashboard should treat a reopen as an exception, not a step.
+
 
 | State | Row | Item | Source |
 |---|---|---|---|
@@ -200,7 +212,7 @@ wait for someone to act. `partial` has no transition of its own in the code; it 
 | spike_closed | `failed` with a spike error | `done` | `spinoff.ts:3183-3192` |
 | failed | `failed` | unchanged | launch cap, abandon, or lost trial (`spinoff.ts:2144`, `:2294`, `:498`) |
 
-`landed` (merged and deployed but not yet closed) is not terminal. Reconcile also lands a handed-off row once its
+`merged_deployed` (merged and deployed but not yet closed) is not terminal. Reconcile also lands a handed-off row once its
 ticket reads `done` (`spinoff.ts:3183-3185`).
 
 ## 5. Where a human is required
@@ -250,14 +262,14 @@ The agent status (`working`, `readying`, `needs-human`, `blocked`) helps tell `b
 | queued | `open` | `pending` → queued | |
 | launching | `open` | `launching` → launching | |
 | building | `open` | `launched` → building | no verdict; agent status `working` |
-| reviewing | `open` | `launched` → building | no verdict; agent status `readying` (no stored signal separates it from building) |
+| reviewing | `open` | `launched` → building | no verdict; agent status `readying`, which the skill stamps for the whole gate (`skills/ob-spinoff/SKILL.md:26`), so it also covers `pr_ci`. No stored signal separates reviewing from building. |
 | pr_ci | `open` | `launched` → building | verdict `landable` (or `needs-human`); a PR is open, checks pending |
 | needs_human | `open` | `launched` → building | verdict `needs-human`; agent status `needs-human` |
 | blocked | `open` | `launched` → building | verdict `blocked`; agent status `blocked` |
 | partial | `open` | `launched` → building | verdict `partial` |
 | handed_off | `open` | `ready-for-gate` → handed-off | handoff unread in the sentinel or architect inbox |
 | gating, updating_pr, owner_merge_call | `open` | `ready-for-gate` → handed-off | handoff read; the gating thread holds the `ticket:` lease. These three cannot be told apart from stored data today. |
-| landed | `open` | `ready-for-gate` or `merged` | PR merged; ticket not yet closed |
+| merged_deployed | `open` | `ready-for-gate` or `merged` → landed | PR merged; ticket not yet closed |
 | closed | `done` | `merged` → landed | |
 | spike_closed | `done` | `failed` with a spike error | tag `spike` |
 | failed | `open` | `failed` → failed | row error says why |
@@ -276,6 +288,8 @@ and `done`. The row status and the verdict do the rest.
 | **Wrong:** step 4 shows the checker as a role. **Silent:** the no-go loop, the `--no-check` override, and spikes. | SS-133 |
 | **Silent:** there are no loops at all: review rounds, the CI fix, sendback, the sentinel's PR update, reopen. | SS-134 |
 | **Silent:** the human points other than the idea and PixelSlash, and the four verdicts. | SS-135 |
+| **Roughly right:** step 5, "Assign and lock". There is no separate assign step: `ob spinoff` launches the builder, the builder's registration takes the `ticket:` lease (`skills/ob-land/SKILL.md:51`), and the gating thread takes it again to gate. The lease claim on the page holds. | none needed |
+| **Outside this machine:** step 10, the ToggleSlash rollout. No skill or code moves a ticket after `closed`; a rollout is the product's own release step. | none needed |
 | **Silent:** how one sentinel serves many builders: the inbox fan-in, oldest first, the architect fallback, and close after deploy. | SS-136 |
 
 Every follow-up changes page copy, so it goes through the approved-copy process before a builder transcribes it.

@@ -35,14 +35,14 @@
     { "id": "building", "label": "Building", "role": "builder", "human_required": false, "terminal": false },
     { "id": "reviewing", "label": "Skeptical review round", "role": "reviewer", "human_required": false, "terminal": false },
     { "id": "pr_ci", "label": "PR open, waiting on CI", "role": "builder", "human_required": false, "terminal": false },
-    { "id": "blocked", "label": "Blocked (verdict)", "role": "builder", "human_required": true, "terminal": false },
+    { "id": "blocked", "label": "Blocked (verdict)", "role": "owner", "human_required": true, "terminal": false },
     { "id": "partial", "label": "Partial (verdict)", "role": "builder", "human_required": false, "terminal": false },
     { "id": "needs_human", "label": "Needs human (verdict)", "role": "owner", "human_required": true, "terminal": false },
     { "id": "handed_off", "label": "Handed off, in the sentinel inbox", "role": "sentinel", "human_required": false, "terminal": false },
     { "id": "gating", "label": "Sentinel gating the PR head", "role": "sentinel", "human_required": false, "terminal": false },
     { "id": "updating_pr", "label": "Sentinel updating a conflicting PR", "role": "sentinel", "human_required": false, "terminal": false },
     { "id": "owner_merge_call", "label": "Merge call only the owner can make", "role": "owner", "human_required": true, "terminal": false },
-    { "id": "landed", "label": "Merged and deployed", "role": "sentinel", "human_required": false, "terminal": false },
+    { "id": "merged_deployed", "label": "Merged and deployed", "role": "sentinel", "human_required": false, "terminal": false },
     { "id": "closed", "label": "Closed (ticket done)", "role": "sentinel", "human_required": false, "terminal": true },
     { "id": "spike_closed", "label": "Spike closed", "role": "architect", "human_required": false, "terminal": true },
     { "id": "failed", "label": "Failed or abandoned", "role": "system", "human_required": false, "terminal": true }
@@ -83,14 +83,14 @@
     { "from": "building", "to": "partial", "label": "verdict partial", "event": "verdict partial: some Done when items unmet; no PR", "actor": "builder", "source": "skills/ob-spinoff/SKILL.md:119" },
     { "from": "blocked", "to": "building", "label": "owner unblocks", "event": "owner gives the decision or access", "actor": "owner", "source": "skills/ob-architect/SKILL.md:103" },
     { "from": "partial", "to": "building", "label": "redispatch", "event": "architect redispatches or steers the rest", "actor": "architect", "source": "skills/ob-architect/SKILL.md:102" },
-    { "from": "handed_off", "to": "gating", "label": "read inbox, take leases", "event": "sentinel reads its inbox, oldest first; takes ticket and worktree leases", "actor": "sentinel", "source": "apps/cli/src/inbox.ts:93" },
+    { "from": "handed_off", "to": "gating", "label": "read inbox", "event": "the sentinel (else the architect) reads its inbox, oldest first, and starts the gate", "actor": "sentinel", "source": "apps/cli/src/inbox.ts:93" },
     { "from": "gating", "to": "building", "label": "sendback", "event": "red CI, a Done when item unmet, or a claim it cannot verify: ob spinoff sendback", "actor": "sentinel", "source": "platform/cli-coord/src/commands/spinoff.ts:3580" },
     { "from": "gating", "to": "updating_pr", "label": "conflict or overlap", "event": "PR conflicts, or is behind main with an overlap", "actor": "sentinel", "source": "skills/ob-sentinel/SKILL.md:35" },
     { "from": "updating_pr", "to": "gating", "label": "pushed, re-gate", "event": "rebased or merged main, pushed, re-gate the new head", "actor": "sentinel", "source": "skills/ob-land/SKILL.md:75" },
     { "from": "gating", "to": "owner_merge_call", "label": "taste, waiver or flake", "event": "a taste call, a waived check, or a known flake", "actor": "sentinel", "source": "skills/ob-sentinel/SKILL.md:51" },
     { "from": "owner_merge_call", "to": "gating", "label": "owner answers", "event": "owner answers", "actor": "owner", "source": "skills/ob-land/SKILL.md:198" },
-    { "from": "gating", "to": "landed", "label": "merge and deploy", "event": "every gate question yes: gh pr merge --squash, then ob deploy run --sha", "actor": "sentinel", "source": "skills/ob-sentinel/SKILL.md:33" },
-    { "from": "landed", "to": "closed", "label": "ob close", "event": "ob close: ticket done, rows landed, unread handoffs withdrawn", "actor": "sentinel", "source": "apps/cli/src/close.ts:20" },
-    { "from": "closed", "to": "building", "label": "reopen", "event": "ob spinoff reopen, for a land that was wrong", "actor": "architect", "source": "platform/cli-coord/src/commands/spinoff.ts:3622" }
+    { "from": "gating", "to": "merged_deployed", "label": "merge and deploy", "event": "every gate question yes: gh pr merge --squash, then ob deploy run --sha", "actor": "sentinel", "source": "skills/ob-sentinel/SKILL.md:33" },
+    { "from": "merged_deployed", "to": "closed", "label": "ob close", "event": "ob close: ticket done, rows landed, unread handoffs withdrawn", "actor": "sentinel", "source": "apps/cli/src/close.ts:20" },
+    { "from": "closed", "to": "building", "label": "reopen", "event": "ob spinoff reopen: an exception for a row that reconcile landed although nothing merged", "actor": "architect", "source": "platform/cli-coord/src/commands/spinoff.ts:3622" }
   ]
 }

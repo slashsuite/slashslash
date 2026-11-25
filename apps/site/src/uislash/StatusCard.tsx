@@ -22,7 +22,7 @@ export function StatusCard({
 }): ReactNode {
   const { label, tone } = STATUS[status];
   return (
-    <Card as="article" title={title} status={<Pill tone={tone}>{label}</Pill>}>
+    <Card title={title} status={<Pill tone={tone}>{label}</Pill>}>
       <Stack gap="sm">
         {summary && <Text>{summary}</Text>}
         {items.length > 0 && (

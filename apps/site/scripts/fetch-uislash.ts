@@ -1,7 +1,7 @@
 /**
  * Fetches the UISlash docs data at the commit pinned in uislash.sha.json into .sources/uislash:
  * packages/ui-react/docs/components/*.ts, props.json, types.json,
- * apps/hack-cove-site/src/content/ui.ts, and the docs examples closure under packages/ui-react/docs/examples.
+ * packages/ui-react/docs/ui.ts, and the docs examples closure under packages/ui-react/docs/examples.
  * Fails, naming both versions, when node_modules/@slashsuite/ui-react differs from uislash.sha.json.
  */
 import { spawnSync } from "node:child_process";
@@ -52,7 +52,7 @@ const DOCS_COMPONENTS = "packages/ui-react/docs/components";
 const DOCS_DATA = [
   "packages/ui-react/docs/props.json",
   "packages/ui-react/docs/types.json",
-  "apps/hack-cove-site/src/content/ui.ts",
+  "packages/ui-react/docs/ui.ts",
 ] as const;
 const EXAMPLES_ROOT = "packages/ui-react/docs/examples";
 
@@ -183,10 +183,7 @@ async function downloadTarball(sha: string, destFile: string): Promise<void> {
 
 function extractArchivePaths(tarball: string, sha: string, outDir: string): void {
   const prefix = `uislash-${sha}`;
-  const members = [
-    `${prefix}/packages/ui-react/docs`,
-    `${prefix}/apps/hack-cove-site/src/content/ui.ts`,
-  ];
+  const members = [`${prefix}/packages/ui-react/docs`];
   const result = spawnSync("tar", ["-xzf", tarball, "-C", outDir, "--strip-components=1", ...members], {
     encoding: "utf8",
   });

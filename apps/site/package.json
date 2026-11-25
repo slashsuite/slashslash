@@ -15,8 +15,8 @@
   "dependencies": {
     "@astrojs/check": "^0.9.12",
     "@astrojs/react": "^7.1.9",
-    "@slashsuite/themes": "^0.4.1",
-    "@slashsuite/ui-react": "^0.12.1",
+    "@slashsuite/themes": "^0.5.0",
+    "@slashsuite/ui-react": "^0.13.0",
     "@tailwindcss/vite": "^4.3.5",
     "astro": "^7.4.12",
     "marked": "^18",
@@ -27,7 +27,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
     "@playwright/test": "1.65.1",
-    "@slashsuite/oxlint-testing": "file:./vendor/slashsuite-oxlint-testing-0.1.0.tgz",
+    "@slashsuite/oxlint-testing": "^0.3.0",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",

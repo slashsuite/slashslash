@@ -1,5 +1,5 @@
 ---
-import { appShellRootClassFor, colourSchemeScript } from "@slashsuite/ui-react";
+import { appShellRootClassFor } from "@slashsuite/ui-react";
 import { thisBuildCommit } from "#/content/build-commit";
 import { OG_HEIGHT, OG_WIDTH, ogCardFor } from "#/content/og";
 import { SITE_NAME, SITE_URL } from "#/content/site";
@@ -30,12 +30,14 @@ const card = ogCardFor(path);
 const shareImage = `${SITE_URL}/og/${card.slug}.png`;
 
 const classes = JSON.stringify({ light, dark });
-// Before first paint. colourSchemeScript reads the stored choice (else the system's) and knows only the
-// `dark` class; this then swaps that for the section's own scope, so <html> carries exactly one of them.
-const scopeScript = `${colourSchemeScript};(function(c){var r=document.documentElement,d=r.classList.contains("dark");r.classList.remove("dark");r.classList.toggle(c.light,!d);r.classList.toggle(c.dark,d)})(${classes})`;
+// Before first paint, and after: the stored choice under the kit's key, else the system's, as the section's own
+// scope class, so <html> carries exactly one of them. It keeps following as the kit's colourSchemeScript does (the
+// system switching, a choice made in another tab), which knows only the `dark` class and so cannot be used here.
+const scopeScript = `(function(c){var r=document.documentElement,k="hackcove:colour-scheme",q=typeof matchMedia==="function"?matchMedia("(prefers-color-scheme: dark)"):null;function a(){var s;try{s=localStorage.getItem(k)}catch(e){}if(s!=="light"&&s!=="dark")s=q&&q.matches?"dark":"light";r.classList.toggle(c.dark,s==="dark");r.classList.toggle(c.light,s!=="dark");r.style.colorScheme=s}a();if(q&&q.addEventListener)q.addEventListener("change",a);addEventListener("storage",function(e){if(e.key===k||e.key===null)a()})})(${classes})`;
 // The kit's toggle is static HTML here, so this does what its click handler would: switch the scope,
-// set color-scheme and store the choice under the kit's key, which every section's head script reads.
-const toggleScript = `(function(c){document.querySelectorAll("[data-scheme-toggle]").forEach(function(b){b.addEventListener("click",function(){var r=document.documentElement,d=!r.classList.contains(c.dark);r.classList.toggle(c.dark,d);r.classList.toggle(c.light,!d);r.style.colorScheme=d?"dark":"light";try{localStorage.setItem("hackcove:colour-scheme",d?"dark":"light")}catch(e){}})})})(${classes})`;
+// set color-scheme and store the choice under the kit's key, which every section's head script reads. Choosing the
+// system's own scheme forgets the stored choice instead, as the kit's toggle does, so the page follows the system again.
+const toggleScript = `(function(c){document.querySelectorAll("[data-scheme-toggle]").forEach(function(b){b.addEventListener("click",function(){var r=document.documentElement,d=!r.classList.contains(c.dark);r.classList.toggle(c.dark,d);r.classList.toggle(c.light,!d);r.style.colorScheme=d?"dark":"light";var k="hackcove:colour-scheme",q=typeof matchMedia==="function"?matchMedia("(prefers-color-scheme: dark)"):null;try{if(q&&q.matches===d)localStorage.removeItem(k);else localStorage.setItem(k,d?"dark":"light")}catch(e){}})})})(${classes})`;
 ---
 
 <html lang="en" class={appShellRootClassFor("light", { light, dark })}>

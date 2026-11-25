@@ -43,3 +43,14 @@ test("with no choice stored, the page follows the system switching between light
   await page.emulateMedia({ colorScheme: "dark" });
   await expect(toLight).toBeVisible();
 });
+
+test("choosing the system's own scheme forgets the stored choice, so the page follows the system again", async ({ page }) => {
+  const toDark = page.getByRole("button", { name: "Switch to dark theme" });
+  const toLight = page.getByRole("button", { name: "Switch to light theme" });
+  await page.emulateMedia({ colorScheme: "light" });
+  await open(page, PAGE);
+  await toDark.click();
+  await toLight.click();
+  await page.emulateMedia({ colorScheme: "dark" });
+  await expect(toLight).toBeVisible();
+});

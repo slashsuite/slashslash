@@ -78,6 +78,7 @@ test("each page the sitemap lists answers 200 with itself as canonical", async (
  * older copy.
  */
 async function readCommit(request: APIRequestContext): Promise<{ status: number; seen: string | undefined }> {
+  // oxlint-disable-next-line ui-testing/no-raised-timeout -- a live edge over the internet, not the local build
   const response = await request.get(`/?commit-check=${crypto.randomUUID()}`, { timeout: 15_000 });
   return { status: response.status(), seen: response.ok() ? buildCommitOf(await response.text()) : undefined };
 }
@@ -95,12 +96,14 @@ const COMMIT_WAIT_MS = 120_000;
 // Only after a deploy, which says what it deployed.
 if (EXPECT_COMMIT !== undefined && EXPECT_COMMIT !== "") {
   test("the home page names the deployed commit", async ({ request }) => {
+    // oxlint-disable-next-line ui-testing/no-raised-timeout -- the live edge takes up to COMMIT_WAIT_MS to serve a new deploy
     test.setTimeout(COMMIT_WAIT_MS + 30_000);
     await expect
       // A dropped connection while the edge switches over counts as not yet, like an older sha.
       .poll(async () => (await readCommit(request).catch(() => undefined))?.seen, {
         message: `the live home page never named the deployed ${EXPECT_COMMIT}`,
         intervals: [5_000],
+        // oxlint-disable-next-line ui-testing/no-raised-timeout -- the live edge takes up to COMMIT_WAIT_MS to serve a new deploy
         timeout: COMMIT_WAIT_MS,
       })
       .toBe(EXPECT_COMMIT);

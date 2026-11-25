@@ -102,7 +102,6 @@ function Components(): ReactNode {
         {componentSections.map((section) => (
           <Card
             key={section.title}
-            as="article"
             icon={section.icon}
             title={section.title}
             count={section.pages.length}

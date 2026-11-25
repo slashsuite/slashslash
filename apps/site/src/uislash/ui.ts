@@ -2,7 +2,7 @@
  * The /uislash Getting started copy, read directly from uislash's fetched content/ui.ts with only
  * references to the old site and package scope replaced.
  */
-import { ui as rawUi } from "@uislash-src/apps/hack-cove-site/src/content/ui";
+import { ui as rawUi } from "@uislash-src/packages/ui-react/docs/ui";
 
 /** Replaces old site and package references without rewriting any prose. */
 export function swapUiReferences(text: string): string {

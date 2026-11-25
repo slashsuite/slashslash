@@ -43,7 +43,7 @@ export function DocsFrame({
     <Island>
       <DocsLayout
         nav={nav}
-        navLabel="All components"
+        asideLabel="All components"
         title={title}
         description={description !== undefined ? <InlineCode text={description} /> : undefined}
         contents={contents}

@@ -1,7 +1,7 @@
 import { existsSync, globSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
-import { ui as rawUi } from "@uislash-src/apps/hack-cove-site/src/content/ui";
+import { ui as rawUi } from "@uislash-src/packages/ui-react/docs/ui";
 import { componentPageOf, componentPages } from "@uislash-src/packages/ui-react/docs/components/index";
 import propsJson from "@uislash-src/packages/ui-react/docs/props.json";
 import { swapUiReferences } from "#/uislash/ui";
@@ -139,7 +139,7 @@ describe("built /uislash pages", () => {
   });
 
   test("/uislash index intro and Getting started text equal fetched ui.ts after reference swaps", () => {
-    expect(existsSync(resolve(FETCHED_UISLASH, "apps/hack-cove-site/src/content/ui.ts"))).toBe(true);
+    expect(existsSync(resolve(FETCHED_UISLASH, "packages/ui-react/docs/ui.ts"))).toBe(true);
     const html = readDist("uislash.html");
     const words = visibleText(html);
     expect(words).toContain(swapUiReferences(rawUi.subtitle));

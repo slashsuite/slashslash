@@ -14,7 +14,6 @@ export function ToolsInDetail({ licences }: { licences: Record<FactsProduct, str
         {PRODUCTS.map((product) => (
           <Card
             key={product.name}
-            as="article"
             size="lg"
             title={product.name}
             titleStyle="name"

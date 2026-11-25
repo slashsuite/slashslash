@@ -62,12 +62,14 @@ const indexHtml = renderToStaticMarkup(<DocsIndexPage />);
 const bodies = [indexHtml, ...cliPages.map((page) => pageHtml.get(page.slug) ?? "")];
 
 /**
- * The `id="…"` of every heading in a page's body, which is where an anchor lands. A titled Card's heading
- * (the previous and next links) carries React's `useId` (`_R_…_`), which no link targets and which restarts
- * on each page, so it is left out.
+ * The `id="…"` of every heading in a page's body, which is where an anchor lands. The previous and next links
+ * are titled Cards whose headings carry React's `useId`, which no link targets and which restarts on each page,
+ * so that nav is cut out first.
  */
 const idsIn = (html: string): string[] =>
-  [...html.matchAll(/<h[1-6][^>]*\sid="([^"]+)"/g)].map((m) => m[1] ?? "").filter((id) => !/^_.*_$/.test(id));
+  [...html.replace(/<nav[^>]*data-testid="docs-prev-next"[\s\S]*?<\/nav>/g, "").matchAll(/<h[1-6][^>]*\sid="([^"]+)"/g)].map(
+    (m) => m[1] ?? "",
+  );
 
 function def(slug: string, sections: string[]): DocPageDef {
   return { slug, title: slug, group: "reference", sections };

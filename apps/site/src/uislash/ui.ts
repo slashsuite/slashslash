@@ -1,5 +1,5 @@
 /**
- * The /uislash Getting started copy, read directly from uislash's fetched content/ui.ts with only
+ * The /uislash Getting started copy, read directly from uislash's fetched packages/ui-react/docs/ui.ts with only
  * references to the old site and package scope replaced.
  */
 import { ui as rawUi } from "@uislash-src/packages/ui-react/docs/ui";

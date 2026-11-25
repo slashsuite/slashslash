@@ -3,9 +3,10 @@ import { open, reload } from "./ready.ts";
 
 /*
  * The shell in a real browser, on the 404 page (the suite's section), on the desktop: the theme
- * toggle switches Slash Day and Slash Night and the choice survives a reload. The phone's toggle is
- * the same one. How the header looks at each width is the visual check's (pixelslash.config.ts). What
- * a reader with JavaScript off gets is in src/shell/shell.built.test.tsx.
+ * toggle switches Slash Day and Slash Night and the choice survives a reload, and with no choice
+ * stored the page follows the system. The phone's toggle is the same one. How the header looks at
+ * each width is the visual check's (pixelslash.config.ts). What a reader with JavaScript off gets is
+ * in src/shell/shell.built.test.tsx.
  */
 
 const PAGE = "/no-such-page";
@@ -31,4 +32,14 @@ test("the toggle switches Slash Day and Slash Night, and the choice survives a r
     await reload(page);
     await expect(toDark).toBeVisible();
   });
+});
+
+test("with no choice stored, the page follows the system switching between light and dark", async ({ page }) => {
+  const toDark = page.getByRole("button", { name: "Switch to dark theme" });
+  const toLight = page.getByRole("button", { name: "Switch to light theme" });
+  await page.emulateMedia({ colorScheme: "light" });
+  await open(page, PAGE);
+  await expect(toDark).toBeVisible();
+  await page.emulateMedia({ colorScheme: "dark" });
+  await expect(toLight).toBeVisible();
 });

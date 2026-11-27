@@ -104,10 +104,10 @@ async function killAndRecover(victim: { name: string; needle: string }, other: {
   check(after !== null && after !== before, `${victim.name} came back after kill -9 (pid ${before} to ${after})`);
   check(await healthyOnFrontDoor(), `${victim.name} still answers 8 s later`);
   check(pidOf(other.needle) === otherBefore, `${other.name} kept its pid (${otherBefore})`);
-  // The orphans are gone, not just joined by new ones: one workerd and one diff sidecar, no more.
+  // The orphan is gone, not just joined by a new one: one workerd, no more.
   const args = docker(["exec", NAME, "ps", "-eo", "args="]).split("\n");
   const count = (needle: string) => args.filter((a) => a.includes(needle)).length;
-  check(count("bin/workerd") === 1 && count("diff-sidecar.ts") === 1, "one workerd and one diff sidecar left");
+  check(count("bin/workerd") === 1, "one workerd left");
   check(!docker(["logs", NAME]).includes("ERR_ADDRESS_IN_USE"), `no ERR_ADDRESS_IN_USE in the logs`);
 }
 

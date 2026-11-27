@@ -16,7 +16,7 @@
 
 ARG PIXELSLASH_REVISION
 ARG TOGGLESLASH_REVISION
-ARG BUN=1.4.2
+ARG BUN=1.4.4
 
 # Caddy's binary without its file capability (cap_net_bind_service): it binds no low port here, and
 # nothing in the image may gain privilege. s6-overlay unpacked from its release tarballs, checked,
@@ -39,7 +39,7 @@ ADD --checksum=sha256:cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc
     https://raw.githubusercontent.com/caddyserver/caddy/v2.11.9/LICENSE /licenses/caddy/LICENSE
 ADD --checksum=sha256:7a3a86cd4e1e2c17dd3f4a972e946773e8bed86e52099d1624c8c9f9fda7d9e3 \
     https://raw.githubusercontent.com/just-containers/s6-overlay/v${S6}/COPYING /licenses/s6-overlay/COPYING
-ADD --checksum=sha256:b9caf52728691b4057e371232c221a132883198be2f3d2ddf92c90404c984b1a \
+ADD --checksum=sha256:362fe32c954ec829240bd7429c53d705eef08c6bfa45ffc2d02005f857cba4dd \
     https://raw.githubusercontent.com/oven-sh/bun/bun-v${BUN}/LICENSE.md /licenses/bun/LICENSE.md
 
 # The ToggleSlash runtime stage is the base: aspnet 10.0.14 on Ubuntu 24.04, whose `app` user (1654)

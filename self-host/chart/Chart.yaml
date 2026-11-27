@@ -3,8 +3,8 @@ name: slashslash
 description: PixelSlash and ToggleSlash in one pod, on one volume
 type: application
 # Both equal self-host/VERSION; `bunx moon run self-host:chart` fails when they drift.
-version: 0.1.2
-appVersion: "0.1.2"
+version: 0.1.3
+appVersion: "0.1.3"
 kubeVersion: ">=1.25.0-0"
 home: https://github.com/slashsuite/slashslash
 sources:

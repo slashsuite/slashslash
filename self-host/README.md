@@ -124,6 +124,8 @@ Everything is the container's environment.
 | Name | Default | What it does |
 | --- | --- | --- |
 | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | none, required | PixelSlash's GitHub sign-in |
+| `PIXELSLASH_ALLOWED_GITHUB_LOGINS` | unset | Comma-separated GitHub logins that may sign in to PixelSlash; unset lets anyone with a GitHub account in |
+| `PIXELSLASH_PUBLIC_URL` | unset | The URL people open PixelSlash at. Behind a proxy that ends TLS, set it to the `https://` URL: the GitHub callback and the session cookie's Secure flag follow it |
 | `TOGGLESLASH_ADMIN_TOKEN` | generated once | Set it to use your own token instead of the generated one |
 | `PIXELSLASH_PORT` | `3000` | The port PixelSlash answers on inside the container |
 | `TOGGLESLASH_PORT` | `8080` | The port ToggleSlash answers on inside the container |

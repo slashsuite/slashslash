@@ -108,9 +108,10 @@ function Footer(): ReactNode {
           title: "Licence",
           items: [
             ...licenceItems(),
-            <Text key="trademark" as="span">
+            // A bare span like the licence lines, so the column's paragraphs share one size.
+            <span key="trademark" data-trademark>
               {TRADEMARK}
-            </Text>,
+            </span>,
           ],
         },
       ]}

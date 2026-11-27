@@ -76,8 +76,8 @@ export const LOCAL_CLAIM: Claim = {
 };
 
 /**
- * What the CLI does, each one a section of PixelSlash's docs. Code style marks a command a reader types; a flag,
- * subcommand or image named in running prose stays text, so the reading line is not broken (`Rich`).
+ * What the CLI does, each one a section of PixelSlash's docs. Code style marks a command a reader types; a flag
+ * or an image named in running prose stays text, so the reading line is not broken (`Rich`).
  */
 export const FEATURES: readonly {
   title: string;
@@ -115,7 +115,7 @@ export const FEATURES: readonly {
   {
     title: "Many pages, Storybook and native",
     body: {
-      text: "Compare a route list (--routes), two shot directories (compare), every story of a running Storybook 7+ index, or Android and iOS PNGs paired with web shots. `pixelslash dev` re-shoots on every save.",
+      text: "Compare a route list (--routes), two shot directories (`compare`), every story of a running Storybook 7+ index, or Android and iOS PNGs paired with web shots. `pixelslash dev` re-shoots on every save.",
       facts: ["pixelslash/many-pages", "pixelslash/storybook-stories", "pixelslash/native-screenshots", "pixelslash/dev-mode"],
     },
     href: "/docs/compare-dirs#comparing-two-snapshot-dirs",

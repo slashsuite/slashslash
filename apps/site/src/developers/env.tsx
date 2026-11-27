@@ -39,10 +39,10 @@ export function Env(): ReactNode {
                 </TableCell>
                 {/* Elements, not mono cells: a mono cell never wraps, and the three do not fit a phone side by side. */}
                 <TableCell>
-                  <span className="font-mono text-xs">{row.staging}</span>
+                  <span className="font-mono text-sm">{row.staging}</span>
                 </TableCell>
                 <TableCell>
-                  <span className="font-mono text-xs">{row.production}</span>
+                  <span className="font-mono text-sm">{row.production}</span>
                 </TableCell>
               </TableRow>
             ))}

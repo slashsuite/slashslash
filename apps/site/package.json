@@ -18,7 +18,7 @@
     "@slashsuite/themes": "^0.5.0",
     "@slashsuite/ui-react": "^0.13.0",
     "@tailwindcss/vite": "^4.3.5",
-    "astro": "^7.4.12",
+    "astro": "^7.4.13",
     "marked": "^18",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
@@ -32,7 +32,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "eslint-plugin-playwright": "2.12.2",
-    "eslint-plugin-testing-library": "7.16.2",
+    "eslint-plugin-testing-library": "7.16.3",
     "oxlint": "^1.94.0",
     "typescript": "6",
     "vitest": "^5.1.1"

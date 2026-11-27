@@ -16,7 +16,7 @@
     "@astrojs/check": "^0.9.12",
     "@astrojs/react": "^7.1.9",
     "@slashsuite/themes": "^0.5.0",
-    "@slashsuite/ui-react": "^0.16.1",
+    "@slashsuite/ui-react": "^0.16.3",
     "@tailwindcss/vite": "^4.3.5",
     "astro": "^7.4.13",
     "marked": "^18",

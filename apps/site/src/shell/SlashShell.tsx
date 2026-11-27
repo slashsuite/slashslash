@@ -1,4 +1,4 @@
-import { AppShell, AppShellBrand, Caption, Cluster, ColourSchemeToggle, Show, Tabs, Text, TextLink } from "@slashsuite/ui-react";
+import { AppShell, AppShellBrand, Caption, Cluster, ColourSchemeToggle, Show, Tabs, TextLink } from "@slashsuite/ui-react";
 import type { ReactNode } from "react";
 import { licenceOf } from "#/content/facts";
 import { PRODUCTS } from "#/content/products";
@@ -76,7 +76,7 @@ function Footer(): ReactNode {
       lead={
         <>
           <Lockup />
-          <Text>{LANDING_HEADLINE}.</Text>
+          <Caption>{LANDING_HEADLINE}.</Caption>
         </>
       }
       columns={[
@@ -108,9 +108,9 @@ function Footer(): ReactNode {
           title: "Licence",
           items: [
             ...licenceItems(),
-            <Text key="trademark" as="span">
+            <Caption key="trademark" as="span">
               {TRADEMARK}
-            </Text>,
+            </Caption>,
           ],
         },
       ]}

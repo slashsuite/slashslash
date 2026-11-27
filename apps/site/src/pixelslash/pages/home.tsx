@@ -71,11 +71,14 @@ export const INSTALL: { npm: Claim; clone: Claim } = {
 
 /** Where a shot goes. */
 export const LOCAL_CLAIM: Claim = {
-  text: "Shots leave the machine only through `pixelslash upload` or `--upload`, and only to the server you name. A model your project sets sees crops of a changed region, never a whole shot.",
+  text: "Shots leave the machine only through `pixelslash upload` or --upload, and only to the server you name. A model your project sets sees crops of a changed region, never a whole shot.",
   facts: ["pixelslash/local-unless-upload", "pixelslash/server-ai-explanations"],
 };
 
-/** What the CLI does, each one a section of PixelSlash's docs. */
+/**
+ * What the CLI does, each one a section of PixelSlash's docs. Code style marks a command a reader types; a flag
+ * or an image named in running prose stays text, so the reading line is not broken (`Rich`).
+ */
 export const FEATURES: readonly {
   title: string;
   body: Claim;
@@ -112,7 +115,7 @@ export const FEATURES: readonly {
   {
     title: "Many pages, Storybook and native",
     body: {
-      text: "Compare a route list (`--routes`), two shot directories (`compare`), every story of a running Storybook 7+ index, or Android and iOS PNGs paired with web shots. `pixelslash dev` re-shoots on every save.",
+      text: "Compare a route list (--routes), two shot directories (`compare`), every story of a running Storybook 7+ index, or Android and iOS PNGs paired with web shots. `pixelslash dev` re-shoots on every save.",
       facts: ["pixelslash/many-pages", "pixelslash/storybook-stories", "pixelslash/native-screenshots", "pixelslash/dev-mode"],
     },
     href: "/docs/compare-dirs#comparing-two-snapshot-dirs",
@@ -121,7 +124,7 @@ export const FEATURES: readonly {
   {
     title: "Deterministic CI and flaky shots",
     body: {
-      text: "`pixelslash capture` shoots inside a pinned container image (`ghcr.io/slashsuite/pixelslash-capture`) and records each shot's render fingerprint. Changed shots are re-shot and flagged as flaky shots when recaptures disagree; `pixelslash flake` reproduces them locally.",
+      text: "`pixelslash capture` shoots inside a pinned container image (ghcr.io/slashsuite/pixelslash-capture) and records each shot's render fingerprint. Changed shots are re-shot and flagged as flaky shots when recaptures disagree; `pixelslash flake` reproduces them locally.",
       facts: ["pixelslash/pinned-capture-image", "pixelslash/capture-image", "pixelslash/flaky-shot-detection"],
     },
     href: "/docs/capture#snapshot-capture-the-pinned-image",

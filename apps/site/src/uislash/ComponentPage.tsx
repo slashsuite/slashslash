@@ -87,7 +87,10 @@ function UseInstead({ siblings }: { siblings: { slug: string; when: string }[] }
                 <TextLink href={`/uislash/${slug}`}>{componentPageOf(slug).name}</TextLink>
               </TableCell>
               <TableCell>
-                <InlineCode text={when} />
+                {/* A cell holding an element never wraps, so the inline code would stretch the table: wrap it as prose. */}
+                <span className="block min-w-48 whitespace-normal">
+                  <InlineCode text={when} />
+                </span>
               </TableCell>
             </TableRow>
           ))}

@@ -25,19 +25,19 @@ for (const theme of ["light", "dark"] as const) {
     );
     expect(filled).toEqual([true, false, false]);
   });
-
-  test(`the demo's pause holds the slash still in ${theme}`, async ({ page }) => {
-    await page.emulateMedia({ colorScheme: theme, reducedMotion: "no-preference" });
-    await open(page, "/pixelslash");
-    const pause = page.getByRole("checkbox", { name: "Pause the demo" });
-    const demo = page.getByRole("figure").filter({ has: pause });
-    await expect(pause).not.toBeChecked();
-    // Space on the focused box, as a keyboard reader toggles it; a pointer lands on the icon its label draws.
-    await pause.focus();
-    await page.keyboard.press("Space");
-    await expect(pause).toBeChecked();
-    const state = await demo.evaluate((figure) => figure.getAnimations({ subtree: true }).map((a) => a.playState));
-    expect(state.length).toBeGreaterThan(0);
-    expect(state.every((s) => s === "paused")).toBe(true);
-  });
 }
+
+test("the demo's pause holds the slash still", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await open(page, "/pixelslash");
+  const pause = page.getByRole("checkbox", { name: "Pause the demo" });
+  const demo = page.getByRole("figure").filter({ has: pause });
+  await expect(pause).not.toBeChecked();
+  // Space on the focused box, as a keyboard reader toggles it; a pointer lands on the icon its label draws.
+  await pause.focus();
+  await page.keyboard.press("Space");
+  await expect(pause).toBeChecked();
+  const state = await demo.evaluate((figure) => figure.getAnimations({ subtree: true }).map((a) => a.playState));
+  expect(state.length).toBeGreaterThan(0);
+  expect(state.every((s) => s === "paused")).toBe(true);
+});

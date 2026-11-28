@@ -3,7 +3,7 @@ import { PALETTE as P } from "#/how-it-works/storybook-data";
 import { BuiltPackage, GroundLine, INK_STROKE } from "#/how-it-works/storybook-parts";
 
 /* ==========================================================================
-   SCENE 5: AUTOMATED & VISUAL CHECKS (PIXELSLASH, UISLASH, FLAKESLASH)
+   SCENE 6: CHECKS (PIXELSLASH, FLAKESLASH, UISLASH)
    ========================================================================== */
 
 function BuilderHandoff(): ReactNode {
@@ -34,7 +34,7 @@ function BuilderHandoff(): ReactNode {
         </g>
       </g>
       <text x={136} y={392} textAnchor="middle" fontSize={15} fontWeight={700} fill={P.inkSoft}>
-        Hands off, never merges
+        Fixes before handoff
       </text>
     </g>
   );
@@ -88,9 +88,22 @@ function PixelSlashWindow(): ReactNode {
           </text>
         </g>
       </g>
-      <text x={140} y={232} textAnchor="middle" fontSize={14} fontWeight={700} fill={P.inkSoft}>
-        Human visual sign-off
-      </text>
+      <g transform="translate(58 212)">
+        <rect x={0} y={0} width={28} height={28} rx={6} fill={P.white} {...INK_STROKE} />
+        <text x={14} y={20} textAnchor="middle" fontSize={16} fontWeight={800} fill={P.ink}>
+          a
+        </text>
+        <text x={36} y={20} fontSize={14} fontWeight={700} fill={P.inkSoft}>
+          accept
+        </text>
+        <rect x={98} y={0} width={28} height={28} rx={6} fill={P.white} {...INK_STROKE} />
+        <text x={112} y={20} textAnchor="middle" fontSize={16} fontWeight={800} fill={P.ink}>
+          r
+        </text>
+        <text x={134} y={20} fontSize={14} fontWeight={700} fill={P.inkSoft}>
+          reject
+        </text>
+      </g>
     </g>
   );
 }
@@ -107,25 +120,25 @@ function SideCheckCards(): ReactNode {
         <rect x={70} y={44} width={58} height={26} rx={5} fill={P.terracottaSoft} stroke={P.terracotta} strokeWidth={2} />
         <rect x={136} y={44} width={50} height={26} rx={5} fill={P.sageSoft} stroke={P.sage} strokeWidth={2} />
         <text x={16} y={100} fontSize={14} fontWeight={700} fill={P.sage}>
-          Design verified
+          No custom styling
         </text>
       </g>
       <g transform="translate(0 138)">
         <g className="sb-chk5-flakeslash">
           <rect x={0} y={0} width={202} height={120} rx={12} fill={P.white} {...INK_STROKE} />
           <text x={16} y={30} fontSize={16} fontWeight={800} fill={P.ink}>
-            FlakeSlash (10m)
+            FlakeSlash
           </text>
           <g transform="translate(18 48)">
             <circle cx={14} cy={14} r={8} fill={P.sage} />
             <circle cx={46} cy={14} r={8} fill={P.sage} />
             <circle cx={78} cy={14} r={8} fill={P.sage} />
-            <circle cx={110} cy={14} r={8} fill={P.sage} />
+            <circle className="sb-chk5-flaky-dot" cx={110} cy={14} r={8} fill={P.terracotta} />
             <circle cx={142} cy={14} r={8} fill={P.sage} />
             <rect className="sb-chk5-scanbar" x={4} y={2} width={20} height={24} rx={4} fill={P.periwinkle} fillOpacity={0.35} />
           </g>
-          <text x={16} y={100} fontSize={14} fontWeight={700} fill={P.sage}>
-            Dashboard scan
+          <text x={16} y={100} fontSize={14} fontWeight={700} fill={P.terracotta}>
+            Flaky test named
           </text>
         </g>
       </g>
@@ -145,7 +158,7 @@ export function SceneChecks(): ReactNode {
 }
 
 /* ==========================================================================
-   SCENE 6: SKEPTICAL REVIEWER -> MULTI-MODEL READ-ONLY INSPECTION
+   SCENE 5: SKEPTICAL REVIEW (FINDINGS GO TO THE BUILDER)
    ========================================================================== */
 
 function BuilderFixRecipient(): ReactNode {
@@ -171,7 +184,7 @@ function BuilderFixRecipient(): ReactNode {
   );
 }
 
-function SecondModelReviewer(): ReactNode {
+function SecondReviewer(): ReactNode {
   return (
     <g transform="translate(560 100)" opacity={0.82}>
       <g className="sb-rev-peer">
@@ -181,7 +194,7 @@ function SecondModelReviewer(): ReactNode {
         <line x1={33} y1={154} x2={52} y2={174} stroke={P.periwinkle} strokeWidth={5} strokeLinecap="round" />
         <path d="M-2 138 Q-36 132 -70 144" fill="none" stroke={P.periwinkle} strokeWidth={2.2} strokeDasharray="5 5" />
         <text x={90} y={290} textAnchor="middle" fontSize={15} fontWeight={700} fill={P.inkSoft}>
-          Second model
+          Second reviewer
         </text>
       </g>
     </g>
@@ -243,7 +256,7 @@ export function SceneReviewer(): ReactNode {
     <g>
       <GroundLine />
       <BuilderFixRecipient />
-      <SecondModelReviewer />
+      <SecondReviewer />
       <CodeReviewSheet />
       <g transform="translate(226 300) scale(0.92)">
         <BuiltPackage seals={2} />
@@ -253,10 +266,10 @@ export function SceneReviewer(): ReactNode {
         <g className="sb-rev-flag-note">
           <rect x={0} y={0} width={224} height={50} rx={12} fill={P.terracottaSoft} stroke={P.terracotta} strokeWidth={2.2} />
           <text x={16} y={22} fontSize={15} fontWeight={800} fill={P.ink}>
-            Read-only flag
+            Finding
           </text>
-          <text x={16} y={40} fontSize={13} fontWeight={700} fill={P.inkSoft}>
-            Reports to builder
+          <text x={16} y={40} fontSize={14} fontWeight={700} fill={P.inkSoft}>
+            Builder fixes or answers
           </text>
         </g>
       </g>
@@ -265,7 +278,7 @@ export function SceneReviewer(): ReactNode {
           <rect x={0} y={0} width={190} height={40} rx={20} fill={P.sageSoft} stroke={P.sage} strokeWidth={2.2} />
           <path d="M18 20 L23 25 L33 14" fill="none" stroke={P.sage} strokeWidth={2.8} strokeLinecap="round" />
           <text x={44} y={26} fontSize={16} fontWeight={800} fill={P.ink}>
-            Fix verified
+            No finding open
           </text>
         </g>
       </g>

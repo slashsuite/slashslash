@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 import { PALETTE as P } from "#/how-it-works/storybook-data";
-import { BuiltPackage, GroundLine, INK_STROKE, OwnerFigure } from "#/how-it-works/storybook-parts";
+import { BuiltPackage, GroundLine, INK_STROKE, OwnerFigure, RoleInboxStack } from "#/how-it-works/storybook-parts";
 
 /* ==========================================================================
-   SCENE 7: SENTINEL -> GATEHOUSE BRIDGE MERGE & DEPLOY
+   SCENE 7: INBOX, GATE AND SHIP (SENTINEL)
    ========================================================================== */
 
 function GatehouseBridge(): ReactNode {
@@ -32,10 +32,10 @@ function GatehouseBridge(): ReactNode {
       </g>
       <g transform="translate(114 -24)">
         <g className="sb-sent-merged-badge">
-          <rect x={0} y={0} width={186} height={38} rx={19} fill={P.sageSoft} stroke={P.sage} strokeWidth={2.2} />
+          <rect x={0} y={0} width={220} height={38} rx={19} fill={P.sageSoft} stroke={P.sage} strokeWidth={2.2} />
           <path d="M16 19 L21 24 L31 13" fill="none" stroke={P.sage} strokeWidth={2.8} strokeLinecap="round" />
           <text x={40} y={25} fontSize={16} fontWeight={800} fill={P.ink}>
-            Merged &amp; live
+            Merged and shipped
           </text>
         </g>
       </g>
@@ -104,12 +104,31 @@ export function SceneSentinel(): ReactNode {
       <GroundLine />
       <GatehouseBridge />
       <SentinelFigure />
+      <g transform="translate(640 22)">
+        <g className="sb-sent-inbox">
+          <g transform="scale(0.7)">
+            <RoleInboxStack label="Sentinel inbox" ticketCount={5} badgeCount={5} seals={1} />
+          </g>
+          <text x={55} y={96} textAnchor="middle" fontSize={14} fontWeight={700} fill={P.inkSoft}>
+            Oldest first
+          </text>
+        </g>
+      </g>
+      <g transform="translate(42 376)">
+        <g className="sb-sent-red-check">
+          <rect x={0} y={0} width={292} height={36} rx={18} fill={P.terracottaSoft} stroke={P.terracotta} strokeWidth={2.2} />
+          <circle cx={20} cy={18} r={7} fill={P.terracotta} />
+          <text x={36} y={24} fontSize={15} fontWeight={800} fill={P.ink}>
+            Red check: back to the Builder
+          </text>
+        </g>
+      </g>
     </g>
   );
 }
 
 /* ==========================================================================
-   SCENE 8: LIVE ROLLOUT -> OWNER & TOGGLESLASH FEATURE SWITCH
+   SCENE 8: LIVE ROLLOUT (OWNER AND TOGGLESLASH)
    ========================================================================== */
 
 function TogglePanel(): ReactNode {
@@ -133,14 +152,14 @@ function TogglePanel(): ReactNode {
         Audience rollout
       </text>
       <rect x={20} y={168} width={218} height={15} rx={7.5} fill={P.paperShade} stroke={P.ink} strokeWidth={2} />
-      <rect className="sb-rol-progress" x={22} y={170} width={214} height={11} rx={5.5} fill={P.terracotta} />
-      <text x={42} y={204} textAnchor="middle" fontSize={14} fontWeight={700} fill={P.inkSoft}>
+      <rect x={22} y={170} width={40} height={11} rx={5.5} fill={P.terracotta} />
+      <text x={42} y={204} textAnchor="middle" fontSize={14} fontWeight={800} fill={P.terracotta}>
         10%
       </text>
       <text x={129} y={204} textAnchor="middle" fontSize={14} fontWeight={700} fill={P.inkSoft}>
         50%
       </text>
-      <text x={238} y={204} textAnchor="end" fontSize={14} fontWeight={800} fill={P.terracotta}>
+      <text x={238} y={204} textAnchor="end" fontSize={14} fontWeight={700} fill={P.inkSoft}>
         100%
       </text>
       <g transform="translate(20 220)">
@@ -148,7 +167,7 @@ function TogglePanel(): ReactNode {
           <circle cx={10} cy={10} r={9} fill={P.sageSoft} stroke={P.sage} strokeWidth={2} />
           <path d="M6 10 L9 13 L14 7" fill="none" stroke={P.sage} strokeWidth={2.2} strokeLinecap="round" />
           <text x={26} y={15} fontSize={14} fontWeight={700} fill={P.ink}>
-            Audit trail recorded
+            Dashboard or command line
           </text>
         </g>
       </g>

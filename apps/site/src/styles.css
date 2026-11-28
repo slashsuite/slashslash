@@ -5,7 +5,6 @@
 @import "./stand-ins/hero-ground.css";
 @import "./illustrations/hero.css";
 @import "./illustrations/combinations.css";
-@import "./illustrations/flow.css";
 @import "./how-it-works/storybook.css";
 @import "./pixelslash/demo.css";
 /* Tailwind skips node_modules: scan the design system for the utilities its components use, and this app. */

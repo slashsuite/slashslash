@@ -3,7 +3,7 @@ import { PALETTE as P } from "#/how-it-works/storybook-data";
 import { GroundLine, INK_STROKE } from "#/how-it-works/storybook-parts";
 
 /* ==========================================================================
-   SCENE 9: GOOD-NIGHT RETRO -> ALL ROLES LEARN FROM PAST RUNS
+   SCENE 9: GOOD NIGHT RETRO (WHAT SHIPPED TODAY)
    ========================================================================== */
 
 function NightSkyAccents(): ReactNode {
@@ -49,20 +49,20 @@ function RetroBoard(): ReactNode {
       <rect x={0} y={0} width={428} height={172} rx={14} fill={P.white} {...INK_STROKE} />
       <path d="M0 14 Q0 0 14 0 L414 0 Q428 0 428 14 L428 38 L0 38 Z" fill={P.ink} {...INK_STROKE} />
       <text x={18} y={24} fontSize={15} fontWeight={800} fill={P.white}>
-        Good-night retro
+        Good night
       </text>
-      <text x={410} y={24} textAnchor="end" fontSize={13} fontWeight={700} fill={P.goldSoft}>
-        Learning for next time
+      <text x={410} y={24} textAnchor="end" fontSize={14} fontWeight={700} fill={P.goldSoft}>
+        Shipped today
       </text>
-      <text x={20} y={60} fontSize={13} fontWeight={700} fill={P.inkSoft}>
-        Notes from today
+      <text x={20} y={60} fontSize={14} fontWeight={700} fill={P.inkSoft}>
+        Tickets closed
       </text>
       <g transform="translate(18 68)">
         <g className="sb-retro-note-1">
           <rect x={0} y={0} width={152} height={26} rx={6} fill={P.goldSoft} stroke={P.ink} strokeWidth={1.8} />
           <path d="M10 13 L14 17 L21 9" fill="none" stroke={P.terracotta} strokeWidth={2.4} strokeLinecap="round" />
-          <text x={28} y={17} fontSize={13} fontWeight={700} fill={P.ink}>
-            Clearer steps
+          <text x={28} y={18} fontSize={14} fontWeight={700} fill={P.ink}>
+            Saved basket
           </text>
         </g>
       </g>
@@ -70,8 +70,8 @@ function RetroBoard(): ReactNode {
         <g className="sb-retro-note-2">
           <rect x={0} y={0} width={152} height={26} rx={6} fill={P.periwinkleSoft} stroke={P.ink} strokeWidth={1.8} />
           <path d="M10 13 L14 17 L21 9" fill="none" stroke={P.periwinkle} strokeWidth={2.4} strokeLinecap="round" />
-          <text x={28} y={17} fontSize={13} fontWeight={700} fill={P.ink}>
-            Earlier checks
+          <text x={28} y={18} fontSize={14} fontWeight={700} fill={P.ink}>
+            Search filters
           </text>
         </g>
       </g>
@@ -79,8 +79,8 @@ function RetroBoard(): ReactNode {
         <g className="sb-retro-note-3">
           <rect x={0} y={0} width={152} height={26} rx={6} fill={P.terracottaSoft} stroke={P.ink} strokeWidth={1.8} />
           <path d="M10 13 L14 17 L21 9" fill="none" stroke={P.terracotta} strokeWidth={2.4} strokeLinecap="round" />
-          <text x={28} y={17} fontSize={13} fontWeight={700} fill={P.ink}>
-            Fewer surprises
+          <text x={28} y={18} fontSize={14} fontWeight={700} fill={P.ink}>
+            Order emails
           </text>
         </g>
       </g>
@@ -98,7 +98,7 @@ function RetroBoard(): ReactNode {
         <g className="sb-retro-playbook">
           <rect x={0} y={0} width={176} height={106} rx={10} fill={P.paper} stroke={P.ink} strokeWidth={2.2} />
           <text x={14} y={24} fontSize={14} fontWeight={800} fill={P.ink}>
-            Shared playbook
+            Merged and shipped
           </text>
           <line className="sb-retro-rule-1" pathLength={1} x1={14} y1={40} x2={156} y2={40} stroke={P.ink} strokeWidth={2.8} strokeLinecap="round" />
           <line className="sb-retro-rule-2" pathLength={1} x1={14} y1={54} x2={138} y2={54} stroke={P.periwinkle} strokeWidth={2.8} strokeLinecap="round" />
@@ -107,8 +107,8 @@ function RetroBoard(): ReactNode {
             <g className="sb-retro-badge">
               <rect x={0} y={0} width={152} height={22} rx={11} fill={P.sageSoft} stroke={P.sage} strokeWidth={1.8} />
               <path d="M11 11 L15 15 L22 7" fill="none" stroke={P.sage} strokeWidth={2.4} strokeLinecap="round" />
-              <text x={28} y={15} fontSize={12} fontWeight={800} fill={P.ink}>
-                Smarter next cycle
+              <text x={28} y={16} fontSize={14} fontWeight={800} fill={P.ink}>
+                3 tickets today
               </text>
             </g>
           </g>
@@ -133,7 +133,7 @@ function RetroMember({
     <g transform={`translate(${x} 230)`}>
       <ellipse cx={0} cy={134} rx={32} ry={5.5} fill={P.taupe} />
       <g className={nodClass}>{children}</g>
-      <text x={0} y={158} textAnchor="middle" fontSize={13} fontWeight={700} fill={P.inkSoft}>
+      <text x={0} y={158} textAnchor="middle" fontSize={14} fontWeight={700} fill={P.inkSoft}>
         {label}
       </text>
     </g>
@@ -152,7 +152,7 @@ function RetroEyes({ lx = -6, rx = 6, y = 44 }: { lx?: number; rx?: number; y?: 
 function LeftRetroGroup(): ReactNode {
   return (
     <g>
-      <RetroMember x={76} label="Owner" nodClass="sb-retro-nod-a">
+      <RetroMember x={90} label="Owner" nodClass="sb-retro-nod-a">
         <path d="M-20 132 L-18 82 Q0 68 18 82 L20 132 Z" fill={P.taupeLight} {...INK_STROKE} />
         <path d="M-24 78 Q0 64 24 78 L20 100 L-20 100 Z" fill={P.ink} {...INK_STROKE} />
         <rect x={-5} y={56} width={10} height={17} rx={3} fill={P.white} {...INK_STROKE} />
@@ -161,7 +161,7 @@ function LeftRetroGroup(): ReactNode {
         <RetroEyes lx={-4} rx={7} y={44} />
         <path d="M-3 52 Q2 55 7 52" fill="none" stroke={P.ink} strokeWidth={2} strokeLinecap="round" />
       </RetroMember>
-      <RetroMember x={184} label="Muse" nodClass="sb-retro-nod-b">
+      <RetroMember x={214} label="Muse" nodClass="sb-retro-nod-b">
         <path d="M-24 78 Q0 64 24 78 L28 132 L-28 132 Z" fill={P.terracotta} {...INK_STROKE} />
         <path d="M-22 44 C-26 64 -24 76 -12 78 L14 78 C24 70 24 54 18 40 Z" fill={P.ink} {...INK_STROKE} />
         <rect x={-7} y={57} width={14} height={17} rx={3} fill={P.terracotta} {...INK_STROKE} />
@@ -170,7 +170,7 @@ function LeftRetroGroup(): ReactNode {
         <RetroEyes lx={-5} rx={6} y={44} />
         <path d="M-4 52 Q1 55 6 52" fill="none" stroke={P.ink} strokeWidth={2} strokeLinecap="round" />
       </RetroMember>
-      <RetroMember x={292} label="Architect" nodClass="sb-retro-nod-a">
+      <RetroMember x={338} label="Architect" nodClass="sb-retro-nod-a">
         <path d="M-24 78 Q0 64 24 78 L28 132 L-28 132 Z" fill={P.periwinkle} {...INK_STROKE} />
         <rect x={-9} y={71} width={18} height={61} fill={P.white} {...INK_STROKE} />
         <rect x={-5} y={56} width={10} height={18} rx={3} fill={P.white} {...INK_STROKE} />
@@ -182,19 +182,6 @@ function LeftRetroGroup(): ReactNode {
         <RetroEyes lx={-6.5} rx={6.5} y={44} />
         <path d="M-4 53 Q0 56 4 53" fill="none" stroke={P.ink} strokeWidth={2} strokeLinecap="round" />
       </RetroMember>
-      <RetroMember x={400} label="Checker" nodClass="sb-retro-nod-b">
-        <path d="M-24 78 Q0 64 24 78 L26 132 L-26 132 Z" fill={P.periwinkle} {...INK_STROKE} />
-        <polygon points="-12,73 0,94 12,73" fill={P.white} {...INK_STROKE} />
-        <rect x={-5} y={56} width={10} height={18} rx={3} fill={P.white} {...INK_STROKE} />
-        <path
-          d="M-24 40 C-28 26 -14 16 0 16 C16 16 28 28 24 44 C24 52 16 58 10 56 L-10 56 C-18 58 -26 50 -24 40 Z"
-          fill={P.white}
-          {...INK_STROKE}
-        />
-        <circle cx={0} cy={44} r={16} fill={P.white} {...INK_STROKE} />
-        <RetroEyes lx={-5.5} rx={5.5} y={43} />
-        <path d="M-4 51 Q0 54 4 51" fill="none" stroke={P.ink} strokeWidth={2} strokeLinecap="round" />
-      </RetroMember>
     </g>
   );
 }
@@ -202,7 +189,7 @@ function LeftRetroGroup(): ReactNode {
 function RightRetroGroup(): ReactNode {
   return (
     <g>
-      <RetroMember x={508} label="Builder" nodClass="sb-retro-nod-a">
+      <RetroMember x={462} label="Builder" nodClass="sb-retro-nod-a">
         <path d="M-24 78 Q0 64 24 78 L26 132 L-26 132 Z" fill={P.white} {...INK_STROKE} />
         <path d="M-16 76 L16 76 L20 132 L-20 132 Z" fill={P.terracotta} {...INK_STROKE} />
         <rect x={-5} y={56} width={10} height={18} rx={3} fill={P.white} {...INK_STROKE} />
@@ -211,7 +198,7 @@ function RightRetroGroup(): ReactNode {
         <RetroEyes lx={-6} rx={5} y={44} />
         <path d="M-5 52 Q0 55 5 52" fill="none" stroke={P.ink} strokeWidth={2} strokeLinecap="round" />
       </RetroMember>
-      <RetroMember x={616} label="Reviewer" nodClass="sb-retro-nod-b">
+      <RetroMember x={586} label="Reviewer" nodClass="sb-retro-nod-b">
         <path d="M-26 132 L-20 76 Q0 64 20 76 L26 132 Z" fill={P.ink} {...INK_STROKE} />
         <path d="M-10 72 L10 72 L8 132 L-8 132 Z" fill={P.terracotta} {...INK_STROKE} />
         <rect x={-5} y={56} width={10} height={18} rx={3} fill={P.white} {...INK_STROKE} />
@@ -223,7 +210,7 @@ function RightRetroGroup(): ReactNode {
         <RetroEyes lx={-8.5} rx={8.5} y={43} />
         <path d="M-5 53 Q0 55 5 53" fill="none" stroke={P.ink} strokeWidth={2} strokeLinecap="round" />
       </RetroMember>
-      <RetroMember x={724} label="Sentinel" nodClass="sb-retro-nod-a">
+      <RetroMember x={710} label="Sentinel" nodClass="sb-retro-nod-a">
         <circle cx={18} cy={39} r={7.5} fill={P.ink} />
         <path d="M-24 78 Q0 64 24 78 L28 132 L-28 132 Z" fill={P.periwinkle} {...INK_STROKE} />
         <path d="M-18 61 Q0 74 18 61 L20 76 Q0 88 -20 76 Z" fill={P.terracotta} {...INK_STROKE} />

@@ -4,7 +4,8 @@ import { describe, expect, test } from "vitest";
 
 /*
  * The approved copy for /how-it-works, checked word for word against the built page (`bunx moon run site:test`
- * builds first). It does not import the content modules, so an accidental wording change fails here.
+ * builds first). It does not import the content modules, so an accidental wording change fails here. Links in
+ * the copy are written here as their text alone, since the page shows only the text.
  */
 
 const DIST = resolve(import.meta.dirname, "../../dist");
@@ -35,6 +36,8 @@ function words(page: string): string {
     page
       .slice(page.indexOf("<body"))
       .replace(/<(script|style|template)[\s\S]*?<\/\1>/g, " ")
+      // React marks text joins with empty comments, which add nothing a reader sees.
+      .replace(/<!--[\s\S]*?-->/g, "")
       // Code spans and links sit inside a sentence, so their tags add no space; other closing inline tags neither.
       .replace(/<\/?(a|code)\b[^>]*>/g, "")
       .replace(/<\/(span|strong|em)>/g, "")
@@ -45,203 +48,99 @@ function words(page: string): string {
 /** The en dash and the em dash, written by code point so this file carries neither. */
 const LONG_DASHES = new RegExp(`[${String.fromCodePoint(0x2013, 0x2014)}]`);
 
-const HEADLINE = "From idea to live release, and what checks each step";
+const HEADLINE = "Bring the idea. Agents ship it, and the calls that matter stay yours.";
 const DESCRIPTION =
-  "How an idea becomes a live software release: six clear AI roles, written rules, and Slash checks at every step, with planned parts marked planned.";
+  "Follow one idea from a chat to shipped work. Agents plan, build, check and ship it, and stop for you at each decision only you can make.";
 
-const LEAD = [
-  "Every change here is built by one AI agent, then checked by separate agents and by the Slash products before it reaches users.",
-  "One cycle, ten steps. Each step names the role doing the work, the written rule it follows, and the Slash product checking the result. Solid cards run today. Dashed cards are planned.",
+const HERO = "It starts as a thought you type into a chat. Say it is a saved basket for your shop, so customers can come back to what they picked. A small team of agents turns that thought into a plan, builds it, checks it and ships it. At each decision only you can make, the work stops and waits for you.";
+
+/** The nine scenes, each as its title and caption, as the page lists them for readers without scripts. */
+const FILMSTRIP = [
+  "Explore and confirm: You open a chat with the Muse and tell it about the saved basket. The Muse asks questions until the idea looks whole, then asks you whether it is complete. Say no, and you keep talking. Say yes, and only then does it become a ticket.",
+  "Shape the ticket: The Architect picks up your saved basket and turns it into a ticket. The ticket records the details the Architect dug into and a list of what done means. A build cannot start without both.",
+  "Cold read the brief: A Reviewer reads the brief on its own, with none of your chat behind it. Any question the brief leaves open sends it back to the Architect to fix. When the open question is one only you can answer, the Architect brings it to you. When only trying can answer a question, the Architect runs a small trial first, and what it learns goes back into the ticket.",
+  "Parallel builds: Your saved basket gets a Builder of its own, in its own copy of the code, beside builders on other tickets. Before it starts, the files it plans to touch are compared with theirs. When two builds clash, the lower priority one pauses until the other lands, then picks up from the new code. On the computer they share, TaskSlash holds each build and test in a queue until there is room for it.",
+  "Skeptical review: Before the change goes up for merging, Reviewers read it and presume every changed line is wrong. They read and never edit. The Builder fixes each finding or answers it, and the review goes another round. Only when no finding is left open does the Builder open a pull request, the proposed change to the live code.",
+  "Visual and automated checks: The project's checks run in order and stop at the first one that fails. PixelSlash shows what changed on screen between the old pages and the new ones, and you go through the changes with a few keys: a to accept, r to reject. FlakeSlash names the tests that pass and fail on the same code. UISlash components take no custom styling, and a check fails any pull request that breaks its rules. When a check fails, the Builder fixes it before it can hand off.",
+  "Inbox, gate and ship: Every build ends with one of four verdicts: ready to merge, needs you, blocked, or partly done. Only the first two reach the Sentinel. The Builder hands off and stops. It never merges its own work. Its note lands in the Sentinel's inbox with the notes of every other builder on the team, read oldest first. The Sentinel checks each claim for itself. Red checks, an unmet item on the done list or a claim it cannot reproduce go back to the Builder. When the change clashes with newer work, the Sentinel brings it up to date itself. When every answer is yes, it merges, deploys and closes the ticket.",
+  "Live rollout: Your saved basket is shipped. The agents stop here. If you want some customers to see a feature before others, ToggleSlash lets you turn it on for a share of users and off again while your app runs, from its dashboard or its command line. That step is yours.",
+  "Good night retro: The day ends, and you see what shipped today, your saved basket with it.",
 ];
 
-/** The illustrated roles: id, heading, subtitle, image path, explanation. */
-const ROLES: [string, string, string, string, string][] = [
-  [
-    "muse",
-    "Muse",
-    "Explores the idea",
-    "/how-it-works/muse.webp",
-    "The muse is the agent you talk through a rough idea with before anyone plans or builds. It asks questions, explores options, and once you confirm a design, sends it to the architect's role inbox.",
-  ],
-  [
-    "architect",
-    "Architect",
-    "Plans, drills and assigns",
-    "/how-it-works/architect.webp",
-    "The architect turns a confirmed design into a clear plan broken into small tasks. It writes out each drilled ticket, assigns a builder once checked, and steps in to merge and deploy when there is no sentinel.",
-  ],
-  [
-    "checker",
-    "Checker",
-    "Verifies the ticket is doable",
-    "/how-it-works/checker.webp",
-    "Before any builder starts, the checker inspects the architect's drilled ticket to make sure the work is clear and doable. Once satisfied, it records a go sign-off; without it, OmniSlash blocks the task from starting unless overridden.",
-  ],
-  [
-    "builder",
-    "Builder",
-    "Builds in an isolated workspace",
-    "/how-it-works/builder.webp",
-    "A builder is an agent given one checked task to build inside its own isolated workspace, protected by a lease so two agents cannot collide on the same work. It submits a proposed change for review; it can never merge or deploy its own work.",
-  ],
-  [
-    "skeptical-reviewer",
-    "Skeptical reviewer",
-    "Presumes every changed line is wrong",
-    "/how-it-works/skeptical-reviewer.webp",
-    "Independent, read-only reviewers running across different AI models inspect a builder's proposed change before it can merge. They presume every changed line has a flaw and report problems without editing anything themselves.",
-  ],
-  [
-    "sentinel",
-    "Sentinel",
-    "Approves, merges and deploys",
-    "/how-it-works/sentinel.webp",
-    "The sentinel is the dedicated gatekeeper that oversees every proposed change before it reaches users. It runs skeptical reviews, waits for automated and visual checks to pass, then merges and deploys the release.",
-  ],
+/** Meet the team: id, name, image path, line. */
+const ROLES: [string, string, string, string][] = [
+  ["muse","Muse","/how-it-works/muse.webp","Talks your idea through with you and asks whether it is complete before anything is ticketed."],
+  ["architect","Architect","/how-it-works/architect.webp","One per team. Turns your idea into a ticket that says what done means, then starts each build."],
+  ["builder","Builder","/how-it-works/builder.webp","One per ticket, in its own copy of the code. Builds the change, runs its checks, opens the pull request and hands off. It never merges."],
+  ["reviewer","Reviewer","/how-it-works/skeptical-reviewer.webp","Reads the brief before the build and the change after it, presumes every changed line is wrong, and never edits."],
+  ["sentinel","Sentinel","/how-it-works/sentinel.webp","One per team. Reads every builder's handoff from one inbox, checks the work for itself, then merges and ships it. A team with no Sentinel has its Architect do this."],
 ];
 
-/** The nine plain-English terms: id, heading, tagline, explanation. */
-const TERMS: [string, string, string, string][] = [
-  [
-    "drilled-ticket",
-    "Drilled ticket",
-    "Worked out before building starts",
-    "A task written out in full before any agent begins building: a clear breakdown of the work, a checklist of what done looks like, and a recorded go sign-off from the checker. OmniSlash refuses to start a builder without all three unless overridden.",
-  ],
-  [
-    "written-rule",
-    "Written rule",
-    "The playbook each role follows",
-    "A written set of instructions that guides each AI role on how to do its job, which checks to run, and what it is not allowed to do, such as preventing a builder from merging its own work.",
-  ],
-  [
-    "isolated-workspace",
-    "Isolated workspace",
-    "One private copy per builder",
-    "Every builder works inside its own separate copy of the project, split cleanly from the live version. Multiple builders can work at the same time without overwriting or stepping on each other's changes.",
-  ],
-  [
-    "lease",
-    "Lease",
-    "One agent per task at a time",
-    "A time-limited lock OmniSlash places on an active task and its isolated workspace. Only one agent can hold it at a time; a second request is refused until the lease is released or expires.",
-  ],
-  [
-    "role-inbox",
-    "Role inbox",
-    "Clean handoffs between roles",
-    "A dedicated inbox for each role that stores unread messages and handoff notes oldest first. Confirmed designs from the muse and finished work from builders land here without holding up the sender.",
-  ],
-  [
-    "design-system",
-    "Design system",
-    "Approved visual building blocks",
-    "A shared library of pre-approved screen components and colour themes. Builders compose pages strictly from these building blocks, and automated checks fail any proposed change that tries to invent ad-hoc styling.",
-  ],
-  [
-    "proposed-change",
-    "Proposed change",
-    "Finished work waiting for review",
-    "The bundle of finished edits a builder submits once it completes a task. Automated checks, visual comparisons, and skeptical reviews all run against this proposed change before anything touches the live product.",
-  ],
-  [
-    "merge-and-deploy",
-    "Merge and deploy",
-    "Approved work going live",
-    "Merging brings an approved proposed change from its isolated workspace into the main project; deploying publishes that updated version so users can reach it. Only the sentinel (or architect) can merge, never the builder.",
-  ],
-  [
-    "feature-switch",
-    "Feature switch",
-    "Controls who sees a new change",
-    "A live control built into the app that turns a new feature on or off for specific customers, user groups, or a growing percentage of users while the app is running, without rebuilding the software.",
-  ],
+const CONTROL = [
+  "Where you stay in control",
+  "The agents do the shaping, building and checking. These are the moments the work stops for you.",
+  "The idea. You say whether it is complete. Nothing is ticketed for building before your yes.",
+  "A planning question. When the Architect hits a question only you can decide, it asks you and waits.",
+  "A builder that needs you. A Builder missing a decision or access stops and asks for it. A Builder that marks its change as needing your eyes, for feel, wording or anything visual, waits while you judge it, then hands it on or makes the change you ask for.",
+  "The merge call. A taste call, a check someone wants to skip, or merging past a known flaky test goes to you before anything merges.",
+  "What changed on screen. You accept or reject each change in PixelSlash. A review you have not done yet does not hold up the handoff. A failed one stops it.",
+  "Anything sent outside. Nothing goes to anyone outside without you.",
+  "On the dashboard, the Machine page draws the whole flow, tags every step that needs a person, and counts how many are waiting on one.",
 ];
 
-/** The diagram's rows: number, node label, role and rule, tool at this step. */
-const NODES: [string, string, string, string][] = [
-  ["1", "Idea", "The owner", "None"],
-  ["2", "Explore the design", "Muse. Explores the idea and hands over a confirmed design", "OmniSlash: delivers the design to the architect's role inbox"],
-  ["3", "Drill the ticket", "Architect. Turns the design into a drilled ticket", "OmniSlash: requires a written breakdown and what-done-looks-like checklist on every ticket"],
-  ["4", "Check the ticket", "Checker. Verifies the drilled ticket is clear and doable", "OmniSlash: refuses to start a builder without a recorded go sign-off unless overridden"],
-  ["5", "Assign and lock", "Architect. Starts a builder on the checked ticket", "OmniSlash: claims a lease on the task and isolated workspace so no two agents collide"],
-  ["6", "Build in isolation", "Builder. Works inside its own isolated workspace", "OmniSlash: private copy of the project per task. TaskSlash: paces builds and tests to fit machine capacity. UISlash: locks screens to the design system"],
-  ["6a", "Size and security check", "Builder", "BundleSlash (planned): will compare app size before and after, check whether security flaws in third-party packages reach your code, and prepare releases"],
-  ["7", "Automated and visual checks", "Builder submits a proposed change and hands off. Never merges its own work", "PixelSlash: before-and-after screenshots for human sign-off and inconsistent shot detection. UISlash: automated design system check. FlakeSlash: scans for unreliable tests every 10 minutes"],
-  ["7a", "Reliability check per change", "Automated check", "FlakeSlash (planned): will post an informational test reliability summary on each proposed change without blocking the release"],
-  ["8", "Skeptical review", "Skeptical reviewer. Independent reviewers across models presume every changed line is wrong", "OmniSlash: read-only skeptical review across multiple AI models"],
-  ["9", "Merge and deploy", "Sentinel, else architect. Never the builder", "OmniSlash: handoff delivered to the sentinel's role inbox, then merged and deployed once every check passes"],
-  ["10", "Roll out behind a feature switch", "Live rollout", "ToggleSlash: audience targeting, gradual percentage rollouts, live updates, full audit trail"],
+const STAGES = [
+  "Five stages",
+  "Idea. You and the Muse talk the thought through until you call it complete. Behind it: OmniSlash, which keeps track of tickets, projects and the agents that work on them.",
+  "Plan. The Architect shapes the ticket and a Reviewer reads the brief cold. Behind it: OmniSlash.",
+  "Build. Builders work side by side, each in its own copy of the code. Behind it: TaskSlash, which stops builds and tests that start at the same time from overloading one computer, and UISlash, screen parts and themes a site is built from as they are, with no styling of its own.",
+  "Ship. The checks run, you review what changed on screen, and the Sentinel merges and deploys. Behind it: PixelSlash, which shows what changed on a web page between two versions and lets a person accept or reject each change, and FlakeSlash, which finds the tests that pass and fail on the same code.",
+  "Done. The ticket closes. If you then want to let a feature out to a share of users first, there is ToggleSlash, a feature flag service you run yourself that decides which users see which version of a feature.",
 ];
-const PLANNED_NODES = new Set(["6a", "7a"]);
 
-/** Everything after the diagram's rows, in order. */
-const REST = [
-  "Solid: runs today. Dashed: planned. Each role follows a written rule; each Slash product checks that step's output.",
-  "The steps in words",
-  "1. Idea. The owner has an idea. Next: the muse.",
-  "2. Explore the design. Role: muse. Written rule: explore the problem, ask questions, and hand over a design once it is confirmed. The handoff goes through OmniSlash's role inbox, which stores messages and lists unread handoffs oldest first. Next: the architect.",
-  "3. Drill the ticket. Role: architect. Written rule: turn the confirmed design into a plan and break it into drilled tickets. Every drilled ticket carries a written breakdown and a clear checklist of what done looks like before anyone starts building. Next: the checker.",
-  "4. Check the ticket. Role: checker. Check: review the architect's drilled ticket to verify the work is clear and doable, then record a go sign-off on its current text. OmniSlash refuses to start a builder without the breakdown, the done checklist, and that recorded go sign-off unless overridden. Next: assign and lock.",
-  "5. Assign and lock. Role: architect. Written rule: assign a builder to the checked ticket. Check: leases. OmniSlash allows only one live holder per active task or isolated workspace; a second agent is refused until the lease is released or expires. Next: a builder.",
-  "6. Build in an isolated workspace. Role: builder. OmniSlash opens the builder inside its own isolated workspace, split cleanly from the live version so parallel builders never collide. Checks while building:",
-  "TaskSlash: runs build and test steps in the right order, waiting for earlier steps to pass first and starting each job only when the machine has spare capacity, with a live view of what is running and waiting.",
-  "UISlash: builds every screen strictly from the design system's approved components, so a builder cannot invent ad-hoc styling.",
-  "BundleSlash (planned): will compare app size before and after, check whether security flaws in third-party packages reach your code, and prepare releases.",
-  "Next: automated and visual checks.",
-  "7. Automated and visual checks. Role: builder submits a proposed change and hands off. It never merges or deploys its own work. Checks:",
-  "PixelSlash: sends screenshots to a review app that highlights every visual difference against the live version. A person accepts or rejects each change, and automated checks wait for that decision. Any changed screenshot is retaken and flagged when shots disagree.",
-  "UISlash: an automated check fails any proposed change that breaks design system rules, alongside an advisory AI review.",
-  "FlakeSlash: scans connected projects every 10 minutes. A test that both failed and passed on the exact same version is flagged as unreliable; nothing else is.",
-  "FlakeSlash reliability check (planned): one informational summary on each proposed change, never blocking the release and linking straight to the dashboard.",
-  "Next: the handoff note goes to the sentinel's role inbox (or the architect's when there is no sentinel) without blocking the builder.",
-  "8. Skeptical review. Role: skeptical reviewer. Independent, read-only reviewers running across different AI models inspect the builder's proposed change before it can merge. They presume every changed line is wrong and report flaws without editing anything themselves. Next: merge and deploy.",
-  "9. Merge and deploy. Role: sentinel, else architect. Never the builder. The sentinel confirms that every automated check, visual review, and skeptical review passed, then merges and deploys the proposed change. Next: rollout.",
-  "10. Roll out behind a feature switch. Product: ToggleSlash. A feature switch decides which users see the new version: by environment, by customer, by user attributes, by segment, when another switch is already on, or by gradual percentage. Running apps receive feature switch updates live, and check automatically if the live connection drops. Every change is recorded in an audit trail with before and after values.",
-  "Today and planned",
-  'Legend: solid outline, runs today. Dashed outline and the word "planned", not built yet.',
+/** Where each stage's product names link, in order. */
+const STAGE_LINKS: [string, string[]][] = [
+  ["Idea.",["/omnislash"]],
+  ["Plan.",["/omnislash"]],
+  ["Build.",["/taskslash","/uislash"]],
+  ["Ship.",["/pixelslash","/flakeslash"]],
+  ["Done.",["/toggleslash"]],
+];
+
+const STATUS = [
+  "Running today and next",
+  "Every product here is alpha. It runs today, and any of it may change.",
   "Today",
-  "OmniSlash: drilled-ticket gate, isolated workspace per builder, leases, written rules per role, multi-model skeptical review, merge and deploy rules, and role inboxes. Alpha.",
-  "UISlash: design system with no ad-hoc styling escapes, seven checked themes, and automated design system checks on proposed changes. Version 0.x.",
-  "TaskSlash: capacity-aware build and test queue, step ordering, live progress view, and stopping running jobs on demand. Alpha.",
-  "FlakeSlash: proves when a test fails and passes on the same version and scans connected projects on a dashboard. Alpha.",
-  "PixelSlash: visual before-and-after comparison, human approval app, automated check waiting, and inconsistent screenshot detection. Alpha.",
-  "ToggleSlash: feature switches you run on your own servers, audience targeting, percentage rollouts, and live updates. Alpha.",
-  "Planned",
-  "OmniSlash: conflict checks between parallel builders; a team server with per-user access.",
-  "UISlash: a mobile app component package.",
-  "TaskSlash: custom output filters; scheduling across a pool of machines; scheduling for automated test servers.",
-  "FlakeSlash: an informational reliability summary on each proposed change; a dashboard view per change; direct result uploads.",
-  "PixelSlash: one combined visual review across all parts of a multi-app project.",
-  "ToggleSlash: automatic step-by-step percentage rollouts; approvals before a feature switch goes live; scheduled changes.",
-  "BundleSlash: compares app size between versions before review, checks whether security flaws in third-party packages reach your code, and prepares releases.",
-  "The products",
-  "OmniSlash: keeps track of tasks, projects, and the AI agents working on them.",
-  "UISlash: a design system of approved components and themes that keeps every page consistent without ad-hoc styling.",
-  "TaskSlash: queues builds and tests until the machine has spare capacity for each.",
-  "FlakeSlash: finds unreliable tests that pass and fail on the same version, grouped into issues.",
-  "PixelSlash: shows what changed visually on a web page so a person can accept or reject each change.",
-  "ToggleSlash: feature switches you run on your own servers to control who sees new changes while the app runs.",
-  "BundleSlash (planned): app size checks between versions, security flaw reachability, and release preparation.",
-  "Next: the home page, technical details for developers, or any product page.",
-  "Source: OmniSlash at github.com/slashsuite/omnislash (Elastic License 2.0, source available). UISlash and TaskSlash are MIT. PixelSlash, FlakeSlash and ToggleSlash are Elastic License 2.0. Docs: slashslash.build/uislash (UISlash), slashslash.build/pixelslash/docs (PixelSlash).",
+  "OmniSlash, alpha. A command line tool that runs from a checkout of its public source, with a dashboard whose Machine page places every live ticket on the flow.",
+  "TaskSlash, alpha, version 0.1.0. Runs on Linux. There is no installable release yet; you build it from source.",
+  "PixelSlash, alpha, version 0.8. Installs from npm. The review app is hosted at pixelslash.dev, or you run it yourself.",
+  "UISlash, alpha, every package at version 0.x. Installs from npm, with its docs at hack-cove.com/ui.",
+  "FlakeSlash, alpha, version 0.1.0. Its dashboard is hosted at flakeslash.slashslash.build. The command line tool runs from a checkout.",
+  "ToggleSlash, alpha, version 0.2.0. You run the server yourself. There is no public hosted service.",
+  "Next",
+  "These are planned, with no dates.",
+  "OmniSlash: a team server where each person has their own access.",
+  "TaskSlash: scheduling across a pool of machines, and for the automated checks that run on each change.",
+  "ToggleSlash: rollouts that raise the share of users in automatic steps, and user accounts and roles so a team stops sharing one admin token.",
+  "FlakeSlash: one check on each pull request that links to its dashboard and never blocks.",
 ];
 
-/** Where each name in The products links, and the names that link nowhere. */
-const TOOL_LINKS: Record<string, string | undefined> = {
-  OmniSlash: "/omnislash",
-  UISlash: "/uislash",
-  TaskSlash: "/taskslash",
-  FlakeSlash: "/flakeslash",
-  PixelSlash: "/pixelslash",
-  ToggleSlash: "/toggleslash",
-  BundleSlash: undefined,
-};
+const CLOSE = [
+  "Bring the idea. Agents ship it, and the calls that matter stay yours.",
+  "Your saved basket started as a sentence in a chat. Your next idea starts the same way.",
+  "Meet the products",
+];
 
 /** The markup of the first `<li>` carrying `attribute`. */
 function item(page: string, attribute: string): string {
   const match = page.match(new RegExp(`<li[^>]*${attribute}[\\s\\S]*?</li>`));
   if (!match) throw new Error(`No list item with ${attribute}`);
+  return match[0];
+}
+
+/** The markup of the `<ul>` carrying `data-list="name"`. */
+function list(page: string, name: string): string {
+  const match = page.match(new RegExp(`<ul[^>]*data-list="${name}"[\\s\\S]*?</ul>`));
+  if (!match) throw new Error(`No list ${name}`);
   return match[0];
 }
 
@@ -262,67 +161,51 @@ describe("the approved copy, word for word on /how-it-works", () => {
   test("every line of the copy is on the page, in order", () => {
     const lines = [
       HEADLINE,
-      ...LEAD,
-      "The roles",
-      "Before the diagram, meet the six roles that carry an idea to a live release.",
-      ...ROLES.flatMap(([, name, role, , summary]) => [name, role, summary]),
-      "The terms",
-      "Every concept used in the diagram and steps below, explained in plain English.",
-      ...TERMS.flatMap(([, name, tagline, summary]) => [name, tagline, summary]),
-      "The flow diagram",
-      ...NODES.flatMap(([id, label, role, tool]) => [`${id} ${label}`, role, tool]),
-      ...REST,
+      HERO,
+      ...FILMSTRIP,
+      "Meet the team",
+      ...ROLES.flatMap(([, name, , line]) => [name, line]),
+      ...CONTROL,
+      ...STAGES,
+      ...STATUS,
+      ...CLOSE,
     ];
     let from = 0;
     for (const line of lines) {
-      const at = body.indexOf(line.replaceAll("`", ""), from);
+      const at = body.indexOf(line, from);
       expect(at, line).toBeGreaterThan(-1);
       from = at + 1;
     }
   });
 
-  test("each illustrated role carries its image in dist/ and non-empty alt text", () => {
-    for (const [id, name, role, image, summary] of ROLES) {
+  test("each role card carries its image in dist/ and non-empty alt text", () => {
+    for (const [id, name, image, line] of ROLES) {
       const markup = item(page, `data-role="${id}"`);
       expect(markup, id).toContain(`src="${image}"`);
       const alt = markup.match(/alt="([^"]+)"/)?.[1] ?? "";
       expect(alt.length, `${id} alt`).toBeGreaterThan(10);
       expect(existsSync(resolve(DIST, image.slice(1))), image).toBe(true);
       const text = words(`<body>${markup}`);
-      for (const field of [name, role, summary]) expect(text, `${id}: ${field}`).toContain(field.replaceAll("`", ""));
+      for (const field of [name, line]) expect(text, `${id}: ${field}`).toContain(field);
     }
   });
 
-  test("each term renders in its own card without an image", () => {
-    for (const [id, name, tagline, summary] of TERMS) {
-      const markup = item(page, `data-term="${id}"`);
-      expect(markup, id).not.toContain("<img");
-      const text = words(`<body>${markup}`);
-      for (const field of [name, tagline, summary]) expect(text, `${id}: ${field}`).toContain(field.replaceAll("`", ""));
+  test("each stage links its product names to their pages", () => {
+    const items = list(page, "stages").split("</li>");
+    for (const [bold, hrefs] of STAGE_LINKS) {
+      const markup = items.find((li) => li.includes(`>${bold}</strong>`)) ?? "";
+      const links = [...markup.matchAll(/<a[^>]*href="([^"]*)"/g)].map((m) => m[1]);
+      expect(links, bold).toEqual(hrefs);
     }
   });
 
-  test("each diagram node holds its own row, and only 6a and 7a are planned", () => {
-    for (const [id, label, role, tool] of NODES) {
-      const markup = item(page, `data-node="${id}"`);
-      const text = words(`<body>${markup}`);
-      for (const field of [label, role, tool]) expect(text, `${id}: ${field}`).toContain(field.replaceAll("`", ""));
-      const planned = PLANNED_NODES.has(id);
-      expect(markup, id).toContain(`data-stage="${planned ? "planned" : "today"}"`);
-      expect(text.includes("Planned"), id).toBe(planned);
-    }
-  });
-
-  test("each built product's name links to its page here, and BundleSlash links nowhere", () => {
-    for (const [name, href] of Object.entries(TOOL_LINKS)) {
-      const links = [...item(page, `data-tool="${name}"`).matchAll(/<a[^>]*href="([^"]*)"/g)].map((m) => m[1]);
-      expect(links, name).toEqual(href === undefined ? [] : [href]);
-    }
+  test("the close leads on to the products", () => {
+    expect(page).toMatch(/<a[^>]*href="\/#tools"[^>]*>[\s\S]*?Meet the products/);
   });
 
   test("keeps developer jargon, long dashes, and banned names off /how-it-works", () => {
     expect(page).not.toMatch(LONG_DASHES);
     expect(page).not.toMatch(/tesla|whatsapp/i);
-    expect(body).not.toMatch(/\b(worktree|git|spinoff|className|origin\/main|cargo|npm|polling|repositories|self-hosted)\b/i);
+    expect(body).not.toMatch(/\b(worktree|git|spinoff|className|origin\/main|cargo|polling|repositories|self-hosted)\b/i);
   });
 });

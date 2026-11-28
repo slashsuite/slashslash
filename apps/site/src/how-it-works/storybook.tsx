@@ -1,35 +1,36 @@
-import { Text } from "@slashsuite/ui-react";
-import { type CSSProperties, type KeyboardEvent, type ReactNode, useRef, useSyncExternalStore } from "react";
-import { HomeSection } from "#/home/sections";
+import { Container, Text, TextLink } from "@slashsuite/ui-react";
+import { type CSSProperties, type KeyboardEvent, type ReactNode, useRef, useState, useSyncExternalStore } from "react";
 import { SceneBuilder } from "#/how-it-works/scenes-builder";
 import { SceneArchitect, SceneMuse } from "#/how-it-works/scenes-early";
-import { SceneChecker } from "#/how-it-works/scenes-middle";
+import { SceneColdRead } from "#/how-it-works/scenes-middle";
 import { SceneRollout, SceneSentinel } from "#/how-it-works/scenes-release";
 import { SceneRetro } from "#/how-it-works/scenes-retro";
 import { SceneChecks, SceneReviewer } from "#/how-it-works/scenes-review";
 import {
   PALETTE,
   SCENE_DURATION_MS,
-  STORYBOOK_INTRO,
+  STORYBOOK_LABEL,
+  STORYBOOK_PRODUCTS,
   STORYBOOK_SCENES,
-  STORYBOOK_TITLE,
+  productHref,
   type StorybookScene,
   type StorybookSceneId,
 } from "#/how-it-works/storybook-data";
 import { useStorybookPlayback } from "#/how-it-works/storybook-playback";
+import { Rich } from "#/shell/rich-text";
 
 const NOOP_SUBSCRIBE = (): (() => void) => () => {};
 const CLIENT_READY = (): boolean => true;
 const SERVER_READY = (): boolean => false;
 
 const SCENE_COMPONENTS: Record<StorybookSceneId, () => ReactNode> = {
-  muse: SceneMuse,
-  architect: SceneArchitect,
-  checker: SceneChecker,
-  builder: SceneBuilder,
+  explore: SceneMuse,
+  shape: SceneArchitect,
+  "cold-read": SceneColdRead,
+  build: SceneBuilder,
+  review: SceneReviewer,
   checks: SceneChecks,
-  reviewer: SceneReviewer,
-  sentinel: SceneSentinel,
+  ship: SceneSentinel,
   rollout: SceneRollout,
   retro: SceneRetro,
 };
@@ -59,7 +60,6 @@ function StorybookHeader({
         <span className="sb-chapter-pill">
           Scene {scene.chapter} of {total}
         </span>
-        <span className="sb-steps-label">{scene.stepsLabel}</span>
       </div>
       <div className="sb-controls" role="group" aria-label="Storybook playback controls">
         <button type="button" className="sb-btn" onClick={onPrev} aria-label="Previous scene">
@@ -81,31 +81,64 @@ function StorybookHeader({
   );
 }
 
+const captionText = (scene: StorybookScene): string =>
+  typeof scene.caption === "string" ? scene.caption : scene.caption.text;
+
 function StorybookCaption({ scene }: { scene: StorybookScene }): ReactNode {
   return (
     <figcaption className="sb-caption-bar">
       <div className="sb-caption-head">
-        <h3 className="sb-scene-title">
-          {scene.title} ({scene.role})
-        </h3>
-        <ul className="sb-tools" aria-label="Slash tools in this scene">
-          {scene.tools.map((tool) => (
-            <li key={tool} className="sb-tool-chip">
-              {tool}
-            </li>
-          ))}
-        </ul>
+        <h2 className="sb-scene-title">{scene.title}</h2>
+        {scene.products.length === 0 ? null : (
+          <ul className="sb-tools" aria-label="Products in this scene">
+            {scene.products.map((product) => (
+              <li key={product} className="sb-tool-chip">
+                <TextLink href={productHref(product)}>{product}</TextLink>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
-      <Text>{scene.caption.text}</Text>
+      <Text>
+        <Rich text={captionText(scene)} />
+      </Text>
     </figcaption>
+  );
+}
+
+/** The product bar: pick a product to mark the scenes it appears in and jump to the first of them. */
+function StorybookProducts({
+  highlight,
+  onPick,
+}: {
+  highlight: string | null;
+  onPick: (name: string) => void;
+}): ReactNode {
+  return (
+    <div className="sb-products" role="group" aria-label="Show the scenes a product appears in">
+      {STORYBOOK_PRODUCTS.map((product) => (
+        <button
+          key={product.name}
+          type="button"
+          className="sb-product-btn"
+          data-storybook-product={product.name}
+          aria-pressed={highlight === product.name}
+          onClick={() => onPick(product.name)}
+        >
+          {product.name}
+        </button>
+      ))}
+    </div>
   );
 }
 
 function StorybookChapters({
   activeIndex,
+  highlight,
   onSelect,
 }: {
   activeIndex: number;
+  highlight: string | null;
   onSelect: (index: number) => void;
 }): ReactNode {
   return (
@@ -116,11 +149,14 @@ function StorybookChapters({
           type="button"
           className="sb-chapter-btn"
           data-storybook-chapter={item.id}
+          data-highlight={
+            highlight !== null && item.products.some((product) => product === highlight) ? "true" : undefined
+          }
           aria-current={idx === activeIndex ? "step" : undefined}
           onClick={() => onSelect(idx)}
         >
           <span className="sb-chapter-num">0{item.chapter}</span>
-          <span className="sb-chapter-name">{item.shortLabel}</span>
+          <span className="sb-chapter-name">{item.title}</span>
         </button>
       ))}
     </div>
@@ -130,19 +166,31 @@ function StorybookChapters({
 function StorybookNoScript(): ReactNode {
   return (
     <noscript>
-      <style>{".sb-controls,.sb-chapters,.sb-progress-track{display:none}"}</style>
+      <style>{".sb-controls,.sb-chapters,.sb-products,.sb-progress-track{display:none}"}</style>
       <ol className="sb-noscript-list">
         {STORYBOOK_SCENES.map((item) => (
           <li key={item.id}>
-            <strong>
-              {item.title} ({item.role}):
-            </strong>{" "}
-            {item.caption.text}
+            <strong>{item.title}:</strong> <Rich text={captionText(item)} />
           </li>
         ))}
       </ol>
     </noscript>
   );
+}
+
+/** The product the bar has picked, if any; picking one jumps to its first scene, picking it again clears it. */
+function useProductHighlight(selectScene: (index: number) => void): [string | null, (name: string) => void] {
+  const [highlight, setHighlight] = useState<string | null>(null);
+  const pickProduct = (name: string): void => {
+    if (highlight === name) {
+      setHighlight(null);
+      return;
+    }
+    setHighlight(name);
+    const first = STORYBOOK_SCENES.findIndex((item) => item.products.some((product) => product === name));
+    if (first >= 0) selectScene(first);
+  };
+  return [highlight, pickProduct];
 }
 
 export function Storybook(): ReactNode {
@@ -151,6 +199,8 @@ export function Storybook(): ReactNode {
   const total = STORYBOOK_SCENES.length;
   const { index, isPlaying, stageAnimated, stagePaused, liveText, runKey, selectScene, togglePlay } =
     useStorybookPlayback(containerRef, total);
+
+  const [highlight, pickProduct] = useProductHighlight(selectScene);
 
   const scene = STORYBOOK_SCENES[index] ?? STORYBOOK_SCENES[0];
   if (scene === undefined) return null;
@@ -214,7 +264,8 @@ export function Storybook(): ReactNode {
         </div>
         <StorybookCaption scene={scene} />
       </figure>
-      <StorybookChapters activeIndex={index} onSelect={selectScene} />
+      <StorybookProducts highlight={highlight} onPick={pickProduct} />
+      <StorybookChapters activeIndex={index} highlight={highlight} onSelect={selectScene} />
       <p className="sb-sr-only" aria-live="polite" aria-atomic="true">
         {liveText}
       </p>
@@ -225,9 +276,10 @@ export function Storybook(): ReactNode {
 
 export function StorybookSection(): ReactNode {
   return (
-    <HomeSection id="storybook" title={STORYBOOK_TITLE}>
-      <Text>{STORYBOOK_INTRO}</Text>
-      <Storybook />
-    </HomeSection>
+    <section className="py-12" aria-label={STORYBOOK_LABEL} data-home-section="storybook">
+      <Container>
+        <Storybook />
+      </Container>
+    </section>
   );
 }

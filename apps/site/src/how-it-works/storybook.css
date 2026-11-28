@@ -50,17 +50,11 @@
   background: var(--hc-ink);
   color: var(--hc-surface);
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   font-weight: 700;
   line-height: 1.3;
 }
 
-.sb-steps-label {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--hc-mute);
-}
 
 .sb-controls {
   display: flex;
@@ -80,7 +74,7 @@
   border-radius: 0.5rem;
   background: var(--hc-surface);
   color: var(--hc-ink);
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.2;
   cursor: pointer;
@@ -181,7 +175,7 @@
   border-radius: 999px;
   background: var(--hc-subtle);
   color: var(--hc-ink);
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.25;
 }
@@ -232,7 +226,7 @@
 
 .sb-chapter-num {
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: 0.875rem;
   font-weight: 700;
   color: var(--hc-mute);
 }
@@ -242,7 +236,7 @@
 }
 
 .sb-chapter-name {
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.2;
   color: var(--hc-ink);
@@ -270,6 +264,52 @@
   background: var(--hc-surface);
   color: var(--hc-ink);
   font-size: 0.9375rem;
+}
+
+.sb-products {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  padding: 0.75rem 1rem 0;
+  background: var(--hc-subtle);
+}
+
+.sb-product-btn {
+  min-height: 2.25rem;
+  padding: 0.3rem 0.8rem;
+  border: 1.5px solid var(--hc-line);
+  border-radius: 999px;
+  background: var(--hc-surface);
+  color: var(--hc-ink);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: border-color 0.14s ease, background-color 0.14s ease;
+}
+
+.sb-product-btn:hover {
+  border-color: var(--hc-mute);
+}
+
+.sb-product-btn:focus-visible {
+  outline: 2px solid var(--hc-accent);
+  outline-offset: 2px;
+}
+
+.sb-product-btn[aria-pressed="true"] {
+  border-color: var(--hc-accent);
+  background: var(--hc-accent);
+  color: var(--hc-surface);
+}
+
+.sb-chapter-btn[data-highlight="true"] {
+  border-color: var(--hc-accent);
+  background: var(--hc-subtle);
+}
+
+.sb-chapter-btn[data-highlight="true"] .sb-chapter-num {
+  color: var(--hc-accent);
 }
 
 /* ==========================================================================
@@ -358,50 +398,15 @@
   animation: sb-muse-lift 2s 1.85s ease-in-out both;
 }
 
-.sb-stage.is-animated .sb-muse-envelope-1 {
-  transform-origin: center;
-  animation: sb-envelope-fly 1.2s 1.85s cubic-bezier(0.25, 0.8, 0.25, 1) both;
-}
 
-.sb-stage.is-animated .sb-muse-envelope-2 {
-  transform-origin: center;
-  animation: sb-envelope-fly 1.2s 2.15s cubic-bezier(0.25, 0.8, 0.25, 1) both;
-}
 
-.sb-stage.is-animated .sb-muse-envelope-3 {
-  transform-origin: center;
-  animation: sb-envelope-fly 1.2s 2.45s cubic-bezier(0.25, 0.8, 0.25, 1) both;
-}
 
-.sb-stage.is-animated .sb-muse-envelope-4 {
-  transform-origin: center;
-  animation: sb-envelope-fly 1.2s 2.75s cubic-bezier(0.25, 0.8, 0.25, 1) both;
-}
 
-.sb-stage.is-animated .sb-muse-envelope-5 {
-  transform-origin: center;
-  animation: sb-envelope-fly 1.2s 3.05s cubic-bezier(0.25, 0.8, 0.25, 1) both;
-}
 
-.sb-stage.is-animated .sb-muse-inbox {
-  transform-origin: 50% 85%;
-  animation: sb-inbox-bounce 0.55s 4.2s ease-out both;
-}
 
-.sb-stage.is-animated .sb-muse-badge {
-  transform-origin: center;
-  animation: sb-pop-in 0.45s 4.3s cubic-bezier(0.2, 1.35, 0.4, 1) both;
-}
 
 /* Scene 2: Architect -> Drill the tickets */
-.sb-stage.is-animated .sb-arch-inbox {
-  transform-origin: 50% 85%;
-  animation: sb-inbox-bounce 0.55s 0.2s ease-out both;
-}
 
-.sb-stage.is-animated .sb-arch-inbox-arc {
-  animation: sb-dash-flow-11 1.4s linear infinite;
-}
 
 .sb-stage.is-animated .sb-arch-blueprint {
   transform-origin: left center;
@@ -495,32 +500,11 @@
   animation: sb-pop-in 0.35s 3.15s cubic-bezier(0.2, 1.45, 0.35, 1) both;
 }
 
-.sb-stage.is-animated .sb-chk-lane-arrow {
-  animation: sb-dash-flow-12 1.4s linear infinite;
-}
 
-.sb-stage.is-animated .sb-chk-seal {
-  transform-origin: center;
-  animation: sb-seal-light 0.4s 3.2s ease-out both;
-}
 
-.sb-stage.is-animated .sb-chk-gate-arm {
-  transform-origin: 6px 7px;
-  animation: sb-gate-lift 0.9s 3.4s cubic-bezier(0.25, 0.9, 0.3, 1.05) both;
-}
 
-.sb-stage.is-animated .sb-chk-gate-lamp {
-  animation: sb-lamp-turn-green 0.45s 3.4s ease-out both;
-}
 
-.sb-stage.is-animated .sb-chk-gate-badge {
-  transform-origin: center;
-  animation: sb-pop-in 0.45s 3.85s cubic-bezier(0.2, 1.3, 0.4, 1) both;
-}
 
-.sb-stage.is-animated .sb-chk-ticket-pass {
-  animation: sb-chk-ticket-pass 1.15s 3.75s cubic-bezier(0.35, 0, 0.2, 1) both;
-}
 
 /* Scene 4: Architect & Builder -> Lease lock, UISlash, TaskSlash, BuiltPackage */
 .sb-bld-handoff-token {
@@ -545,9 +529,6 @@
   animation: sb-pop-in 0.5s 0.45s cubic-bezier(0.2, 1.3, 0.4, 1) both;
 }
 
-.sb-stage.is-animated .sb-bld-handoff-arc {
-  animation: sb-dash-flow-11 1.4s linear infinite;
-}
 
 .sb-stage.is-animated .sb-bld-handoff-token {
   transform-origin: center;
@@ -757,10 +738,6 @@
   animation: sb-dash-flow-10 1.3s linear infinite;
 }
 
-.sb-stage.is-animated .sb-rol-progress {
-  transform-origin: left center;
-  animation: sb-rollout-grow 3.1s 1.05s ease-in-out both;
-}
 
 .sb-stage.is-animated .sb-rol-win-1 {
   transform-origin: center;
@@ -875,6 +852,57 @@
    KEYFRAMES
    ========================================================================== */
 
+
+/* Scene 1: the Muse asks whether the idea is complete, then writes the ticket. */
+.sb-stage.is-animated .sb-muse-ask {
+  animation: sb-pop-in 0.45s 2.6s cubic-bezier(0.2, 1.35, 0.4, 1) both;
+  transform-origin: center;
+}
+.sb-stage.is-animated .sb-muse-yes {
+  animation: sb-pop-in 0.4s 3.5s cubic-bezier(0.2, 1.45, 0.35, 1) both;
+  transform-origin: center;
+}
+.sb-stage.is-animated .sb-muse-ticket {
+  animation: sb-slide-up 0.55s 4.2s ease-out both;
+}
+
+/* Scene 3: an open question takes one of three paths. */
+.sb-stage.is-animated .sb-cold-path-1 {
+  animation: sb-fade-right 0.45s 2.4s ease-out both;
+}
+.sb-stage.is-animated .sb-cold-path-2 {
+  animation: sb-fade-right 0.45s 3.1s ease-out both;
+}
+.sb-stage.is-animated .sb-cold-path-3 {
+  animation: sb-fade-right 0.45s 3.8s ease-out both;
+}
+
+/* Scene 4: builders on other tickets, then the build that pauses. */
+.sb-stage.is-animated .sb-bld-other-1 {
+  animation: sb-fade-right 0.45s 0.3s ease-out both;
+}
+.sb-stage.is-animated .sb-bld-other-2 {
+  animation: sb-fade-right 0.45s 0.7s ease-out both;
+}
+.sb-stage.is-animated .sb-bld-paused {
+  animation: sb-pop-in 0.45s 3.6s cubic-bezier(0.2, 1.35, 0.4, 1) both;
+  transform-origin: center;
+}
+
+/* Scene 6: FlakeSlash names the flaky test. */
+.sb-stage.is-animated .sb-chk5-flaky-dot {
+  animation: sb-pop-in 0.4s 3.4s cubic-bezier(0.2, 1.45, 0.35, 1) both;
+  transform-origin: center;
+}
+
+/* Scene 7: the Sentinel inbox fills, and a red check goes back. */
+.sb-stage.is-animated .sb-sent-inbox {
+  animation: sb-slide-up 0.55s 0.3s ease-out both;
+}
+.sb-stage.is-animated .sb-sent-red-check {
+  animation: sb-fade-right 0.45s 2.2s ease-out both;
+}
+
 @keyframes sb-progress-bar {
   from { transform: scaleX(0); }
   to { transform: scaleX(1); }
@@ -941,18 +969,7 @@
   100% { transform: rotate(-4deg); }
 }
 
-@keyframes sb-envelope-fly {
-  0% { transform: translate(-192px, -12px) rotate(-12deg) scale(0.86); opacity: 0; }
-  14% { transform: translate(-176px, -16px) rotate(-8deg) scale(1); opacity: 1; }
-  58% { transform: translate(-86px, -74px) rotate(10deg) scale(1.04); opacity: 1; }
-  100% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 1; }
-}
 
-@keyframes sb-inbox-bounce {
-  0%, 100% { transform: scale(1); }
-  40% { transform: translateY(4px) scale(1.04, 0.95); }
-  75% { transform: translateY(-2px) scale(0.99, 1.02); }
-}
 
 @keyframes sb-pop-in {
   0% { transform: scale(0.5); opacity: 0; }
@@ -1001,20 +1018,8 @@
   100% { transform: rotate(0deg); }
 }
 
-@keyframes sb-gate-lift {
-  0% { transform: rotate(103deg); }
-  100% { transform: rotate(0deg); }
-}
 
-@keyframes sb-chk-ticket-pass {
-  0% { transform: translateX(-172px); }
-  100% { transform: translateX(0); }
-}
 
-@keyframes sb-lamp-turn-green {
-  from { fill: var(--sb-terracotta); }
-  to { fill: var(--sb-sage); }
-}
 
 @keyframes sb-agent-deflect {
   0% { transform: translateX(-8px); }
@@ -1165,12 +1170,6 @@
 }
 
 /* Pauses clearly at 10%, 50%, and 100% matching the three window waves */
-@keyframes sb-rollout-grow {
-  0% { transform: scaleX(0.04); }
-  12%, 34% { transform: scaleX(0.1); }
-  48%, 68% { transform: scaleX(0.5); }
-  86%, 100% { transform: scaleX(1); }
-}
 
 @keyframes sb-window-pop {
   0% { transform: scale(0.96); }

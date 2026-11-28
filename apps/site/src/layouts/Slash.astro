@@ -19,9 +19,12 @@ interface Props {
 
 const { section, title, description } = Astro.props;
 const { day: light, night: dark, mark } = SECTIONS[section];
-// The page's own address on the live site, with no trailing slash.
+// The page's own address on the live site, with no trailing slash. The 404 page is `/404` whatever address
+// it answers: the dev server renders it under the missing one (a browser's `/sw.js`, say).
 const path =
-  Astro.url.pathname
+  Astro.routePattern === "/404"
+    ? "/404"
+    : Astro.url.pathname
     .replace(/\.html$/, "")
     .replace(/(^|\/)index$/, "")
     .replace(/\/+$/, "") || "/";

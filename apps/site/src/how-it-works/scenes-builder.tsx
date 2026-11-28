@@ -1,54 +1,43 @@
 import type { ReactNode } from "react";
 import { PALETTE as P } from "#/how-it-works/storybook-data";
-import { BuiltPackage, GroundLine, INK_STROKE, RoleInboxStack, StoryToken } from "#/how-it-works/storybook-parts";
+import { BuiltPackage, GroundLine, INK_STROKE, StoryToken } from "#/how-it-works/storybook-parts";
 
 /* ==========================================================================
-   SCENE 4: LOCK & BUILD IN ISOLATION (ARCHITECT, BUILDER, LEASE, UISLASH, TASKSLASH)
+   SCENE 4: PARALLEL BUILDS (BUILDERS ON OTHER TICKETS, FILES COMPARED, TASKSLASH QUEUE)
    ========================================================================== */
 
-function ArchitectLeaseAndOtherAgent(): ReactNode {
+const OTHER_BUILDERS = ["translate(14 40)", "translate(118 40)"] as const;
+
+/** Builders on other tickets, a check of the files each plans to touch, and the build that pauses. */
+function OtherBuildsAndPause(): ReactNode {
   return (
     <g>
-      <g transform="translate(14 48)">
-        <circle cx={34} cy={38} r={16} fill={P.white} {...INK_STROKE} />
-        <path d="M18 36 C18 18 52 16 52 34 C42 26 28 30 18 36 Z" fill={P.ink} />
-        <circle cx={29} cy={39} r={5} fill="none" stroke={P.ink} strokeWidth={1.8} />
-        <circle cx={41} cy={39} r={5} fill="none" stroke={P.ink} strokeWidth={1.8} />
-        <path d="M18 62 Q34 52 50 62 L54 110 L14 110 Z" fill={P.periwinkle} {...INK_STROKE} />
-        <text x={34} y={130} textAnchor="middle" fontSize={14} fontWeight={700} fill={P.inkSoft}>
-          Architect
-        </text>
-      </g>
-      <g transform="translate(76 80) scale(0.72)">
-        <RoleInboxStack label="Inbox" ticketCount={4} badgeCount={4} seals={1} />
-      </g>
-      <text x={132} y={172} textAnchor="middle" fontSize={13} fontWeight={700} fill={P.inkSoft}>
-        4 waiting
-      </text>
+      {OTHER_BUILDERS.map((transform, i) => (
+        <g key={transform} transform={transform}>
+          <g className={`sb-bld-other-${i + 1}`}>
+            <circle cx={34} cy={38} r={16} fill={P.paperShade} stroke={P.inkSoft} strokeWidth={2.2} strokeDasharray="4 3" />
+            <path d="M14 62 Q34 52 54 62 L58 110 L10 110 Z" fill={P.paperShade} stroke={P.inkSoft} strokeWidth={2.2} strokeDasharray="4 3" />
+            <g transform="translate(58 70) scale(0.6)">
+              <StoryToken />
+            </g>
+            <text x={50} y={132} textAnchor="middle" fontSize={14} fontWeight={700} fill={P.inkSoft}>
+              Other ticket
+            </text>
+          </g>
+        </g>
+      ))}
       <g transform="translate(238 18)">
         <g className="sb-bld-lease-badge">
-          <rect x={0} y={0} width={164} height={42} rx={21} fill={P.white} {...INK_STROKE} />
+          <rect x={0} y={0} width={184} height={42} rx={21} fill={P.white} {...INK_STROKE} />
           <g transform="translate(14 9)">
-            <path d="M6 11 V7 A5.5 5.5 0 0 1 17 7 V11" fill="none" stroke={P.terracotta} strokeWidth={2.6} strokeLinecap="round" />
-            <rect x={2} y={11} width={19} height={13} rx={3} fill={P.terracotta} stroke={P.ink} strokeWidth={1.8} />
+            <rect x={0} y={2} width={14} height={18} rx={2} fill={P.white} stroke={P.ink} strokeWidth={1.8} />
+            <rect x={8} y={6} width={14} height={18} rx={2} fill={P.terracottaSoft} stroke={P.terracotta} strokeWidth={1.8} />
           </g>
-          <text x={44} y={27} fontSize={16} fontWeight={800} fill={P.ink}>
-            Lease locked
+          <text x={46} y={27} fontSize={16} fontWeight={800} fill={P.ink}>
+            Files compared
           </text>
         </g>
       </g>
-      <path
-        className="sb-bld-handoff-arc"
-        d="M178 96 Q368 48 486 226"
-        fill="none"
-        stroke={P.terracotta}
-        strokeWidth={2.2}
-        strokeDasharray="5 6"
-        strokeLinecap="round"
-      />
-      <text x={374} y={88} textAnchor="middle" fontSize={13} fontWeight={700} fill={P.terracotta}>
-        1 assigned
-      </text>
       <g transform="translate(52 214)">
         <g className="sb-bld-second-agent">
           <circle cx={34} cy={46} r={16} fill={P.paperShade} stroke={P.inkSoft} strokeWidth={2.2} strokeDasharray="4 3" />
@@ -60,7 +49,15 @@ function ArchitectLeaseAndOtherAgent(): ReactNode {
             strokeDasharray="4 3"
           />
           <text x={34} y={172} textAnchor="middle" fontSize={15} fontWeight={700} fill={P.inkSoft}>
-            Other agent
+            Other builder
+          </text>
+        </g>
+      </g>
+      <g transform="translate(14 176)">
+        <g className="sb-bld-paused">
+          <rect x={0} y={0} width={204} height={34} rx={17} fill={P.goldSoft} stroke={P.gold} strokeWidth={2.2} />
+          <text x={102} y={23} textAnchor="middle" fontSize={15} fontWeight={800} fill={P.ink}>
+            Paused: lower priority
           </text>
         </g>
       </g>
@@ -144,7 +141,7 @@ function BuilderWorkspace(): ReactNode {
       </g>
       <circle cx={86} cy={130} r={7.5} fill={P.white} />
       <text x={206} y={336} textAnchor="middle" fontSize={16} fontWeight={700} fill={P.ink}>
-        Isolated workspace
+        Own copy of the code
       </text>
     </g>
   );
@@ -166,27 +163,29 @@ function TaskSlashQueueCard(): ReactNode {
         <g className="sb-bld-step-1">
           <rect x={0} y={0} width={158} height={34} rx={8} fill={P.sageSoft} stroke={P.sage} strokeWidth={1.8} />
           <text x={12} y={23} fontSize={15} fontWeight={700} fill={P.ink}>
-            1. Build
+            Build: running
           </text>
           <path d="M132 17 L137 22 L147 11" fill="none" stroke={P.sage} strokeWidth={2.8} strokeLinecap="round" />
         </g>
       </g>
       <g transform="translate(16 132)">
         <g className="sb-bld-step-2">
-          <rect x={0} y={0} width={158} height={34} rx={8} fill={P.sageSoft} stroke={P.sage} strokeWidth={1.8} />
+          <rect x={0} y={0} width={158} height={34} rx={8} fill={P.paperShade} stroke={P.inkSoft} strokeWidth={1.8} />
           <text x={12} y={23} fontSize={15} fontWeight={700} fill={P.ink}>
-            2. Design
+            Test: queued
           </text>
-          <path d="M132 17 L137 22 L147 11" fill="none" stroke={P.sage} strokeWidth={2.8} strokeLinecap="round" />
+          <circle cx={140} cy={17} r={7} fill="none" stroke={P.inkSoft} strokeWidth={2} />
+          <path d="M140 13 L140 17 L143 19" fill="none" stroke={P.inkSoft} strokeWidth={2} strokeLinecap="round" />
         </g>
       </g>
       <g transform="translate(16 174)">
         <g className="sb-bld-step-3">
-          <rect x={0} y={0} width={158} height={34} rx={8} fill={P.sageSoft} stroke={P.sage} strokeWidth={1.8} />
+          <rect x={0} y={0} width={158} height={34} rx={8} fill={P.paperShade} stroke={P.inkSoft} strokeWidth={1.8} />
           <text x={12} y={23} fontSize={15} fontWeight={700} fill={P.ink}>
-            3. Tests
+            Build: queued
           </text>
-          <path d="M132 17 L137 22 L147 11" fill="none" stroke={P.sage} strokeWidth={2.8} strokeLinecap="round" />
+          <circle cx={140} cy={17} r={7} fill="none" stroke={P.inkSoft} strokeWidth={2} />
+          <path d="M140 13 L140 17 L143 19" fill="none" stroke={P.inkSoft} strokeWidth={2} strokeLinecap="round" />
         </g>
       </g>
     </g>
@@ -197,7 +196,7 @@ export function SceneBuilder(): ReactNode {
   return (
     <g>
       <GroundLine />
-      <ArchitectLeaseAndOtherAgent />
+      <OtherBuildsAndPause />
       <BuilderWorkspace />
       <TaskSlashQueueCard />
     </g>

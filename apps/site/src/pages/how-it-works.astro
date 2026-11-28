@@ -1,14 +1,15 @@
 ---
-// /how-it-works on the shell, in the suite's section: one cycle from an idea to live release, with the
-// illustrated roles, terms, interactive storybook animation, flow diagram, and steps in words.
+// /how-it-works on the shell, in the suite's section: one idea followed from a chat to shipped work. The
+// hero, then the nine scene storybook, then the team, where you stay in control, the five stages, running
+// today and next, and the close.
 import { HOW_IT_WORKS_DESCRIPTION, HOW_IT_WORKS_HEADLINE } from "#/content/how-it-works";
-import { HowItWorksAfterStory, HowItWorksBeforeStory } from "#/how-it-works/page";
+import { HowItWorksAfterStory, HowItWorksHero } from "#/how-it-works/page";
 import { StorybookSection } from "#/how-it-works/storybook";
 import Slash from "#/layouts/Slash.astro";
 ---
 
 <Slash section="suite" title={HOW_IT_WORKS_HEADLINE} description={HOW_IT_WORKS_DESCRIPTION}>
-  <HowItWorksBeforeStory />
+  <HowItWorksHero />
   <StorybookSection client:visible />
   <HowItWorksAfterStory />
 </Slash>

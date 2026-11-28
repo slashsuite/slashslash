@@ -54,7 +54,7 @@ export function PricingPage(): ReactNode {
       <CardGrid columns={3} data-testid="pricing-facts">
         {CARDS.map((fact) => (
           <Card key={fact.title} title={fact.title} icon={fact.icon}>
-            {"licence" in fact.body ? <LicenceLine product={fact.body.licence} /> : fact.body.text}
+            {"licence" in fact.body ? <LicenceLine product={fact.body.licence} inline /> : fact.body.text}
           </Card>
         ))}
       </CardGrid>

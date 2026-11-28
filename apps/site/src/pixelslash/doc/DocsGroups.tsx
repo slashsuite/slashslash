@@ -12,7 +12,8 @@ const LONG_GROUP = 8;
  * columns; Get started spans the first row. The rest pair up: walking in order, a group that would
  * sit alone in a row (the next group spans, or it is the last) spans too, so no half row is left
  * empty. Each group is a grid of its heading over a card that fills the rest, so the cards in one
- * row end level. A site page that sits in the docs nav (`EXTRA_NAV`) is a link in its group's card
+ * row end level. Each link is the quiet ink with an accent chevron, so the landing is not a wall of
+ * accent where everything looks clickable at once. A site page that sits in the docs nav (`EXTRA_NAV`) is a link in its group's card
  * after the group's pages, drawn as a page link is, and counts towards the group's length.
  */
 export function DocsGroupGrid(): ReactNode {
@@ -57,10 +58,10 @@ export function DocsGroupGrid(): ReactNode {
               <ul className={long[index] ? "flex flex-col gap-1 md:block md:columns-2 md:gap-x-6" : "flex flex-col gap-1"}>
                 {links[index]?.map((link) => (
                   <li key={link.key} className={long[index] ? "break-inside-avoid md:mb-1" : undefined}>
-                    <TextLink href={link.href}>
+                    <TextLink href={link.href} tone="quiet" data-testid="docs-index-link">
                       {link.title}
-                      <span className="ml-1 inline-block align-[-0.1em]">
-                        <Icon name="chevron-right" size="sm" />
+                      <span className="ml-1 inline-block align-[-0.1em]" data-testid="docs-index-marker">
+                        <Icon name="chevron-right" size="sm" tone="accent" />
                       </span>
                     </TextLink>
                   </li>

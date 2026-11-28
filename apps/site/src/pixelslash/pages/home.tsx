@@ -213,6 +213,7 @@ function StageLine(): ReactNode {
   );
 }
 
+/** The hero. Its actions are one primary and two boxless links: one leads, and all three fit 390 wide at md. */
 function Hero(): ReactNode {
   return (
     <div className="hero-ground">
@@ -223,14 +224,14 @@ function Hero(): ReactNode {
               <StageLine />
               <Lead>{LEAD.text}</Lead>
               <LicenceLine product="pixelslash" />
-              <CentredRow>
-                <Button href={psHref("/self-host")} size="lg">
+              <CentredRow data-testid="hero-actions">
+                <Button href={psHref("/self-host")} size={{ base: "md", md: "lg" }}>
                   Get started
                 </Button>
-                <Button href={PIXELSLASH_SITE_URL} variant="outline" size="lg">
+                <Button href={PIXELSLASH_SITE_URL} variant="link" size={{ base: "md", md: "lg" }}>
                   Hosted review app
                 </Button>
-                <Button href={psHref("/docs")} variant="outline" size="lg">
+                <Button href={psHref("/docs")} variant="link" size={{ base: "md", md: "lg" }}>
                   Docs
                 </Button>
               </CentredRow>

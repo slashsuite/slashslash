@@ -1,4 +1,4 @@
-import { Code, Text } from "@slashsuite/ui-react";
+import { Code, Icon, Text } from "@slashsuite/ui-react";
 import type { CSSProperties, ReactNode } from "react";
 import hero from "@pixelslash-src/apps/site/src/content/hero.json";
 import { psAsset } from "#/pixelslash/paths";
@@ -49,6 +49,26 @@ function cropOf(regions: readonly { x: number; y: number; w: number; h: number }
 
 const CROP = cropOf(CHANGES);
 
+/**
+ * Holds the demo still: the wipe and the count never end on their own, so the window's bar carries a
+ * pause beside the run it stops. A checkbox under its label, so it works with no script, and not drawn
+ * under reduced motion, where nothing moves (demo.css).
+ */
+function DemoPause(): ReactNode {
+  return (
+    <label className="ps-pause">
+      <input type="checkbox" className="sr-only" />
+      <span className="sr-only">Pause the demo</span>
+      <span className="ps-pause-icon">
+        <Icon name="pause" />
+      </span>
+      <span className="ps-play-icon">
+        <Icon name="play" />
+      </span>
+    </label>
+  );
+}
+
 /** Main, wiped into Branch by the slash; the boxes are where the run found its regions. */
 export function SlashDemo(): ReactNode {
   return (
@@ -59,6 +79,7 @@ export function SlashDemo(): ReactNode {
           <span />
           <span />
           <p>northwind.test/billing</p>
+          <DemoPause />
         </div>
         <div
           className="ps-demo"

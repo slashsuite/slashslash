@@ -14,6 +14,10 @@ export function CentredHero(props: ComponentProps<typeof Hero>): ReactNode {
 }
 
 /** A row of items centred on the line, wrapping on a phone, the kit's sm gap apart. */
-export function CentredRow({ children }: { children: ReactNode }): ReactNode {
-  return <div className="flex flex-wrap items-center justify-center gap-3">{children}</div>;
+export function CentredRow({ children, ...rest }: { children: ReactNode; "data-testid"?: string }): ReactNode {
+  return (
+    <div {...rest} className="flex flex-wrap items-center justify-center gap-3">
+      {children}
+    </div>
+  );
 }

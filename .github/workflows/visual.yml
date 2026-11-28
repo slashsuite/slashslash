@@ -45,7 +45,7 @@ jobs:
           persist-credentials: false
 
       # The upload runs the PixelSlash CLI from this checkout, beside slashslash. It runs with the token
-      # in its env, so it is pinned to a commit (pixelslash main, 2026-11-25), never a branch, and is
+      # in its env, so it is pinned to a commit (pixelslash main, 2026-11-28), never a branch, and is
       # bumped by hand: apps/site/pixelslash.sha (the docs the site shows) moves on its own and this
       # does not follow it.
       - name: Check out pixelslash
@@ -53,7 +53,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: slashsuite/pixelslash
-          ref: 74182377e4e3940b50a1dbf17b4bc2d6f546c2e9
+          ref: 66707361e9ad4481145f018f7457ac54be1d1405
           path: pixelslash
           persist-credentials: false
 

@@ -46,7 +46,7 @@
   background: var(--hc-surface);
 }
 
-.ps-window-bar span {
+.ps-window-bar > span {
   width: 0.7rem;
   height: 0.7rem;
   border-radius: 999px;
@@ -60,6 +60,54 @@
   background: var(--hc-subtle);
   color: var(--hc-mute);
   font-size: 0.75rem;
+}
+
+/* The demo's pause, at the bar's end: a round ghost control in the bar's muted ink. */
+.ps-pause {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin: -0.4rem -0.4rem -0.4rem 0;
+  border-radius: 999px;
+  color: var(--hc-mute);
+  cursor: pointer;
+}
+
+.ps-pause:hover {
+  background: var(--hc-subtle);
+  color: var(--hc-ink);
+}
+
+.ps-pause:has(:focus-visible) {
+  outline: 2px solid var(--hc-accent);
+  outline-offset: 2px;
+}
+
+.ps-pause span {
+  display: inline-flex;
+}
+
+.ps-pause .ps-play-icon,
+.ps-pause:has(input:checked) .ps-pause-icon {
+  display: none;
+}
+
+.ps-pause:has(input:checked) .ps-play-icon {
+  display: inline-flex;
+}
+
+.ps-demo-figure:has(.ps-pause input:checked) .ps-demo,
+.ps-demo-figure:has(.ps-pause input:checked) .ps-count {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ps-pause {
+    display: none;
+  }
 }
 
 .ps-demo {

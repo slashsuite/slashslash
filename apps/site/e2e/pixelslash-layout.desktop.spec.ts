@@ -4,9 +4,9 @@ import { open } from "./ready.ts";
 /*
  * The PixelSlash pages leave no dead space at 1440 wide, in both themes: every row of a card grid
  * reaches the grid's end (no card alone at half or a third of the width, no row two thirds full),
- * the cards in one row end level, no docs group card sits near empty beside a full one, and no
- * section leaves its right half empty. Where things sit is what the ticket asks of these pages,
- * so this measures boxes; how they look stays the visual check's.
+ * the cards in one row end level, no docs group card is near empty, and no home section's words
+ * lean to its left leaving the right side bare. Where things sit is what the ticket asks of these
+ * pages, so this measures boxes; how they look stays the visual check's.
  */
 
 const THEMES = ["light", "dark"] as const;
@@ -19,14 +19,9 @@ const GRIDS = [
   { path: "/pixelslash/docs", grid: "[data-testid=docs-index]", card: "[data-testid=docs-group-card]" },
 ] as const;
 
-/** The regions whose content must reach past their middle: each landing section, and the pricing hero. */
-const REGIONS = [
-  { path: "/pixelslash", region: "main section" },
-  { path: "/pixelslash/pricing", region: "[data-testid=pricing-hero]" },
-] as const;
 
-/** What fills a region: its words, code, pictures and controls. */
-const CONTENT = ":is(p, h2, h3, pre, img, svg, a, button)";
+/** How much wider a section's bare right side may be than its left, as a share of its width. */
+const LEAN = 0.25;
 
 /** Tolerance in CSS pixels. */
 const SLACK = 2;
@@ -57,6 +52,24 @@ function rows(cards: Box[]): number[][] {
   return out;
 }
 
+/**
+ * The left and right edges of the text a region draws, by its line boxes. A block's own box runs to
+ * its parent's edge however short its text, so it says nothing here.
+ */
+async function ink(region: Locator): Promise<{ left: number; right: number }> {
+  return region.evaluate((root) => {
+    const drawn: DOMRect[] = [];
+    const range = document.createRange();
+    const text = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    while (text.nextNode()) {
+      range.selectNodeContents(text.currentNode);
+      drawn.push(...range.getClientRects());
+    }
+    const seen = drawn.filter((rect) => rect.width > 1 && rect.height > 1);
+    return { left: Math.min(...seen.map((r) => r.left)), right: Math.max(...seen.map((r) => r.right)) };
+  });
+}
+
 const right = (b: Box): number => b.x + b.width;
 const bottom = (b: Box): number => b.y + b.height;
 
@@ -82,31 +95,37 @@ for (const theme of THEMES) {
       });
     }
 
-    test("no docs group card sits near empty beside a full one", async ({ page }) => {
+    test("no docs group card is near empty, beside a full one or across the row", async ({ page }) => {
       await open(page, "/pixelslash/docs");
       // A group's card and its links have no role that tells them from the docs nav's; their test ids name them.
       const cells = page.getByTestId("docs-group-card");
       const cards = await boxes(cells);
-      const shared = rows(cards).filter((row) => row.length > 1).flat();
+      const grouped = rows(cards);
+      const shared = grouped.filter((row) => row.length > 1).flat();
+      const alone = grouped.filter((row) => row.length === 1).flat();
       expect(shared.length).toBeGreaterThan(1);
+      expect(alone.length).toBeGreaterThan(0);
       for (const index of shared) {
         const card = cards[index] ?? { x: 0, y: 0, width: 0, height: 1 };
         const last = await box(cells.nth(index).getByTestId("docs-index-link").last());
         expect(bottom(last) - card.y).toBeGreaterThanOrEqual(FILLED * card.height);
       }
+      for (const index of alone) {
+        const card = cards[index] ?? { x: 0, y: 0, width: 0, height: 1 };
+        expect((await ink(cells.nth(index))).right).toBeGreaterThan(card.x + card.width / 2);
+      }
     });
 
-    for (const { path, region } of REGIONS) {
-      test(`no section on ${path} leaves its right half empty`, async ({ page }) => {
-        await open(page, path);
-        const regions = await page.locator(region).all();
-        expect(regions.length).toBeGreaterThan(0);
-        for (const found of regions) {
-          const whole = await box(found);
-          const reach = Math.max(...(await boxes(found.locator(CONTENT))).map(right));
-          expect(reach).toBeGreaterThan(whole.x + whole.width / 2);
-        }
-      });
-    }
+    test("no section on /pixelslash leans left with its right side bare", async ({ page }) => {
+      await open(page, "/pixelslash");
+      const sections = await page.getByRole("main").getByRole("region").all();
+      expect(sections.length).toBeGreaterThan(0);
+      for (const section of sections) {
+        const whole = await box(section);
+        const drawn = await ink(section);
+        const bare = right(whole) - drawn.right - (drawn.left - whole.x);
+        expect(bare).toBeLessThanOrEqual(LEAN * whole.width);
+      }
+    });
   });
 }

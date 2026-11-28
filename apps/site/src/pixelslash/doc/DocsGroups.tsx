@@ -44,10 +44,33 @@ export function groupSpans(lengths: readonly number[]): boolean[] {
   return spans;
 }
 
+type GroupLink = { key: string; href: string; title: string };
+
+/** A group card's summary and its list of links; a `long` list runs in two columns from md. */
+function GroupBody({ summary, links, long }: { summary: string; links: readonly GroupLink[]; long: boolean }): ReactNode {
+  return (
+    <>
+      <Text as="p">{summary}</Text>
+      <ul className={long ? "flex flex-col gap-1 md:block md:columns-2 md:gap-x-6" : "flex flex-col gap-1"}>
+        {links.map((link) => (
+          <li key={link.key} className={long ? "break-inside-avoid md:mb-1" : undefined}>
+            <TextLink href={link.href} tone="quiet" data-testid="docs-index-link">
+              {link.title}
+              <span className="ml-1 inline-block align-[-0.1em]" data-testid="docs-index-marker">
+                <Icon name="chevron-right" size="sm" tone="accent" />
+              </span>
+            </TextLink>
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+}
+
 /**
  * The /pixelslash/docs landing's groups, in `GROUPS` order, on a two-column grid, ported from
  * PixelSlash's site. Which groups share a row is `groupSpans`'s; a group that spans the row lists
- * more than 4 links in two columns. Each group is a grid of its heading over a card that fills the
+ * more than 4 links in two columns, and sets 4 or fewer beside its summary, so its right half is never empty. Each group is a grid of its heading over a card that fills the
  * rest, so the cards in one row end level. Each link is the quiet ink with an accent chevron, so the landing is not a wall of
  * accent where everything looks clickable at once. A site page that sits in the docs nav (`EXTRA_NAV`) is a link in its group's card
  * after the group's pages, drawn as a page link is, and counts towards the group's length.
@@ -67,6 +90,7 @@ export function DocsGroupGrid(): ReactNode {
   ]);
   const spans = groupSpans(links.map((list) => list.length));
   const long = links.map((list, index) => spans[index] === true && list.length > TWO_COLUMN_LIST);
+  const beside = links.map((list, index) => spans[index] === true && list.length <= TWO_COLUMN_LIST);
   return (
     <ul data-testid="docs-index" className="m-0 grid list-none gap-6 p-0 md:grid-cols-2">
       {GROUPS.map((group, index) => (
@@ -80,21 +104,15 @@ export function DocsGroupGrid(): ReactNode {
             </SubsectionHeading>
           </div>
           <Card data-testid="docs-group-card">
-            <Stack gap="xs">
-              <Text as="p">{group.summary}</Text>
-              <ul className={long[index] ? "flex flex-col gap-1 md:block md:columns-2 md:gap-x-6" : "flex flex-col gap-1"}>
-                {links[index]?.map((link) => (
-                  <li key={link.key} className={long[index] ? "break-inside-avoid md:mb-1" : undefined}>
-                    <TextLink href={link.href} tone="quiet" data-testid="docs-index-link">
-                      {link.title}
-                      <span className="ml-1 inline-block align-[-0.1em]" data-testid="docs-index-marker">
-                        <Icon name="chevron-right" size="sm" tone="accent" />
-                      </span>
-                    </TextLink>
-                  </li>
-                ))}
-              </ul>
-            </Stack>
+            {beside[index] ? (
+              <div className="grid gap-2 md:grid-cols-2 md:gap-x-6">
+                <GroupBody summary={group.summary} links={links[index] ?? []} long={false} />
+              </div>
+            ) : (
+              <Stack gap="xs">
+                <GroupBody summary={group.summary} links={links[index] ?? []} long={long[index] === true} />
+              </Stack>
+            )}
           </Card>
         </li>
       ))}

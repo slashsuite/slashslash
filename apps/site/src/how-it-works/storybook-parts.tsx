@@ -8,14 +8,14 @@ export const INK_STROKE: Pick<SVGProps<SVGElement>, "stroke" | "strokeWidth" | "
   strokeLinejoin: "round",
 };
 
-/** Shared warm paper baseline at y=364 across all eight scenes. */
+/** Shared warm paper baseline at y=364 across all nine scenes. */
 export function GroundLine(): ReactNode {
   return <line x1={42} y1={364} x2={758} y2={364} stroke={P.taupe} strokeWidth={2.5} strokeLinecap="round" />;
 }
 
 /**
- * The recurring blue-with-orange-band story ticket passed from Muse to Architect, Checker,
- * and Builder before it is built into a physical package.
+ * The recurring blue story ticket with its orange band, passed from the Muse to the Architect, the
+ * Reviewer and the Builder before it is built into a physical package.
  */
 export function StoryToken({
   seals = 0,
@@ -104,7 +104,7 @@ const INBOX_SLOTS_5 = [
   "translate(80 25) rotate(4) scale(0.76)",
 ] as const;
 
-/** Shared OmniSlash role inbox tray holding four or five tickets behind its cutaway lip. */
+/** Shared role inbox tray holding four or five tickets behind its cutaway lip. */
 export function RoleInboxStack({
   label = "Architect inbox",
   ticketCount = 5,
@@ -151,7 +151,7 @@ export function RoleInboxStack({
   );
 }
 
-/** Compact Owner figure used at both the start (Scene 1) and the live rollout finale (Scene 8). */
+/** Compact Owner figure used at the start (Scene 1) and the live rollout (Scene 8). */
 export function OwnerFigure({ label = "Owner" }: { label?: string }): ReactNode {
   return (
     <g>

@@ -1,262 +1,221 @@
 /**
- * /how-it-works: one cycle from an idea to a live release, written for non-technical readers using the six
- * roles and nine terms in how-it-works-roles.ts. The steps in words and the today and planned lists are in
- * how-it-works-steps.ts. Every sentence that says what a product does is a `Claim`, held to the facts files
- * by facts.built.test.ts.
+ * /how-it-works: one idea, a saved basket for a shop, followed from a chat to shipped work. The page
+ * opens on the hero, then the nine scene storybook, then the team (how-it-works-roles.ts), where you stay
+ * in control, the five stages, what runs today and next, and the close. The words are the approved copy,
+ * transcribed as written. Every sentence that says what a product does is a `Claim`, held to the facts
+ * files by facts.built.test.ts.
  */
 import type { Claim } from "#/content/facts";
-import { OMNISLASH_REPO_URL } from "#/content/site";
 
-/** The page's h1, its title and its share card's headline. */
-export const HOW_IT_WORKS_HEADLINE = "From idea to live release, and what checks each step";
+/** The page's h1, its title, its share card's headline and the close's heading. */
+export const HOW_IT_WORKS_HEADLINE = "Bring the idea. Agents ship it, and the calls that matter stay yours.";
 
 /** The page's meta description: the share card description. */
 export const HOW_IT_WORKS_DESCRIPTION =
-  "How an idea becomes a live software release: six clear AI roles, written rules, and Slash checks at every step, with planned parts marked planned.";
+  "Follow one idea from a chat to shipped work. Agents plan, build, check and ship it, and stop for you at each decision only you can make.";
 
-/** The two paragraphs under the h1. */
-export const HOW_IT_WORKS_LEAD: readonly string[] = [
-  "Every change here is built by one AI agent, then checked by separate agents and by the Slash products before it reaches users.",
-  "One cycle, ten steps. Each step names the role doing the work, the written rule it follows, and the Slash product checking the result. Solid cards run today. Dashed cards are planned.",
-];
-
-/** A node of the diagram: one step in the cycle, optionally linked to a personified role avatar. */
-export type FlowNode = {
-  /** The step's number, `6a` and `7a` for the planned branches off 6 and 7. */
-  id: string;
-  label: string;
-  /** Optional role id matching an illustrated role in how-it-works-roles.ts. */
-  roleId?: string;
-  /** The Role and rule cell. */
-  role: string;
-  /** The Tool at this step cell: a claim, or a plain word when no tool acts. */
-  tool: Claim | string;
-  stage: "today" | "planned";
-};
-
-export const DIAGRAM: {
-  title: string;
-  nodes: readonly FlowNode[];
-  caption: string;
-} = {
-  title: "The flow diagram",
-  nodes: [
-    { id: "1", label: "Idea", role: "The owner", tool: "None", stage: "today" },
-    {
-      id: "2",
-      label: "Explore the design",
-      roleId: "muse",
-      role: "Muse. Explores the idea and hands over a confirmed design",
-      tool: { text: "OmniSlash: delivers the design to the architect's role inbox", facts: ["omnislash/role-inbox"] },
-      stage: "today",
-    },
-    {
-      id: "3",
-      label: "Drill the ticket",
-      roleId: "architect",
-      role: "Architect. Turns the design into a drilled ticket",
-      tool: {
-        text: "OmniSlash: requires a written breakdown and what-done-looks-like checklist on every ticket",
-        facts: ["omnislash/drilled-ticket-gate"],
-      },
-      stage: "today",
-    },
-    {
-      id: "4",
-      label: "Check the ticket",
-      roleId: "checker",
-      role: "Checker. Verifies the drilled ticket is clear and doable",
-      tool: {
-        text: "OmniSlash: refuses to start a builder without a recorded go sign-off unless overridden",
-        facts: ["omnislash/drilled-ticket-gate"],
-      },
-      stage: "today",
-    },
-    {
-      id: "5",
-      label: "Assign and lock",
-      roleId: "architect",
-      role: "Architect. Starts a builder on the checked ticket",
-      tool: {
-        text: "OmniSlash: claims a lease on the task and isolated workspace so no two agents collide",
-        facts: ["omnislash/drilled-ticket-gate", "omnislash/leases"],
-      },
-      stage: "today",
-    },
-    {
-      id: "6",
-      label: "Build in isolation",
-      roleId: "builder",
-      role: "Builder. Works inside its own isolated workspace",
-      tool: {
-        text: "OmniSlash: private copy of the project per task. TaskSlash: paces builds and tests to fit machine capacity. UISlash: locks screens to the design system",
-        facts: [
-          "omnislash/agent-build-worktree",
-          "taskslash/moon-targets",
-          "taskslash/admission-by-capacity",
-          "uislash/no-styling-escape",
-        ],
-      },
-      stage: "today",
-    },
-    {
-      id: "6a",
-      label: "Size and security check",
-      roleId: "builder",
-      role: "Builder",
-      tool: {
-        text: "BundleSlash (planned): will compare app size before and after, check whether security flaws in third-party packages reach your code, and prepare releases",
-        planned: "BundleSlash",
-      },
-      stage: "planned",
-    },
-    {
-      id: "7",
-      label: "Automated and visual checks",
-      roleId: "builder",
-      role: "Builder submits a proposed change and hands off. Never merges its own work",
-      tool: {
-        text: "PixelSlash: before-and-after screenshots for human sign-off and inconsistent shot detection. UISlash: automated design system check. FlakeSlash: scans for unreliable tests every 10 minutes",
-        facts: [
-          "pixelslash/upload-to-review-app",
-          "pixelslash/block-ci-on-review",
-          "pixelslash/flaky-shot-detection",
-          "uislash/ui-review-workflow",
-          "flakeslash/dashboard-scan",
-        ],
-      },
-      stage: "today",
-    },
-    {
-      id: "7a",
-      label: "Reliability check per change",
-      role: "Automated check",
-      tool: {
-        text: "FlakeSlash (planned): will post an informational test reliability summary on each proposed change without blocking the release",
-        facts: ["flakeslash/pr-check"],
-      },
-      stage: "planned",
-    },
-    {
-      id: "8",
-      label: "Skeptical review",
-      roleId: "skeptical-reviewer",
-      role: "Skeptical reviewer. Independent reviewers across models presume every changed line is wrong",
-      tool: {
-        text: "OmniSlash: read-only skeptical review across multiple AI models",
-        facts: ["omnislash/review-merge-skills"],
-      },
-      stage: "today",
-    },
-    {
-      id: "9",
-      label: "Merge and deploy",
-      roleId: "sentinel",
-      role: "Sentinel, else architect. Never the builder",
-      tool: {
-        text: "OmniSlash: handoff delivered to the sentinel's role inbox, then merged and deployed once every check passes",
-        facts: ["omnislash/role-inbox", "omnislash/role-delivery", "omnislash/review-merge-skills"],
-      },
-      stage: "today",
-    },
-    {
-      id: "10",
-      label: "Roll out behind a feature switch",
-      role: "Live rollout",
-      tool: {
-        text: "ToggleSlash: audience targeting, gradual percentage rollouts, live updates, full audit trail",
-        facts: ["toggleslash/targeting", "toggleslash/live-updates", "toggleslash/audit-trail"],
-      },
-      stage: "today",
-    },
-  ],
-  caption:
-    "Solid: runs today. Dashed: planned. Each role follows a written rule; each Slash product checks that step's output.",
-};
+/** The paragraph under the h1. */
+export const HOW_IT_WORKS_HERO =
+  "It starts as a thought you type into a chat. Say it is a saved basket for your shop, so customers can come back to what they picked. A small team of agents turns that thought into a plan, builds it, checks it and ships it. At each decision only you can make, the work stops and waits for you.";
 
 /**
- * One product in The products: its name, its page here when it has one, and its line, which starts with the
- * name (the page shows the name in bold, linked to the page).
+ * A list line that opens with a bold label: the line's text starts with the label, which the page shows in
+ * bold, and the rest follows as written.
  */
-export type FlowTool = { name: string; href?: string; line: Claim };
+export type BoldLine = { bold: string; line: Claim | string };
 
-export const TOOLS: { title: string; tools: readonly FlowTool[] } = {
-  title: "The products",
-  tools: [
+/** Where you stay in control: the moments the work stops for you. */
+export const CONTROL: {
+  title: string;
+  intro: string;
+  items: readonly BoldLine[];
+  after: Claim;
+} = {
+  title: "Where you stay in control",
+  intro: "The agents do the shaping, building and checking. These are the moments the work stops for you.",
+  items: [
     {
-      name: "OmniSlash",
-      href: "/omnislash",
+      bold: "The idea.",
       line: {
-        text: "OmniSlash: keeps track of tasks, projects, and the AI agents working on them.",
-        facts: ["omnislash/what-it-is"],
+        text: "The idea. You say whether it is complete. Nothing is ticketed for building before your yes.",
+        facts: ["omnislash/role-state-machine"],
       },
     },
     {
-      name: "UISlash",
-      href: "/uislash",
+      bold: "A planning question.",
       line: {
-        text: "UISlash: a design system of approved components and themes that keeps every page consistent without ad-hoc styling.",
-        facts: ["uislash/what-it-is"],
+        text: "A planning question. When the Architect hits a question only you can decide, it asks you and waits.",
+        facts: ["omnislash/role-state-machine"],
       },
     },
     {
-      name: "TaskSlash",
-      href: "/taskslash",
+      bold: "A builder that needs you.",
       line: {
-        text: "TaskSlash: queues builds and tests until the machine has spare capacity for each.",
-        facts: ["taskslash/what-it-is"],
+        text: "A builder that needs you. A Builder missing a decision or access stops and asks for it. A Builder that marks its change as needing your eyes, for feel, wording or anything visual, waits while you judge it, then hands it on or makes the change you ask for.",
+        facts: ["omnislash/role-state-machine"],
       },
     },
     {
-      name: "FlakeSlash",
-      href: "/flakeslash",
+      bold: "The merge call.",
       line: {
-        text: "FlakeSlash: finds unreliable tests that pass and fail on the same version, grouped into issues.",
-        facts: ["flakeslash/what-it-is"],
+        text: "The merge call. A taste call, a check someone wants to skip, or merging past a known flaky test goes to you before anything merges.",
+        facts: ["omnislash/role-state-machine"],
       },
     },
     {
-      name: "PixelSlash",
-      href: "/pixelslash",
+      bold: "What changed on screen.",
       line: {
-        text: "PixelSlash: shows what changed visually on a web page so a person can accept or reject each change.",
-        facts: ["pixelslash/what-it-is"],
+        text: "What changed on screen. You accept or reject each change in PixelSlash. A review you have not done yet does not hold up the handoff. A failed one stops it.",
+        facts: ["omnislash/role-state-machine", "omnislash/handoff-pixelslash-owed", "pixelslash/upload-to-review-app"],
       },
     },
     {
-      name: "ToggleSlash",
-      href: "/toggleslash",
+      bold: "Anything sent outside.",
+      line: "Anything sent outside. Nothing goes to anyone outside without you.",
+    },
+  ],
+  after: {
+    text: "On the dashboard, the Machine page draws the whole flow, tags every step that needs a person, and counts how many are waiting on one.",
+    facts: ["omnislash/dashboard-machine"],
+  },
+};
+
+/** The five stages, each naming the products behind it, linked to their pages. */
+export const STAGES: { title: string; items: readonly BoldLine[] } = {
+  title: "Five stages",
+  items: [
+    {
+      bold: "Idea.",
       line: {
-        text: "ToggleSlash: feature switches you run on your own servers to control who sees new changes while the app runs.",
-        facts: ["toggleslash/what-it-is"],
+        text: "Idea. You and the Muse talk the thought through until you call it complete. Behind it: [OmniSlash](/omnislash), which keeps track of tickets, projects and the agents that work on them.",
+        facts: ["omnislash/what-it-is", "omnislash/role-state-machine"],
       },
     },
     {
-      name: "BundleSlash",
+      bold: "Plan.",
       line: {
-        text: "BundleSlash (planned): app size checks between versions, security flaw reachability, and release preparation.",
-        planned: "BundleSlash",
+        text: "Plan. The Architect shapes the ticket and a Reviewer reads the brief cold. Behind it: [OmniSlash](/omnislash).",
+        facts: ["omnislash/drilled-ticket-gate", "omnislash/role-state-machine"],
+      },
+    },
+    {
+      bold: "Build.",
+      line: {
+        text: "Build. Builders work side by side, each in its own copy of the code. Behind it: [TaskSlash](/taskslash), which stops builds and tests that start at the same time from overloading one computer, and [UISlash](/uislash), screen parts and themes a site is built from as they are, with no styling of its own.",
+        facts: ["omnislash/agent-build-worktree", "taskslash/what-it-is", "uislash/what-it-is", "uislash/no-styling-escape"],
+      },
+    },
+    {
+      bold: "Ship.",
+      line: {
+        text: "Ship. The checks run, you review what changed on screen, and the Sentinel merges and deploys. Behind it: [PixelSlash](/pixelslash), which shows what changed on a web page between two versions and lets a person accept or reject each change, and [FlakeSlash](/flakeslash), which finds the tests that pass and fail on the same code.",
+        facts: ["pixelslash/what-it-is", "flakeslash/what-it-is", "omnislash/role-skills"],
+      },
+    },
+    {
+      bold: "Done.",
+      line: {
+        text: "Done. The ticket closes. If you then want to let a feature out to a share of users first, there is [ToggleSlash](/toggleslash), a feature flag service you run yourself that decides which users see which version of a feature.",
+        facts: ["toggleslash/what-it-is", "toggleslash/targeting"],
       },
     },
   ],
 };
 
-/** The close: where to go next, and where the source is. */
-export const CLOSE: { next: string; source: Claim; external: readonly string[] } = {
-  next: "Next: [the home page](/), [technical details for developers](/developers), or any product page.",
-  source: {
-    text: `Source: OmniSlash at [github.com/slashsuite/omnislash](${OMNISLASH_REPO_URL}) (Elastic License 2.0, source available). UISlash and TaskSlash are MIT. PixelSlash, FlakeSlash and ToggleSlash are Elastic License 2.0. Docs: [slashslash.build/uislash](/uislash) (UISlash), [slashslash.build/pixelslash/docs](/pixelslash/docs) (PixelSlash).`,
-    facts: [
-      "omnislash/public-repo",
-      "omnislash/licence",
-      "uislash/licence",
-      "taskslash/licence",
-      "pixelslash/licence",
-      "flakeslash/licence",
-      "toggleslash/licence",
-      "uislash/docs-site",
-      "pixelslash/docs-site",
-    ],
-  },
-  external: [OMNISLASH_REPO_URL],
+/** Running today and next: each product's state today, then what is planned. */
+export const STATUS: {
+  title: string;
+  intro: string;
+  todayTitle: string;
+  today: readonly BoldLine[];
+  nextTitle: string;
+  nextIntro: string;
+  planned: readonly BoldLine[];
+} = {
+  title: "Running today and next",
+  intro: "Every product here is alpha. It runs today, and any of it may change.",
+  todayTitle: "Today",
+  today: [
+    {
+      bold: "OmniSlash",
+      line: {
+        text: "OmniSlash, alpha. A command line tool that runs from a checkout of its public source, with a dashboard whose Machine page places every live ticket on the flow.",
+        facts: ["omnislash/what-it-is", "omnislash/checkout-linux", "omnislash/public-repo", "omnislash/dashboard-machine"],
+      },
+    },
+    {
+      bold: "TaskSlash",
+      line: {
+        text: "TaskSlash, alpha, version 0.1.0. Runs on Linux. There is no installable release yet; you build it from source.",
+        facts: ["taskslash/what-it-is", "taskslash/no-release", "taskslash/linux-systemd"],
+      },
+    },
+    {
+      bold: "PixelSlash",
+      line: {
+        text: "PixelSlash, alpha, version 0.8. Installs from npm. The review app is hosted at pixelslash.dev, or you run it yourself.",
+        facts: ["pixelslash/what-it-is", "pixelslash/npm-cli", "pixelslash/hosted-review-app", "pixelslash/self-host-docker"],
+      },
+    },
+    {
+      bold: "UISlash",
+      line: {
+        text: "UISlash, alpha, every package at version 0.x. Installs from npm, with its docs at hack-cove.com/ui.",
+        facts: ["uislash/what-it-is", "uislash/npm-install", "uislash/docs-site"],
+      },
+    },
+    {
+      bold: "FlakeSlash",
+      line: {
+        text: "FlakeSlash, alpha, version 0.1.0. Its dashboard is hosted at flakeslash.slashslash.build. The command line tool runs from a checkout.",
+        facts: ["flakeslash/what-it-is", "flakeslash/hosted-dashboard", "flakeslash/cli-from-checkout"],
+      },
+    },
+    {
+      bold: "ToggleSlash",
+      line: {
+        text: "ToggleSlash, alpha, version 0.2.0. You run the server yourself. There is no public hosted service.",
+        facts: ["toggleslash/what-it-is", "toggleslash/server-from-source", "toggleslash/dashboard-cloudflare-workers"],
+      },
+    },
+  ],
+  nextTitle: "Next",
+  nextIntro: "These are planned, with no dates.",
+  planned: [
+    {
+      bold: "OmniSlash:",
+      line: {
+        text: "OmniSlash: a team server where each person has their own access.",
+        facts: ["omnislash/team-server"],
+      },
+    },
+    {
+      bold: "TaskSlash:",
+      line: {
+        text: "TaskSlash: scheduling across a pool of machines, and for the automated checks that run on each change.",
+        facts: ["taskslash/machine-pool", "taskslash/ci-runners"],
+      },
+    },
+    {
+      bold: "ToggleSlash:",
+      line: {
+        text: "ToggleSlash: rollouts that raise the share of users in automatic steps, and user accounts and roles so a team stops sharing one admin token.",
+        facts: ["toggleslash/progressive-rollouts", "toggleslash/user-accounts-and-roles"],
+      },
+    },
+    {
+      bold: "FlakeSlash:",
+      line: {
+        text: "FlakeSlash: one check on each pull request that links to its dashboard and never blocks.",
+        facts: ["flakeslash/pr-check"],
+      },
+    },
+  ],
+};
+
+/** The close: the headline again as an h2, one line, and the way on to the products. */
+export const CLOSE: { text: string; button: string; href: string } = {
+  text: "Your saved basket started as a sentence in a chat. Your next idea starts the same way.",
+  button: "Meet the products",
+  href: "/#tools",
 };

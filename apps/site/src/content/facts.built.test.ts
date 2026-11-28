@@ -18,7 +18,6 @@ import * as flakeslash from "#/content/flakeslash";
 import * as flow from "#/content/flow";
 import * as howItWorks from "#/content/how-it-works";
 import * as howItWorksRoles from "#/content/how-it-works-roles";
-import * as howItWorksSteps from "#/content/how-it-works-steps";
 import * as omnislash from "#/content/omnislash";
 import * as products from "#/content/products";
 import * as story from "#/content/story";
@@ -48,7 +47,6 @@ const MODULES: Record<string, object> = {
   "content/flow": flow,
   "content/how-it-works": howItWorks,
   "content/how-it-works-roles": howItWorksRoles,
-  "content/how-it-works-steps": howItWorksSteps,
   "how-it-works/storybook-data": howItWorksStorybook,
   "content/toggleslash": toggleslash,
   "content/flakeslash": flakeslash,

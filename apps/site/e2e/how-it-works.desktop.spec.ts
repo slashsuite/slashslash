@@ -18,35 +18,35 @@ test("the storybook autoplays in view and pauses when scrolled away", async ({ p
   await expect(book).toHaveAttribute("data-playing", "true");
   await expect(book).toHaveAttribute("data-animated", "true");
   await expect(book).toHaveAttribute("data-paused", "false");
-  await expect(book).toHaveAttribute("data-scene", "muse");
+  await expect(book).toHaveAttribute("data-scene", "explore");
 
-  // Scene 1 (muse) stays active for its full 6500ms duration, then advances to Scene 2 (architect)
+  // Scene 1 (explore) stays active for its full 6500ms duration, then advances to Scene 2 (shape)
   await page.clock.runFor(6000);
-  await expect(book).toHaveAttribute("data-scene", "muse");
+  await expect(book).toHaveAttribute("data-scene", "explore");
   await page.clock.runFor(600);
-  await expect(book).toHaveAttribute("data-scene", "architect");
+  await expect(book).toHaveAttribute("data-scene", "shape");
 
-  // Scene 2 (architect) must also get its full 6500ms duration (regression test against 50ms skip)
+  // Scene 2 (shape) must also get its full 6500ms duration (regression test against 50ms skip)
   await page.clock.runFor(500);
-  await expect(book).toHaveAttribute("data-scene", "architect");
+  await expect(book).toHaveAttribute("data-scene", "shape");
   await page.clock.runFor(5500);
-  await expect(book).toHaveAttribute("data-scene", "architect");
+  await expect(book).toHaveAttribute("data-scene", "shape");
   await page.clock.runFor(700);
-  await expect(book).toHaveAttribute("data-scene", "checker");
+  await expect(book).toHaveAttribute("data-scene", "cold-read");
 
   // Selecting a scene mid-way through Scene 3 resets the timer to a full 6500ms for the chosen scene
   await page.clock.runFor(4000);
-  await expect(book).toHaveAttribute("data-scene", "checker");
-  await book.getByRole("group", { name: "Storybook scenes" }).getByRole("button", { name: /Builder$/ }).click();
-  await expect(book).toHaveAttribute("data-scene", "builder");
+  await expect(book).toHaveAttribute("data-scene", "cold-read");
+  await book.getByRole("group", { name: "Storybook scenes" }).getByRole("button", { name: /Parallel builds$/ }).click();
+  await expect(book).toHaveAttribute("data-scene", "build");
   await page.clock.runFor(6000);
-  await expect(book).toHaveAttribute("data-scene", "builder");
+  await expect(book).toHaveAttribute("data-scene", "build");
   await page.clock.runFor(700);
-  await expect(book).toHaveAttribute("data-scene", "checks");
+  await expect(book).toHaveAttribute("data-scene", "review");
 
   // Scrolling away pauses playback so the scene does not advance while off-screen
-  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
   await expect(book).toHaveAttribute("data-paused", "true");
   await page.clock.runFor(7000);
-  await expect(book).toHaveAttribute("data-scene", "checks");
+  await expect(book).toHaveAttribute("data-scene", "review");
 });

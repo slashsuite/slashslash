@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { PALETTE as P } from "#/how-it-works/storybook-data";
-import { GroundLine, INK_STROKE, OwnerFigure, RoleInboxStack } from "#/how-it-works/storybook-parts";
+import { GroundLine, INK_STROKE, OwnerFigure, StoryToken } from "#/how-it-works/storybook-parts";
 
 function Starburst({ cx, cy, r, className }: { cx: number; cy: number; r: number; className?: string }): ReactNode {
   return (
@@ -20,7 +20,7 @@ function Starburst({ cx, cy, r, className }: { cx: number; cy: number; r: number
 }
 
 /* ==========================================================================
-   SCENE 1: IDEA & MUSE -> OMNISLASH ROLE INBOX
+   SCENE 1: EXPLORE AND CONFIRM
    ========================================================================== */
 
 function OwnerSpark(): ReactNode {
@@ -104,29 +104,32 @@ function MuseDeskCharacter(): ReactNode {
   );
 }
 
-const MUSE_ENVELOPE_CLASSES = [
-  "sb-muse-envelope-1",
-  "sb-muse-envelope-2",
-  "sb-muse-envelope-3",
-  "sb-muse-envelope-4",
-  "sb-muse-envelope-5",
-] as const;
-
-function RoleInboxTray(): ReactNode {
+/** The Muse asks whether the idea is complete; only a yes turns it into one ticket. */
+function CompleteCard(): ReactNode {
   return (
-    <g transform="translate(574 236)">
-      <g className="sb-muse-inbox">
-        <g transform="scale(1.08)">
-          <RoleInboxStack
-            label="Architect inbox"
-            ticketCount={5}
-            badgeCount={5}
-            ticketClasses={MUSE_ENVELOPE_CLASSES}
-            badgeClass="sb-muse-badge"
-          />
+    <g transform="translate(560 120)">
+      <g className="sb-muse-ask">
+        <rect x={0} y={0} width={190} height={112} rx={12} fill={P.white} {...INK_STROKE} />
+        <text x={95} y={38} textAnchor="middle" fontSize={20} fontWeight={800} fill={P.ink}>
+          Complete?
+        </text>
+        <rect x={18} y={58} width={70} height={36} rx={18} fill={P.paperShade} stroke={P.inkSoft} strokeWidth={2} />
+        <text x={53} y={82} textAnchor="middle" fontSize={16} fontWeight={700} fill={P.inkSoft}>
+          No
+        </text>
+      </g>
+      <g className="sb-muse-yes">
+        <rect x={102} y={58} width={70} height={36} rx={18} fill={P.sage} {...INK_STROKE} />
+        <text x={137} y={82} textAnchor="middle" fontSize={16} fontWeight={800} fill={P.white}>
+          Yes
+        </text>
+      </g>
+      <g className="sb-muse-ticket">
+        <g transform="translate(67 142)">
+          <StoryToken />
         </g>
-        <text x={84} y={153} textAnchor="middle" fontSize={15} fontWeight={700} fill={P.inkSoft}>
-          OmniSlash inbox
+        <text x={95} y={216} textAnchor="middle" fontSize={15} fontWeight={700} fill={P.inkSoft}>
+          Ticket
         </text>
       </g>
     </g>
@@ -139,13 +142,13 @@ export function SceneMuse(): ReactNode {
       <GroundLine />
       <OwnerSpark />
       <MuseDeskCharacter />
-      <RoleInboxTray />
+      <CompleteCard />
     </g>
   );
 }
 
 /* ==========================================================================
-   SCENE 2: ARCHITECT -> DRILL THE TICKET
+   SCENE 2: SHAPE THE TICKET
    ========================================================================== */
 
 function ArchitectFigure(): ReactNode {
@@ -208,24 +211,13 @@ function DrilledTicketCard(): ReactNode {
   return (
     <g transform="translate(534 94)">
       <g className="sb-arch-ticket">
-        <g transform="translate(18 -18)">
-          <rect x={0} y={0} width={226} height={228} rx={12} fill={P.paperShade} {...INK_STROKE} />
-          <rect x={14} y={14} width={198} height={32} rx={7} fill={P.terracottaSoft} stroke={P.terracotta} strokeWidth={1.8} />
-        </g>
-        <g transform="translate(9 -9)">
-          <rect x={0} y={0} width={226} height={228} rx={12} fill={P.white} {...INK_STROKE} />
-          <rect x={14} y={14} width={198} height={32} rx={7} fill={P.terracottaSoft} stroke={P.terracotta} strokeWidth={1.8} />
-        </g>
         <rect x={0} y={0} width={226} height={228} rx={12} fill={P.white} {...INK_STROKE} />
         <rect x={14} y={14} width={198} height={32} rx={7} fill={P.terracotta} />
         <text x={26} y={36} fontSize={16} fontWeight={800} fill={P.white}>
-          Drilled ticket
-        </text>
-        <text x={202} y={35} textAnchor="end" fontSize={12} fontWeight={700} fill={P.terracottaSoft}>
-          1 of 5
+          Ticket
         </text>
         <text x={18} y={70} fontSize={15} fontWeight={700} fill={P.inkSoft}>
-          Breakdown
+          Details
         </text>
         <line className="sb-arch-line-1" pathLength={1} x1={18} y1={86} x2={200} y2={86} stroke={P.ink} strokeWidth={3.2} strokeLinecap="round" />
         <line
@@ -240,7 +232,7 @@ function DrilledTicketCard(): ReactNode {
           strokeLinecap="round"
         />
         <text x={18} y={136} fontSize={15} fontWeight={700} fill={P.inkSoft}>
-          Done checklist
+          Done means
         </text>
         <g className="sb-arch-check-row-1">
           <rect x={18} y={148} width={14} height={14} rx={3} fill={P.paperShade} stroke={P.ink} strokeWidth={2} />
@@ -263,23 +255,6 @@ export function SceneArchitect(): ReactNode {
   return (
     <g>
       <GroundLine />
-      <path
-        className="sb-arch-inbox-arc"
-        d="M120 268 Q154 224 206 238"
-        fill="none"
-        stroke={P.terracotta}
-        strokeWidth={2.2}
-        strokeDasharray="5 6"
-        strokeLinecap="round"
-      />
-      <g transform="translate(20 278) scale(0.86)">
-        <g className="sb-arch-inbox">
-          <RoleInboxStack label="Architect inbox" ticketCount={5} badgeCount={5} />
-        </g>
-      </g>
-      <text x={87} y={389} textAnchor="middle" fontSize={14} fontWeight={700} fill={P.inkSoft}>
-        OmniSlash inbox
-      </text>
       <ArchitectFigure />
       <DrilledTicketCard />
     </g>

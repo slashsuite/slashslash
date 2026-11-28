@@ -251,8 +251,7 @@ describe("the home from the pipeline on", () => {
     // The start frame is only ever drawn under `.motion`, which only the head script sets, so a page
     // with no script shows every drawing's base style: the finished drawing.
     // The flags grid on /developers has no start frame: it only replays while lit, from its finished style.
-    // The flow diagram on /how-it-works has no motion at all.
-    const still = new Set(["illustrations/combinations.css", "illustrations/flow.css"]);
+    const still = new Set(["illustrations/combinations.css"]);
     const files = globSync("illustrations/*.css", { cwd: SRC }).filter((file) => !still.has(file));
     expect(files).toContain("illustrations/hero.css");
     for (const file of files) {

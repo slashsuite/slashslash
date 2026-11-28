@@ -26,7 +26,7 @@ import {
 import { useId, type ReactNode } from "react";
 import { DoDont } from "./docs/DoDont";
 import { Example } from "./docs/Example";
-import { InlineCode } from "./docs/InlineCode";
+import { InlineCode, inlineCode } from "./docs/InlineCode";
 import { docOf, Props, Types } from "./docs/Props";
 
 /** The page's top-level sections, in page order: the "On this page" list and the anchors it jumps to. */
@@ -86,12 +86,7 @@ function UseInstead({ siblings }: { siblings: { slug: string; when: string }[] }
               <TableCell tone="strong">
                 <TextLink href={`/uislash/${slug}`}>{componentPageOf(slug).name}</TextLink>
               </TableCell>
-              <TableCell>
-                {/* A cell holding an element never wraps, so the inline code would stretch the table: wrap it as prose. */}
-                <span className="block min-w-48 whitespace-normal">
-                  <InlineCode text={when} />
-                </span>
-              </TableCell>
+              <TableCell>{inlineCode(when)}</TableCell>
             </TableRow>
           ))}
         </TableBody>

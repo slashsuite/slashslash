@@ -164,6 +164,20 @@ describe("built /uislash pages", () => {
     expect(html).not.toContain("@hackcove/");
   });
 
+  test("a Use instead cell with code in its words wraps as prose, with no wrapper of its own", () => {
+    const html = readDist("uislash/callout.html");
+    const table = /Use instead[\s\S]*?(<table[\s\S]*?<\/table>)/.exec(html)?.[1] ?? "";
+    const cells = [...table.matchAll(/<td([^>]*)>([\s\S]*?)<\/td>/g)].filter(([, , body]) =>
+      body?.includes("<code"),
+    );
+    expect(cells.length).toBeGreaterThan(0);
+    for (const [, attrs, body] of cells) {
+      expect(attrs).toContain("min-w-48");
+      expect(attrs).not.toContain("whitespace-nowrap");
+      expect(body).not.toMatch(/^\s*<span/);
+    }
+  });
+
   // SearchIsland is the kit's SiteSearch, wrapped so it reports its hydration (src/uislash/SearchIsland.tsx).
   test("/uislash pages include the SiteSearch island", () => {
     for (const file of ["uislash.html", "uislash/button.html"]) {

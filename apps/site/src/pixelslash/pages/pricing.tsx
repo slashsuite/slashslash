@@ -32,7 +32,7 @@ import {
 export function PricingPage(): ReactNode {
   return (
     <Stack width="full" gap="lg">
-      <Stack gap="sm" data-testid="pricing-hero">
+      <Stack gap="sm">
         <PageHeading>
           <Display as="span">{STATEMENT.text}</Display>
         </PageHeading>
@@ -49,7 +49,7 @@ export function PricingPage(): ReactNode {
             {"licence" in fact.body ? <LicenceLine product={fact.body.licence} inline /> : fact.body.text}
           </Card>
         ))}
-        <Card title="Our commitment" icon="check" data-testid="commitment">
+        <Card title="Our commitment" icon="check">
           {COMMITMENT.text}
         </Card>
       </CardGrid>

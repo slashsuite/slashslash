@@ -25,38 +25,33 @@ import {
 } from "#/pixelslash/content/pricing";
 
 /**
- * The statement, its lead and the one action on the left of a hero, the commitment beside them on the
- * right; the facts follow, and the contact line ends the page. Below lg the hero is one column, in
- * that order. From lg the hero is the facts' own three columns with the same gap, the headline over
- * two of them and the commitment over the third, so its left edge meets the third card's.
+ * The statement, its lead and the one action; then the facts and the commitment as one row of three
+ * cards, so the row is full and no box stands alone beside the hero with blank space under it. The
+ * licence brief follows, and the contact line ends the page.
  */
 export function PricingPage(): ReactNode {
   return (
     <Stack width="full" gap="lg">
-      <div className="grid gap-8 lg:grid-cols-3 lg:gap-4 lg:items-start" data-testid="pricing-hero">
-        <div className="lg:col-span-2">
-          <Stack gap="sm">
-            <PageHeading>
-              <Display as="span">{STATEMENT.text}</Display>
-            </PageHeading>
-            <Lead>{LEAD.text}</Lead>
-            <Cluster gap="xs">
-              <Button href={psHref(ACTION.href)} size="lg" data-testid="pricing-action">
-                {ACTION.label} <span aria-hidden="true">→</span>
-              </Button>
-            </Cluster>
-          </Stack>
-        </div>
-        <Callout tone="neutral" title="Our commitment" data-testid="commitment">
-          {COMMITMENT.text}
-        </Callout>
-      </div>
+      <Stack gap="sm" data-testid="pricing-hero">
+        <PageHeading>
+          <Display as="span">{STATEMENT.text}</Display>
+        </PageHeading>
+        <Lead>{LEAD.text}</Lead>
+        <Cluster gap="xs">
+          <Button href={psHref(ACTION.href)} size="lg" data-testid="pricing-action">
+            {ACTION.label} <span aria-hidden="true">→</span>
+          </Button>
+        </Cluster>
+      </Stack>
       <CardGrid columns={3} data-testid="pricing-facts">
         {CARDS.map((fact) => (
           <Card key={fact.title} title={fact.title} icon={fact.icon}>
             {"licence" in fact.body ? <LicenceLine product={fact.body.licence} inline /> : fact.body.text}
           </Card>
         ))}
+        <Card title="Our commitment" icon="check" data-testid="commitment">
+          {COMMITMENT.text}
+        </Card>
       </CardGrid>
       <Callout tone="neutral" title="The licence in brief" data-testid="licence-brief">
         <Stack gap="sm">

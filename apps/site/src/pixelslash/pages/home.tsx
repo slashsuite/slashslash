@@ -1,7 +1,9 @@
 import {
   Button,
+  CallToAction,
   Card,
   CardGrid,
+  CardGridRow,
   CodeBlock,
   Container,
   Lead,
@@ -258,15 +260,17 @@ function HowItRuns(): ReactNode {
   );
 }
 
+/** The feature cards, three to a row; one left alone in the last row spans it (`CardGridRow`). */
 function Features(): ReactNode {
+  const cards = FEATURES.map((feature) => (
+    <Card key={feature.title} href={psHref(feature.href)} icon={feature.icon} size="lg" title={feature.title}>
+      <Rich text={feature.body.text} />
+    </Card>
+  ));
   return (
     <Section size="lg" title="What it does">
-      <CardGrid columns={3}>
-        {FEATURES.map((feature) => (
-          <Card key={feature.title} href={psHref(feature.href)} icon={feature.icon} size="lg" title={feature.title}>
-            <Rich text={feature.body.text} />
-          </Card>
-        ))}
+      <CardGrid columns={3} data-testid="feature-grid">
+        {cards.length % 3 === 1 ? [...cards.slice(0, -1), <CardGridRow key="wide">{cards.at(-1)}</CardGridRow>] : cards}
       </CardGrid>
     </Section>
   );
@@ -293,10 +297,10 @@ function Install(): ReactNode {
   );
 }
 
+/** The page's closing band: where a shot goes, and the two ways on. It spans the column, centred. */
 function Local(): ReactNode {
   return (
-    <Section
-      size="lg"
+    <CallToAction
       title="Your pixels stay on your machine."
       description={<Rich text={LOCAL_CLAIM.text} />}
       actions={

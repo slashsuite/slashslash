@@ -27,6 +27,10 @@ export default {
   // The 404 page answers 200 at its own address under `astro preview`; an unknown path answers 404,
   // which capture refuses.
   routes: [...paths, "/404"],
+  // A video draws its own loading spinner, at whatever point of its turn the shot lands on, so every
+  // video's box is left out of the diff (its pixels stay in the PNG). PixelSlash leaves media to the
+  // project, and prints one line a run for the shots with no video.
+  ignore: ["video"],
   variants: [
     { name: "desktop-light", viewport: DESKTOP, theme: "light", browser: "chromium" },
     { name: "desktop-dark", viewport: DESKTOP, theme: "dark", browser: "chromium" },

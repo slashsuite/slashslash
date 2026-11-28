@@ -42,12 +42,16 @@ function groupItems(groupId: string, current: string | undefined): { label: stri
   ];
 }
 
-/** The docs nav: a link to the landing, then each group's title over its pages. `current` is the page's slug. */
+/**
+ * The docs nav: a link to the landing, then each group's title over its pages. `current` is the page's
+ * slug. The links are the quiet ink and the current page alone is the accent, so the nav says where the
+ * reader is instead of drawing every link in the accent.
+ */
 export function DocsNav({ current }: { current?: string }): ReactNode {
   return (
     <nav aria-label="Docs" data-testid="docs-nav">
       <Stack gap="md">
-        <TextLink href={DOCS} {...(current === undefined ? { "aria-current": "page" as const } : {})}>
+        <TextLink href={DOCS} {...(current === undefined ? { "aria-current": "page" as const } : { tone: "quiet" as const })}>
           All docs
         </TextLink>
         {GROUPS.map((group) => (
@@ -56,7 +60,10 @@ export function DocsNav({ current }: { current?: string }): ReactNode {
             <ul className="flex flex-col gap-1 text-sm/6">
               {groupItems(group.id, current).map((item) => (
                 <li key={item.href}>
-                  <TextLink href={item.href} {...(item.active ? { "aria-current": "page" as const } : {})}>
+                  <TextLink
+                    href={item.href}
+                    {...(item.active ? { "aria-current": "page" as const } : { tone: "quiet" as const })}
+                  >
                     {item.label}
                   </TextLink>
                 </li>

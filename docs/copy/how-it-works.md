@@ -1,6 +1,6 @@
 # slashslash how-it-works: copy
 
-Status: outline, three drafts and the persona knockout, waiting for the owner's pick. Knockout winner: Draft A; runner up: Draft C. Nothing goes to a builder until he approves the words.
+Status: the owner approved the outline and picked Draft A (2026-11-28), with three added lines: the trial in scene 3, the failed check in scene 6 and the four verdicts in scene 7. Knockout winner: Draft A; runner up: Draft C.
 
 ## Audience
 
@@ -37,7 +37,7 @@ One headline, the same in the h1, the footer and the share card. Its job: tell P
 
 1. **Facts read on origin/main of each repo, 2026-11-28.** OmniSlash d8d5903 (1 commit since, a thread sweep, not on this page). TaskSlash 0aac233 (8 since, including `cancel`, already listed). PixelSlash 78658b25 (2 since, `org-owner-role`, not on this page). UISlash 6c4c2a39 (88 since, many ui-react changes: only the stable claims `no-styling-escape` and `ui-review-workflow` are used; a facts refresh is owed on uislash). FlakeSlash 0277e42 and ToggleSlash c254941 (no feature changes since).
 2. **Facts approval not verified.** The skill wants each FACTS.md approved by the owner. This run did not find a recorded yes for each; it used them as they stand.
-3. **Outline approval waived for this run.** The skill asks for his yes on the outline before drafts. The team asked for drafts and the knockout overnight, so both were made; if he changes the outline, the drafts are redone.
+3. **Outline approved after the drafts.** The team asked for drafts and the knockout overnight, so both were made before his yes; he approved the outline as it stands on 2026-11-28.
 4. **The good night retro has no product fact.** It is a workflow step, not a line in any FACTS.md. The drafts keep it to "you see what shipped today". the owner to confirm the scene stays, or ticket a fact for it.
 5. **Stage five is "done", not "roll out".** The role model's stages are idea, plan, build, ship, done. The ticket's "Roll out" with ToggleSlash is shown as a scene, not a stage, and the copy does not say the agents drive a rollout.
 6. **The flow, checked against docs/role-state-machine.md and role.ts:** no reopen after shipping; a sendback goes to the builder; the reviewer, not a checker, sends a brief back; the backlog belongs to the system; the sentinel's last move is merge and ship. Every draft follows this.
@@ -72,7 +72,7 @@ The Architect picks up your saved basket and turns it into a ticket. The ticket 
 
 ##### Scene 3. Cold read the brief
 
-A Reviewer reads the brief on its own, with none of your chat behind it. Any question the brief leaves open sends it back to the Architect to fix. When the open question is one only you can answer, the Architect brings it to you.
+A Reviewer reads the brief on its own, with none of your chat behind it. Any question the brief leaves open sends it back to the Architect to fix. When the open question is one only you can answer, the Architect brings it to you. When only trying can answer a question, the Architect runs a small trial first, and what it learns goes back into the ticket.
 
 ##### Scene 4. Parallel builds
 
@@ -84,11 +84,11 @@ Before the change goes up for merging, Reviewers read it and presume every chang
 
 ##### Scene 6. Visual and automated checks
 
-The project's checks run in order and stop at the first one that fails. PixelSlash shows what changed on screen between the old pages and the new ones, and you go through the changes with a few keys: a to accept, r to reject. FlakeSlash names the tests that pass and fail on the same code. UISlash components take no custom styling, and a check fails any pull request that breaks its rules.
+The project's checks run in order and stop at the first one that fails. PixelSlash shows what changed on screen between the old pages and the new ones, and you go through the changes with a few keys: a to accept, r to reject. FlakeSlash names the tests that pass and fail on the same code. UISlash components take no custom styling, and a check fails any pull request that breaks its rules. When a check fails, the Builder fixes it before it can hand off.
 
 ##### Scene 7. Inbox, gate and ship
 
-The Builder hands off and stops. It never merges its own work. Its note lands in the Sentinel's inbox with the notes of every other builder on the team, read oldest first. The Sentinel checks each claim for itself. Red checks, an unmet item on the done list or a claim it cannot reproduce go back to the Builder. When the change clashes with newer work, the Sentinel brings it up to date itself. When every answer is yes, it merges, deploys and closes the ticket.
+Every build ends with one of four verdicts: ready to merge, needs you, blocked, or partly done. Only the first two reach the Sentinel. The Builder hands off and stops. It never merges its own work. Its note lands in the Sentinel's inbox with the notes of every other builder on the team, read oldest first. The Sentinel checks each claim for itself. Red checks, an unmet item on the done list or a claim it cannot reproduce go back to the Builder. When the change clashes with newer work, the Sentinel brings it up to date itself. When every answer is yes, it merges, deploys and closes the ticket.
 
 ##### Scene 8. Live rollout
 
